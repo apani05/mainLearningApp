@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "1074120253631",
+    "project_id": "blackfootapplication",
+    "storage_bucket": "blackfootapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074120253631:android:5ac70ae4ec6214e7e8260a",
+        "android_client_info": {
+          "package_name": "com.example.blackfoot_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtNigTTsphBJRyVKHVSokmmIJXSzoDpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074120253631:android:239851db209b3beee8260a",
+        "android_client_info": {
+          "package_name": "com.example.oki_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtNigTTsphBJRyVKHVSokmmIJXSzoDpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074120253631:android:da5b6ef100147513e8260a",
+        "android_client_info": {
+          "package_name": "com.example.oki_blackfoot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtNigTTsphBJRyVKHVSokmmIJXSzoDpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
