@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LeaderBar extends StatefulWidget {
+import '../../riverpod/river_pod.dart';
+
+class LeaderBar extends ConsumerStatefulWidget {
   final double barHeight ;
   final double barWidth ;
   final Color color;
   final int index;
   final String image;
-  const LeaderBar({
-    super.key,required this.barHeight ,required this.barWidth, required this.color, required this.index, required this.image,
+  final String leaderImages;
+  const LeaderBar( {
+    super.key,required this.barHeight ,required this.barWidth, required this.color, required this.index, required this.image,required this.leaderImages,
   });
 
   @override
-  State<LeaderBar> createState() => _LeaderBarState();
+  _LeaderBarState createState() => _LeaderBarState();
 }
 
-class _LeaderBarState extends State<LeaderBar> {
+class _LeaderBarState extends ConsumerState<LeaderBar> {
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return Stack(
         fit: StackFit.loose,
         clipBehavior: Clip.none,
@@ -45,13 +50,13 @@ class _LeaderBarState extends State<LeaderBar> {
             left: 15,
             child: CircleAvatar(
               radius: 28,
-              backgroundColor: Colors.yellow,
+             // backgroundColor: Colors.yellow,
               child: CircleAvatar(
                 radius: 25,
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
                   radius: 45,
-                  backgroundImage: AssetImage('assets/prson_1.jpg'),
+                  backgroundImage: AssetImage('assets/th.jpg'),
                 ),
               ),
             ),

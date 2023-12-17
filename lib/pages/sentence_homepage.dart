@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'category_learning_page.dart';
 import 'quiz_page.dart';
 
 class FeatureItem extends StatelessWidget {
@@ -24,9 +24,9 @@ class FeatureItem extends StatelessWidget {
       child: Container(
         width: 120,
         height: 120,
-        margin: EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.deepPurple,
+          color: Color(0xFFcccbff),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -58,16 +58,28 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 60,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
+    return GestureDetector(
+      onTap: () {
+        if (title == 'Party Talk') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LearningPage()),
+          );
+        } else {
+          // Handle other feature items
+        }
+      },
+      child: Container(
+        height: 60,
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ListTile(
+          leading: Icon(icon),
+          title: Text(title),
+        ),
       ),
     );
   }
@@ -84,26 +96,28 @@ class SentenceHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Conversation Learning"),
-          backgroundColor: Colors.deepPurple,
-          actions: [
-            IconButton(
-              onPressed: logout,
-              icon: Icon(Icons.logout),
-            )
-          ]),
+        title: Text("Conversation Learning"),
+        backgroundColor: Color(0xFFcccbff),
+        actions: [
+          IconButton(
+            onPressed: logout,
+            icon: Icon(Icons.logout),
+          )
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
             child: Text(
               'Features',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Container(
-            height: 120, // Increased height to accommodate images and text
+            height: 120,
+            padding: EdgeInsets.symmetric(horizontal: 12),
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: const [
@@ -115,7 +129,7 @@ class SentenceHomePage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
             child: Text(
               'Categories',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

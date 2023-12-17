@@ -1,17 +1,22 @@
+import 'package:bfootlearn/leaderboard/repo/lederborad_model.dart';
 import 'package:bfootlearn/leaderboard/widgets/leadercard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
+import '../../common/bottomnav.dart';
+import '../../riverpod/river_pod.dart';
 import '../widgets/sliverlist.dart';
 
-class LeaderBoardPage extends StatefulWidget {
+class LeaderBoardPage extends ConsumerStatefulWidget {
   const LeaderBoardPage({super.key});
 
   @override
-  State<LeaderBoardPage> createState() => _LeaderBoardPageState();
+  _LeaderBoardPageState createState() => _LeaderBoardPageState();
 }
 
-class _LeaderBoardPageState extends State<LeaderBoardPage> {
+class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
+
   List<String> names = [
     "1",
     "2",
@@ -46,48 +51,19 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
     "3",
     "4"
   ];
-  List<String> litems = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4",
-    "1",
-    "2",
-    "3",
-    "4"
-  ];
-  List<Widget> items = List.generate(100, (index) => LeaderCard(index: index,));
+  //List<Widget> items = List.generate(100, (index) => LeaderCard(index: index,));
+  late Iterable<LeaderBoardModel> leader ;
 
+  @override
+  void initState() {
+    super.initState();
+  }
 
 // Create a container for the top of the list
   Widget topContainer = Container(
     height: 100.0,
     width: double.infinity,
-    color: Colors.blue,
+    color: Colors.redAccent,
     child: Card(
       child: Container(
         height: 100.0,
@@ -95,7 +71,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
         child: Text(
           'Title',
           style: TextStyle(
-            color: Colors.white,
+            color: ThemeData.dark().primaryColor,
             fontSize: 24.0,
           ),
         ),
@@ -107,18 +83,34 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
 
   @override
   Widget build(BuildContext context) {
-    SliverListWithTopContainer sliverList = SliverListWithTopContainer(
-      items: items,
-      topContainer: topContainer,
-    );
-    return  Scaffold(
-      backgroundColor: Colors.black,
-      // body:  ListView.builder(
-      //   itemBuilder: (BuildContext txt, int index) =>
-      //       buildList(txt, index),
-      //   itemCount: litems.length,
-      // ),
-      body:sliverList,
+    final theme = ref.watch(themeProvider);
+    final leaderboardRepo = ref.watch(leaderboardProvider);
+
+    return  FutureBuilder(
+      future: leaderboardRepo.getTopHighScores(),
+      builder: (context,snapshot) {
+
+        if(snapshot.connectionState == ConnectionState.waiting){
+          return Center(child: CircularProgressIndicator());
+        }else if(snapshot.hasData){
+          SliverListWithTopContainer sliverList = SliverListWithTopContainer(
+            items: List.generate(snapshot.data!.length, (index) => LeaderCard(snapshot.data!.elementAt(index).name ,index: index, score: snapshot.data!.elementAt(index).score,)),
+            topContainer: topContainer,
+          );
+          return Scaffold(
+            backgroundColor: Colors.white,
+            // body:  ListView.builder(
+            //   itemBuilder: (BuildContext txt, int index) =>
+            //       buildList(txt, index),
+            //   itemCount: litems.length,
+            // ),
+            body:sliverList,
+          );
+        }else{
+          return Center(child: Text("No Data"));
+        }
+
+      }
     );
   }
 

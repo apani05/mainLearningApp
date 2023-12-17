@@ -1,3 +1,4 @@
+import 'package:bfootlearn/Home/views/home_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../auth/login_or_register.dart';
@@ -13,7 +14,8 @@ class AuthPage extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const SentenceHomePage();
+             // return const SentenceHomePage();
+              return const HomeView();
             } else {
               return const LoginOrRegister();
             }

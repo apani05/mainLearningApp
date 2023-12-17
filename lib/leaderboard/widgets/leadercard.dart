@@ -1,45 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LeaderCard extends StatelessWidget {
+import '../../riverpod/river_pod.dart';
+
+class LeaderCard extends ConsumerStatefulWidget {
   final int index ;
-  const LeaderCard({
-    super.key,required this.index
+  final String name;
+  final int score;
+  const LeaderCard(this.name, {
+    super.key,required this.index,required this.score
   });
 
   @override
+ _LeaderCardState createState() => _LeaderCardState();
+}
+
+class _LeaderCardState extends ConsumerState<LeaderCard> {
+  @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return Padding(
-        padding:  EdgeInsets.only(top: index == 0?18.0:0),
+        padding:  EdgeInsets.only(top: widget.index == 0?18.0:0),
         child: Card(
-          margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+          color: theme.lightPurple,
+          margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           child: Container(
             height: 60,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text((index+4).toString(),
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold)),
+                  Text((widget.index+4).toString(),
+                      style: theme.themeData.textTheme.headline3),
                   CircleAvatar(
-                    foregroundColor: Colors.green,
-                    backgroundImage: AssetImage('assets/person_2.jpg'),
+                    radius: 23,
+                    backgroundColor: Colors.green,
+                    child: CircleAvatar(
+                      foregroundColor: Colors.green,
+                      backgroundImage: AssetImage('assets/person_logo.png'),
+                    ),
                   ),
                   Text(
-                    "Name",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                    widget.name,
+                    style: theme.themeData.textTheme.headline4,
                   ),
                   Text(
-                    "Score",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                    widget.score.toString(),
+                    style: theme.themeData.textTheme.headline3,
                   )
                 ]
             ),
           ),
+          elevation: 0,
         ));
   }
 }

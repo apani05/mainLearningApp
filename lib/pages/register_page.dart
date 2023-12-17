@@ -67,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.purple),
+                    color: Color(0xFFcccbff)),
               ),
               const SizedBox(height: 25),
               MyTextField(

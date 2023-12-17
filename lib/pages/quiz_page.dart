@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class QuizPage extends StatefulWidget {
@@ -9,63 +8,220 @@ class QuizPage extends StatefulWidget {
   _QuizPageState createState() => _QuizPageState();
 }
 
-class _QuizPageState extends State<QuizPage> {
+class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   int _timerSeconds = 20;
   int _currentIndex = 0;
+  late Timer _timer;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   List<Question> questions = [
-    Question("What's your name?", "Tsá kitáánikko?",
+    Question(
+        "How are you?", "Okihkiita?", ["Good", "Okihkiita?", "Bad", "So-so"]),
+    Question("What is your name?", "Tsá kitáánikko?",
         ["Option 1", "Tsá kitáánikko?", "Option 3", "Option 4"]),
-    // Add other questions here
+    Question("Hello, nice to meet you.", "Tsí̠kʷayímohkiyaki?",
+        ["Option 1", "Tsí̠kʷayímohkiyaki?", "Option 3", "Option 4"]),
+    Question("What are you doing these days?", "Okihkiita moxkíitapi?",
+        ["Option 1", "Okihkiita moxkíitapi?", "Option 3", "Option 4"]),
   ];
+
+  bool _shouldPauseTimer = false;
+  int _originalTimerSeconds = 20;
+  late List<bool> _isQuestionAnswered;
+  bool _isNextButtonEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    _originalTimerSeconds = _timerSeconds;
+    _timer = Timer(Duration.zero, () {});
     startTimer();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: _timerSeconds),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _controller.forward();
+
+    _isQuestionAnswered = List.generate(
+      questions.length,
+      (index) => false,
+    );
+  }
+
+  void updateIsQuestionAnswered() {
+    setState(() {
+      _isQuestionAnswered = List.generate(
+        questions.length,
+        (index) => false,
+      );
+    });
   }
 
   void startTimer() {
+    if (_timer != null && _timer.isActive) {
+      _timer.cancel();
+    }
+
     const oneSecond = Duration(seconds: 1);
-    Timer.periodic(oneSecond, (timer) {
+    _timer = Timer.periodic(oneSecond, (timer) {
       if (_timerSeconds == 0) {
-        // Time is up, handle accordingly (e.g., mark the question as incorrect)
         timer.cancel();
         nextQuestion();
-      } else {
+      } else if (!_shouldPauseTimer) {
         setState(() {
           _timerSeconds--;
         });
+
+        _controller.duration = Duration(seconds: _timerSeconds);
       }
     });
   }
 
   void nextQuestion() {
-    // Handle what to do when the timer reaches 0
-    // For now, let's just move to the next question
     setState(() {
       _currentIndex++;
       if (_currentIndex < questions.length) {
-        _timerSeconds = 20;
+        _timerSeconds = _originalTimerSeconds;
+        _controller.reset();
+        _controller.forward();
         startTimer();
+        _isNextButtonEnabled = false;
       } else {
-        // All questions are done
-        // You may want to navigate to the results screen or perform any other action
+        _isNextButtonEnabled = false;
+        // Quiz is completed
+        calculateScore();
       }
+
+      updateIsQuestionAnswered();
     });
+  }
+
+  void calculateScore() {
+    int correctAnswers = 0;
+    for (int i = 0; i < questions.length; i++) {
+      if (questions[i].correctAnswer == questions[i].selectedAnswer) {
+        correctAnswers++;
+      }
+    }
+
+    // Navigate to a new screen to display the quiz results
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizResultScreen(
+          correctAnswers: correctAnswers,
+          totalQuestions: questions.length,
+          questions: questions,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _onBackPressed() async {
+    _shouldPauseTimer = true;
+
+    if (_currentIndex < questions.length) {
+      bool shouldExit = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text("Exit Quiz?"),
+          content: Text("Are you sure you want to exit the quiz?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                _timer.cancel();
+                _shouldPauseTimer = false;
+                Navigator.of(context).pop(true);
+              },
+              child: Text("Yes"),
+            ),
+            TextButton(
+              onPressed: () {
+                _shouldPauseTimer = false;
+                Navigator.of(context).pop(false);
+              },
+              child: Text("No"),
+            ),
+          ],
+        ),
+      );
+
+      return shouldExit;
+    } else {
+      return true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Practice Section'),
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Quiz'),
+          backgroundColor: Color(0xFFcccbff),
+        ),
+        body: _currentIndex < questions.length
+            ? buildQuestionCard(questions[_currentIndex])
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Quiz Completed!',
+                      style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFcccbff),
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Icon(
+                      Icons.done_all,
+                      size: 60.0,
+                      color: Color(0xFFcccbff),
+                    ),
+                    SizedBox(height: 20.0),
+                    Text(
+                      'Correct Answers:',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFcccbff),
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    // Display correct answers here
+                    ...questions
+                        .asMap()
+                        .entries
+                        .map(
+                          (entry) => Text(
+                            'Q${entry.key + 1}: ${entry.value.correctAnswer}',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Color(0xFFcccbff),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ],
+                ),
+              ),
       ),
-      body: _currentIndex < questions.length
-          ? buildQuestionCard(questions[_currentIndex])
-          : Center(
-              child: Text('Quiz Completed!'),
-            ),
     );
   }
 
@@ -79,62 +235,65 @@ class _QuizPageState extends State<QuizPage> {
           children: [
             Text(
               question.questionText,
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFcccbff),
+              ),
             ),
             SizedBox(height: 10.0),
-            DragTarget<String>(
-              builder: (context, candidateData, rejectedData) {
-                return Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(8.0),
-                  color: Colors.grey[200],
-                  child: Text("Drag and drop your answer here"),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: buildRadioOptionsList(question.options),
+            ),
+            SizedBox(height: 10.0),
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _animation.value * 2 * 3.1416,
+                  child: Icon(Icons.access_time,
+                      size: 60.0, color: Color(0xFFcccbff)),
                 );
               },
-              onWillAccept: (data) => data == question.correctAnswer,
-              onAccept: (data) {
-                // Handle the correct answer here
-                // You may want to update the score or perform any other action
-                print("Selected Answer: $data");
-                nextQuestion();
-              },
             ),
             SizedBox(height: 10.0),
-            buildOptionsList(question.options),
+            Text(
+              "Time left: $_timerSeconds seconds",
+              style: TextStyle(fontSize: 24.0, color: Color(0xFFcccbff)),
+            ),
             SizedBox(height: 10.0),
-            Text("Time left: $_timerSeconds seconds"),
+            ElevatedButton(
+              onPressed: _isNextButtonEnabled ? nextQuestion : null,
+              child: Text("Next"),
+              style: ElevatedButton.styleFrom(primary: Color(0xFFcccbff)),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildOptionsList(List<String> options) {
-    return Wrap(
-      spacing: 8.0,
-      runSpacing: 8.0,
-      children: options
-          .map((option) => Draggable<String>(
-                data: option,
-                child: buildOptionCard(option),
-                feedback: buildOptionCard(option, isDragging: true),
-                childWhenDragging: Container(),
-              ))
-          .toList(),
-    );
-  }
-
-  Widget buildOptionCard(String option, {bool isDragging = false}) {
-    return Card(
-      color: isDragging ? Colors.transparent : Colors.purple,
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Text(
-          option,
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-    );
+  List<Widget> buildRadioOptionsList(List<String> options) {
+    return options
+        .map(
+          (option) => RadioListTile<String>(
+            title: Text(
+              option,
+              style: TextStyle(fontSize: 18.0, color: Colors.black),
+            ),
+            value: option,
+            groupValue: questions[_currentIndex].selectedAnswer,
+            onChanged: (value) {
+              setState(() {
+                questions[_currentIndex].selectedAnswer = value!;
+                _isNextButtonEnabled = true;
+              });
+            },
+            activeColor: Color(0xFFcccbff), // Change radio button color
+          ),
+        )
+        .toList();
   }
 }
 
@@ -142,6 +301,88 @@ class Question {
   String questionText;
   String correctAnswer;
   List<String> options;
+  String? selectedAnswer;
 
   Question(this.questionText, this.correctAnswer, this.options);
+}
+
+class QuizResultScreen extends StatelessWidget {
+  final int correctAnswers;
+  final int totalQuestions;
+  final List<Question> questions;
+
+  const QuizResultScreen({
+    Key? key,
+    required this.correctAnswers,
+    required this.totalQuestions,
+    required this.questions,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Quiz Result'),
+        backgroundColor: Color(0xFFcccbff),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Quiz Completed!',
+              style: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFcccbff),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Icon(
+              Icons.done_all,
+              size: 60.0,
+              color: Color(0xFFcccbff),
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'You answered $correctAnswers out of $totalQuestions questions correctly.',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFcccbff),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Correct Answers:',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFcccbff),
+              ),
+            ),
+            SizedBox(height: 10.0),
+            // Display correct answers here
+            ...questions
+                .asMap()
+                .entries
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'Q${entry.key + 1}: ${entry.value.correctAnswer}',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Color(0xFFcccbff),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ],
+        ),
+      ),
+    );
+  }
 }

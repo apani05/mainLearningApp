@@ -10,14 +10,9 @@ class DisscussionPage extends StatefulWidget {
 class _DisscussionPageState extends State<DisscussionPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: const Icon(Icons.arrow_back_ios,color: Colors.white,),
-        title: Text("Disscussion",style: TextStyle(color: Colors.white),),
-      ),
-      body: SingleChildScrollView(child: DCarad()),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18.0),
+      child: SingleChildScrollView(child: DCarad()),
     );
   }
 }
@@ -66,7 +61,6 @@ class _DCaradState extends State<DCarad> {
       padding: const EdgeInsets.all(8.0),
       child: ExpansionPanelList(
         materialGapSize: 20,
-        expandedHeaderPadding: EdgeInsets.only(top: 0),
       expansionCallback: (int index, bool isExpanded) {
         print("value of index $index with isexpanded: $isExpanded");
         setState(() {
@@ -98,9 +92,12 @@ class _DCaradState extends State<DCarad> {
                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        foregroundColor: Colors.green,
-                        backgroundImage: AssetImage('assets/person_2.jpg'),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: CircleAvatar(
+                          foregroundColor: Colors.green,
+                          backgroundImage: AssetImage('assets/person_2.jpg'),
+                        ),
                       ),
                       SizedBox(width: 10,),
                       Container(

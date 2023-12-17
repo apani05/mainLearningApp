@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.purple),
+                    color: Color(0xFFcccbff)),
               ),
               const SizedBox(height: 25),
               MyTextField(
