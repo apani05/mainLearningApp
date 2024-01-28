@@ -4,16 +4,17 @@ import 'package:bfootlearn/route/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'Home/views/home_view.dart';
 import 'firebase_options.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ProviderScope(
-    child: MyApp(),
-  ),);
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -22,16 +23,16 @@ class MyApp extends ConsumerStatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
-class _MyAppState extends ConsumerState<MyApp> {
 
+class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       ref.read(themeProvider).getTheme();
     });
     super.initState();
-
   }
+
   @override
   Widget build(BuildContext context) {
     var theme = ref.watch(themeProvider);
@@ -40,11 +41,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       title: 'Flutter Demo',
       theme: theme.themeData,
       onGenerateRoute: RouteGenerator.generateRoute,
-      home:  const AuthPage(),
+      home: const AuthPage(),
     );
   }
 }
-
-
-
-

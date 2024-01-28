@@ -5,8 +5,7 @@ import 'package:bfootlearn/leaderboard/views/leader_board_page.dart';
 import 'package:bfootlearn/vocabulary/viwes/v_game.dart';
 import 'package:bfootlearn/vocabulary/viwes/vocabulary_home.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
+import '../pages/blog_page.dart';
 
 class RouteGenerator {
   static const String homeRoute = '/home';
@@ -15,6 +14,7 @@ class RouteGenerator {
   static const String disscussionRoute = '/discussion';
   static const vocabularyRoute = '/vocabulary';
   static const String vGame = '/vgames';
+  static const String blogRoute = '/blog';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -24,10 +24,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => LeaderBoardPage());
       case disscussionRoute:
         return MaterialPageRoute(builder: (context) => DisscussionPage());
-        case vocabularyRoute:
+      case vocabularyRoute:
         return MaterialPageRoute(builder: (context) => VocabularyHome());
-        case vGame:
+      case vGame:
         return MaterialPageRoute(builder: (context) => VocabularyGame());
+      case blogRoute:
+        return MaterialPageRoute(builder: (context) => BlogPage());
       default:
         return MaterialPageRoute(builder: (context) => HomeView());
     }

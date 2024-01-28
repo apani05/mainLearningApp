@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'quiz_result_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizPage extends StatefulWidget {
   const QuizPage({Key? key}) : super(key: key);
@@ -15,16 +18,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
-  List<Question> questions = [
-    Question(
-        "How are you?", "Okihkiita?", ["Good", "Okihkiita?", "Bad", "So-so"]),
-    Question("What is your name?", "Tsá kitáánikko?",
-        ["Option 1", "Tsá kitáánikko?", "Option 3", "Option 4"]),
-    Question("Hello, nice to meet you.", "Tsí̠kʷayímohkiyaki?",
-        ["Option 1", "Tsí̠kʷayímohkiyaki?", "Option 3", "Option 4"]),
-    Question("What are you doing these days?", "Okihkiita moxkíitapi?",
-        ["Option 1", "Okihkiita moxkíitapi?", "Option 3", "Option 4"]),
-  ];
+  List<Question> questions = [];
 
   bool _shouldPauseTimer = false;
   int _originalTimerSeconds = 20;
@@ -51,15 +45,63 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
       questions.length,
       (index) => false,
     );
+
+    // Fetch questions from Firestore and randomize options
+    fetchQuestions();
   }
 
-  void updateIsQuestionAnswered() {
-    setState(() {
-      _isQuestionAnswered = List.generate(
-        questions.length,
-        (index) => false,
-      );
-    });
+  Future<void> fetchQuestions() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('Conversations').get();
+
+      List<Question> fetchedQuestions = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+
+        // Fetch other Blackfoot texts to use as options
+        List<String> allBlackfootTexts = querySnapshot.docs
+            .map((otherDoc) => otherDoc['blackfootText'] as String)
+            .toList();
+
+        // Remove the current Blackfoot text from the options
+        allBlackfootTexts.remove(docData['blackfootText']);
+
+        // Randomly select a subset of options
+        List<String> options = allBlackfootTexts
+          ..shuffle(); // Adjust the shuffle logic as needed
+
+        // Take a specific number of options (e.g., 3)
+        options = options.take(3).toList();
+
+        // Include the correct answer in the options
+        options.add(docData['blackfootText']);
+
+        // Shuffle the options to randomize the order
+        options.shuffle();
+
+        return Question(
+          docData['englishText'],
+          docData['blackfootText'],
+          options,
+        );
+      }).toList();
+
+      // Randomize the order of questions
+      fetchedQuestions.shuffle();
+
+      // Take the first 10 (or less) questions
+      questions =
+          fetchedQuestions.take(min(fetchedQuestions.length, 10)).toList();
+
+      setState(() {
+        _isQuestionAnswered = List.generate(
+          questions.length,
+          (index) => false,
+        );
+      });
+    } catch (error) {
+      print("Error fetching questions: $error");
+    }
   }
 
   void startTimer() {
@@ -122,6 +164,15 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     );
   }
 
+  void updateIsQuestionAnswered() {
+    setState(() {
+      _isQuestionAnswered = List.generate(
+        questions.length,
+        (index) => false,
+      );
+    });
+  }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -176,51 +227,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
         ),
         body: _currentIndex < questions.length
             ? buildQuestionCard(questions[_currentIndex])
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Quiz Completed!',
-                      style: TextStyle(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFcccbff),
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    Icon(
-                      Icons.done_all,
-                      size: 60.0,
-                      color: Color(0xFFcccbff),
-                    ),
-                    SizedBox(height: 20.0),
-                    Text(
-                      'Correct Answers:',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFcccbff),
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    // Display correct answers here
-                    ...questions
-                        .asMap()
-                        .entries
-                        .map(
-                          (entry) => Text(
-                            'Q${entry.key + 1}: ${entry.value.correctAnswer}',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Color(0xFFcccbff),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ],
-                ),
-              ),
+            : Container(),
       ),
     );
   }
@@ -304,85 +311,4 @@ class Question {
   String? selectedAnswer;
 
   Question(this.questionText, this.correctAnswer, this.options);
-}
-
-class QuizResultScreen extends StatelessWidget {
-  final int correctAnswers;
-  final int totalQuestions;
-  final List<Question> questions;
-
-  const QuizResultScreen({
-    Key? key,
-    required this.correctAnswers,
-    required this.totalQuestions,
-    required this.questions,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quiz Result'),
-        backgroundColor: Color(0xFFcccbff),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Quiz Completed!',
-              style: TextStyle(
-                fontSize: 30.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Icon(
-              Icons.done_all,
-              size: 60.0,
-              color: Color(0xFFcccbff),
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'You answered $correctAnswers out of $totalQuestions questions correctly.',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              'Correct Answers:',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 10.0),
-            // Display correct answers here
-            ...questions
-                .asMap()
-                .entries
-                .map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      'Q${entry.key + 1}: ${entry.value.correctAnswer}',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        color: Color(0xFFcccbff),
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ],
-        ),
-      ),
-    );
-  }
 }

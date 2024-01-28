@@ -1,7 +1,80 @@
 import 'package:flutter/material.dart';
 import 'quiz_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LearningPage extends StatelessWidget {
+class LearningPage extends StatefulWidget {
+  final String seriesName;
+
+  LearningPage({required this.seriesName});
+
+  @override
+  _LearningPageState createState() => _LearningPageState();
+}
+
+class _LearningPageState extends State<LearningPage> {
+  List<bool> _isAccordionExpanded = [];
+  late List<CardData> cardDataList = [];
+  late Future<String> seriesNameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    seriesNameFuture = fetchSeriesName();
+    fetchData();
+  }
+
+  Future<String> fetchSeriesName() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> seriesNameSnapshot =
+          await FirebaseFirestore.instance
+              .collection('ConversationTypes')
+              .doc(widget.seriesName)
+              .get();
+
+      // Check if seriesNameSnapshot exists and has data
+      if (seriesNameSnapshot.exists) {
+        String seriesName = seriesNameSnapshot.data()!['seriesName'];
+        return seriesName;
+      } else {
+        print('Series name not found: ${widget.seriesName}');
+        return 'Series Not Found';
+      }
+    } catch (error) {
+      print("Error fetching series name: $error");
+      return 'Error Fetching Series Name';
+    }
+  }
+
+  Future<void> fetchData() async {
+    try {
+      String seriesName = await seriesNameFuture;
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Conversations')
+          .where('seriesName', isEqualTo: seriesName)
+          .get();
+
+      List<CardData> data = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+        return CardData(
+          englishText: docData['englishText'],
+          blackfootText: docData['blackfootText'],
+        );
+      }).toList();
+
+      setState(() {
+        _isAccordionExpanded = List.filled(data.length, false);
+        cardDataList = data;
+      });
+    } catch (error) {
+      print("Error fetching data: $error");
+    }
+  }
+
+  bool get isContinueButtonEnabled {
+    return _isAccordionExpanded.every((value) => value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,33 +86,46 @@ class LearningPage extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          title: Text('Party Talk'),
+          title: FutureBuilder<String>(
+            future: seriesNameFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Text(snapshot.data ?? 'Series Name');
+              }
+              return Text('loading');
+            },
+          ),
           backgroundColor: Color(0xFFcccbff),
         ),
-        body: CardSlider(),
+        body: cardDataList.isNotEmpty
+            ? CardSlider(
+                cardDataList: cardDataList,
+                isAccordionExpanded: _isAccordionExpanded,
+                onAccordionTapped: (index) {
+                  setState(() {
+                    _isAccordionExpanded[index] = !_isAccordionExpanded[index];
+                  });
+                },
+                isContinueButtonEnabled: isContinueButtonEnabled,
+              )
+            : Center(child: CircularProgressIndicator()),
       ),
     );
   }
 }
 
-class CardSlider extends StatefulWidget {
-  @override
-  _CardSliderState createState() => _CardSliderState();
-}
+class CardSlider extends StatelessWidget {
+  final List<CardData> cardDataList;
+  final List<bool> isAccordionExpanded;
+  final Function(int) onAccordionTapped;
+  final bool isContinueButtonEnabled;
 
-class _CardSliderState extends State<CardSlider> {
-  List<bool> _isAccordionExpanded = [false, false, false];
-
-  List<CardData> cardDataList = [
-    CardData("English sentence 1", "Ikosi kiiyi miiksistookatsi 1"),
-    CardData("English sentence 2",
-        "Ikosi kiiyi miiksistookatsi 2 Ikosi kiiyi miiksistookatsi 2 Ikosi kiiyi miiksistookatsi 2 Ikosi kiiyi miiksistookatsi 2"),
-    CardData("English sentence 3", "Ikosi kiiyi miiksistookatsi 3"),
-  ];
-
-  bool get isContinueButtonEnabled {
-    return _isAccordionExpanded.every((value) => value);
-  }
+  CardSlider({
+    required this.cardDataList,
+    required this.isAccordionExpanded,
+    required this.onAccordionTapped,
+    required this.isContinueButtonEnabled,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +138,9 @@ class _CardSliderState extends State<CardSlider> {
               return CardWidget(
                 englishText: cardDataList[index].englishText,
                 blackfootText: cardDataList[index].blackfootText,
-                isAccordionExpanded: _isAccordionExpanded[index],
+                isAccordionExpanded: isAccordionExpanded[index],
                 onAccordionTapped: () {
-                  setState(() {
-                    _isAccordionExpanded[index] = !_isAccordionExpanded[index];
-                  });
+                  onAccordionTapped(index);
                 },
               );
             },
@@ -94,13 +178,6 @@ class _CardSliderState extends State<CardSlider> {
   }
 }
 
-class CardData {
-  final String englishText;
-  final String blackfootText;
-
-  CardData(this.englishText, this.blackfootText);
-}
-
 class CardWidget extends StatelessWidget {
   final String englishText;
   final String blackfootText;
@@ -125,7 +202,7 @@ class CardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             InkWell(
-              onTap: onAccordionTapped, // Trigger the callback on tap
+              onTap: onAccordionTapped,
               child: Row(
                 children: [
                   Expanded(
@@ -191,4 +268,11 @@ class CardWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class CardData {
+  final String englishText;
+  final String blackfootText;
+
+  CardData({required this.englishText, required this.blackfootText});
 }
