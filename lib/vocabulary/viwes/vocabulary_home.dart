@@ -16,22 +16,30 @@ class VocabularyHome extends ConsumerStatefulWidget {
 }
 
 class HomeViewState extends ConsumerState<VocabularyHome> {
+  List<String> category = [];
   @override
   void initState() {
+
+   setCatorgories();
     super.initState();
   }
 
-  List<String> category = [
-    'Weather',
-    'Directions',
-    'Time',
-    'Days',
-    'Kinship Terms',
-    'Plants',
-    'Food',
-    'Animals',
-    'Numbers',
-  ];
+  setCatorgories() async {
+    final vProvider = ref.read(vocaProvider);
+    category= await vProvider.getAllCategories();
+  }
+  // List<String> category = [
+  //   'Weather',
+  //   'Directions',
+  //   'Time',
+  //   'Days',
+  //   'Kinship Terms',
+  //   'Plants',
+  //   'Food',
+  //   'Animals',
+  //   'Numbers',
+  // ];
+
 
   FlipperController flipperController = FlipperController(
     dragAxis: DragAxis.horizontal,
@@ -56,7 +64,7 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
             radius: 23,
             child: CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage('https://w7.pngwing.com/pngs/867/694/png-transparent-user-profile-default-computer-icons-network-video-recorder-avatar-cartoon-maker-blue-text-logo.png'),
+              backgroundImage: AssetImage("assets/person_logo.png"),
             ),
           ),
           actions: [
@@ -70,26 +78,44 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
                 )),
           ],
         ),
-        body: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 5,
-            ),
-            itemCount: category.length,
-            itemBuilder: (context,int){
-              return GestureDetector(
-                onTap: (){
-                  Navigator.pushNamed(context, '/vgames');
-                },
-                child: Card(
-                   color: theme.lightPurple,
-                  child: Center(
-                    child: Text(category[int],style: theme.themeData.textTheme.headline2?.copyWith(color: Colors.black),),
-                  )
+        body: FutureBuilder(
+          future: vProvider.getAllCategories(),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(child: CircularProgressIndicator());
+            }else if(snapshot.hasError){
+              return const Center(child: Text("Error"));
+            }else{
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 5,
                 ),
+                itemCount: snapshot.data?.length,
+                itemBuilder: (context,int){
+                  return GestureDetector(
+                    onTap: ()async{
+                      Navigator.pushNamed(context, '/vgames',arguments: snapshot.data![int]);
+                      print("firebase data");
+                      await vProvider.getAllCategories();
+                    },
+                    child: Card(
+                        color: theme.lightPurple,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(snapshot.data![int],
+                              softWrap: true,
+                              style: theme.themeData.textTheme.headline3?.copyWith(color: Colors.black),),
+                          ),
+                        )
+                    ),
+                  );
+                },
               );
-            },
+            }
+          }
         )
        // bottomNavigationBar:  BottomNavItem.bottomBar(ref, theme.themeData),
     );

@@ -35,12 +35,12 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     var theme = ref.watch(themeProvider);
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: theme.themeData,
+    //  theme: theme.themeData,
       onGenerateRoute: RouteGenerator.generateRoute,
-      home:  const AuthPage(),
+      home:  AuthPage(),
     );
   }
 }

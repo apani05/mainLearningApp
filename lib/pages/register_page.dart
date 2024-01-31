@@ -1,26 +1,30 @@
+import 'package:bfootlearn/User/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 
 import '../helper/helper_functions.dart';
+import '../riverpod/river_pod.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
 
   const RegisterPage({super.key, required this.onTap});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPwdController = TextEditingController();
 
   void registerUser() async {
+    final userProvide = ref.read(userProvider);
     showDialog(
       context: context,
       builder: (context) => const Center(
@@ -36,6 +40,17 @@ class _RegisterPageState extends State<RegisterPage> {
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
+
+        if(userCredential.user != null) {
+          await userProvide.createUserInDb(
+           UserModel(name: userCredential.user!.displayName ?? userNameController.text,
+               uid: userCredential.user!.uid,
+               imageUrl: userCredential.user!.photoURL ?? '',
+               score: 0,
+               rank: 0,
+               savedWords: []),userCredential.user!.uid
+         );
+        }
         Navigator.pop(context);
         displayMessageToUser("Successfully Registered", context);
       } on FirebaseAuthException catch (e) {

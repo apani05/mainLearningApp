@@ -1,6 +1,7 @@
 import 'package:bfootlearn/Home/widgets/bootomnavItems.dart';
 import 'package:bfootlearn/Home/widgets/crad_option.dart';
 import 'package:bfootlearn/Home/widgets/home_page.dart';
+import 'package:bfootlearn/User/user_profile_screen.dart';
 import 'package:bfootlearn/common/bottomnav.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -20,6 +21,11 @@ class HomeView extends ConsumerStatefulWidget {
 class HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
+    final leaderBoardRepo = ref.read(leaderboardProvider);
+    final UserProvide = ref.read(userProvider);
+    //leaderBoardRepo.addToLeaderBoard(UserProvide.name??"", UserProvide.score);
+    //UserProvide.getScore(UserProvide.uid);
+    //UserProvide.setScore(UserProvide.score);
     super.initState();
   }
 
@@ -37,14 +43,19 @@ class HomeViewState extends ConsumerState<HomeView> {
         backgroundColor:  Colors.white,
         title: Row(
           children: [
-             CircleAvatar(
-              backgroundColor: theme.lightPurple,
-              radius: 23,
-              child: CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL??"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" ),
-              ),
+             GestureDetector(
+               onTap: (){
+                 Navigator.push(context, MaterialPageRoute(builder: (context)=>UserProfileScreen()));
+               },
+               child: CircleAvatar(
+                backgroundColor: theme.lightPurple,
+                radius: 23,
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL??"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" ),
+                ),
             ),
+             ),
             Visibility(child: const Text("LeaderBoard"),visible: vProvider.currentPage == 1 ? true : false,),
           ],
         ),

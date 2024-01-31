@@ -1,24 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../User/user_model.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 import '../helper/helper_functions.dart';
+import '../riverpod/river_pod.dart';
 import 'forgot_pwd_page.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
 
   const LoginPage({super.key, required this.onTap});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   void login() async {
+    final userProvide = ref.read(userProvider);
     showDialog(
       context: context,
       builder: (context) => const Center(
@@ -26,8 +30,35 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+     final UserCredential =  await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
+     if(UserCredential.user != null && UserCredential.user!.uid.isNotEmpty){
+      var isExsist = await userProvide.checkIfUserExistsInDb(UserCredential.user!.uid);
+      print("user is exsist $isExsist");
+      if(!isExsist){
+        await userProvide.createUserInDb(
+            UserModel(name: UserCredential.user!.displayName ?? emailController.text,
+                uid: UserCredential.user!.uid,
+                imageUrl: UserCredential.user!.photoURL ?? '',
+                score: 0,
+                rank: 0,
+                savedWords: []),UserCredential.user!.uid
+        );
+        print("user is created with uid ${UserCredential.user!.uid}");
+      }
+
+     }
+
+
+
+
+
+
+
+
+
+
+
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);

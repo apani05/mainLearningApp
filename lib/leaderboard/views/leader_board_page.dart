@@ -85,7 +85,6 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     final leaderboardRepo = ref.watch(leaderboardProvider);
-
     return  FutureBuilder(
       future: leaderboardRepo.getTopHighScores(),
       builder: (context,snapshot) {
