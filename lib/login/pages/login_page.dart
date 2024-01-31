@@ -8,6 +8,7 @@ import '../widget/login_theme_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
+import '../../User/user_model.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
@@ -30,6 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void login() async {
+    final userProvide = ref.read(userProvider);
     showDialog(
       context: context,
       builder: (context) {
@@ -37,8 +39,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       },
     );
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
+      final UserCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: emailController.text, password: passwordController.text);
+      if (UserCredential.user != null && UserCredential.user!.uid.isNotEmpty) {
+        var isExsist =
+            await userProvide.checkIfUserExistsInDb(UserCredential.user!.uid);
+        print("user is exsist $isExsist");
+        if (!isExsist) {
+          await userProvide.createUserInDb(
+              UserModel(
+                  name:
+                      UserCredential.user!.displayName ?? emailController.text,
+                  uid: UserCredential.user!.uid,
+                  imageUrl: UserCredential.user!.photoURL ?? '',
+                  score: 0,
+                  rank: 0,
+                  savedWords: []),
+              UserCredential.user!.uid);
+          print("user is created with uid ${UserCredential.user!.uid}");
+        }
+      }
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       String errorMessage = e.code.replaceAll('-', ' ');

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import '../../helper/helper_functions.dart';
+import 'package:bfootlearn/User/user_model.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
@@ -33,6 +34,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   void registerUser() async {
+    final userProvide = ref.read(userProvider);
     showDialog(
       context: context,
       builder: (context) {
@@ -48,6 +50,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
+        if (userCredential.user != null) {
+          await userProvide.createUserInDb(
+              UserModel(
+                  name: userCredential.user!.displayName ??
+                      userNameController.text,
+                  uid: userCredential.user!.uid,
+                  imageUrl: userCredential.user!.photoURL ?? '',
+                  score: 0,
+                  rank: 0,
+                  savedWords: []),
+              userCredential.user!.uid);
+        }
         Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);

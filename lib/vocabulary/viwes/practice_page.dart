@@ -1,7 +1,10 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:async';
+
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flip_card/flip_card.dart';
+
+import '../../pages/quiz_page.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
   const PracticePage({
@@ -9,109 +12,279 @@ class PracticePage extends ConsumerStatefulWidget {
   });
 
   @override
-  _FlashCradPageState createState() => _FlashCradPageState();
+  PracticePageState createState() => PracticePageState();
 }
 
-class _FlashCradPageState extends ConsumerState<PracticePage> {
+class PracticePageState extends ConsumerState<PracticePage> {
 
-  CarouselController buttonCarouselController = CarouselController();
+  final int _duration = 20;
+  int _score = 0;
+  final CountDownController _controller = CountDownController();
 
-  List<Qustion> qustion = [
-    Qustion(question: '1+1', answer: '2'),
-    Qustion(question: '1+2', answer: '3'),
-    Qustion(question: '1+3', answer: '4'),
-    Qustion(question: '1+4', answer: '5'),
-    Qustion(question: '1+5', answer: '6'),
-    Qustion(question: '1+6', answer: '7'),
-    Qustion(question: '1+7', answer: '8'),
-    Qustion(question: '1+8', answer: '9'),
-    Qustion(question: '1+9', answer: '10'),
-    Qustion(question: '1+10', answer: '11'),
-    Qustion(question: '1+11', answer: '12'),
-    Qustion(question: '1+12', answer: '13'),
-    Qustion(question: '1+13', answer: '14'),
-    Qustion(question: '1+14', answer: '15'),
-    Qustion(question: '1+15', answer: '16'),
-    Qustion(question: '1+16', answer: '17'),
-    Qustion(question: '1+17', answer: '18'),
-    Qustion(question: '1+18', answer: '19'),
+  int _currentQuestionIndex = 0;
+  final List<Map<String, dynamic>> _questions = [
+    {
+      'question': "Choose the correct translation and usage of the Blackfoot word \"i\' poyít\" in a sentence",
+      'options': [
+        'After dinner, we will i\'poyít under the stars - Speak',
+        'Please fetch some i\'poyít from the stream -  Water',
+        'The i\'poyít is bright in the sky today -  Sun',
+        'I saw a beautiful i\'poyít running across the field - Horse'
+      ],
+      'correctAnswer': 'After dinner, we will i\'poyít under the stars - Speak',
+    },
+    {
+      'question': 'Which sentence uses "isstsííyik" correctly?',
+      'options': [
+        'Please isstsííyik to the river\'s flow. - Listen',
+        'sstsííyik me a bedtime story. - Speak',
+        'The isstsííyik feels warm today. - Sun',
+        'I\'ll isstsííyik the book on the shelf. Place'
+      ],
+      'correctAnswer': 'Please isstsííyik to the river\'s flow. - Listen',
+    },
+    {
+      'question': 'Select the set where all Blackfoot words are correctly matched with their English meanings:',
+      'options': [
+        'tsimá - How?, takáá - Where?, tsa - Who?',
+        'tsimá - Who?, takáá - How?, tsa - Where?',
+        'tsimá - Where?, takáá - Who?, tsa - How?',
+        'tsimá - Who?, takáá - Where?, tsa - How?'
+    ],
+      'correctAnswer':  'tsimá - Where?, takáá - Who?, tsa - How?',
+    },
+    {
+      'question': 'Imagine you\'re learning to cook a traditional dish with a Blackfoot-speaking elder. To ask about the process in their language, which word would you use?',
+      'options': [
+        'Why? (tsa)',
+    'How? (tsa)',
+    'When? (tsa)',
+    'What? (tsa)'
+    ],
+      'correctAnswer': 'How? (tsa)',
+    },
+    // Add more questions as needed
   ];
+
+  int _secondsRemaining = 10;
+  bool _isAnswered = false;
+  String _selectedAnswer = '';
+  @override
+  void initState() {
+    super.initState();
+    print("initState");
+    _startTimer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _startTimer();
+    super.didChangeDependencies();
+  }
+
+  void _startTimer() {
+    // const oneSecond = Duration(seconds: 20);
+    // _controller.start();
+    // Timer.periodic(oneSecond, (timer) {
+    //   if (_secondsRemaining == 0 || _isAnswered) {
+    //     Future.delayed(Duration(seconds: 2), () => _nextQuestion());
+    //     //_nextQuestion();
+    //   } else {
+    //     _controller.start();
+    //     setState(() {
+    //       _secondsRemaining--;
+    //     });
+    //   }
+    // });
+    print("startTimer");
+    _controller.start();
+  }
+
+  void _nextQuestion() {
+    setState(() {
+      if (_currentQuestionIndex < _questions.length - 1) {
+        _currentQuestionIndex++;
+        _secondsRemaining = 10;
+        _isAnswered = false;
+       // _startTimer();
+        _controller.restart();
+      } else {
+        // Navigate to result page or perform any desired action
+        // For simplicity, let's just print the result for now
+        print('Quiz completed!');
+        _controller.reset();
+        showAlertDilog();
+      }
+    });
+  }
+
+  void _selectAnswer(String selectedAnswer) {
+    if (!_isAnswered) {
+      setState(() {
+        _isAnswered = true;
+        _selectedAnswer = selectedAnswer;
+      });
+
+      if (selectedAnswer == _questions[_currentQuestionIndex]['correctAnswer']) {
+
+        //Future.delayed(Duration(seconds: 2), () => _nextQuestion());
+        // _nextQuestion();
+        _score++;
+        print('Correct!');
+      } else {
+        // Handle incorrect answer
+        print('Incorrect!');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          color: Colors.blueAccent,
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Center(
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30.0),
+                bottomRight: Radius.circular(30.0),
+              )),
+              elevation: 20,
+              shadowColor: Color(0xffbdbcfd),
+              child: Container(
+                  height: 180,
+                  padding: EdgeInsets.all(8.0),
                   child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 40,),
-                      CarouselSlider(
-                        items: qustion.map((e) => FlipCard(
-                          direction: FlipDirection.HORIZONTAL,
-                          speed: 500,
-                          flipOnTouch: true,
-                          front: Card(
-                              child: Container(
-                                  child: Center(child: Text(e.question)))),
-                          back: Card(
-                            child: Container(
-                              child: Center(
-                                child: Text(e.answer),
-                              ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Question ${_currentQuestionIndex + 1}:',
+                        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8.0),
+                      Row(
+                        children: [
+                          Container(
+                            width: 350,
+                            child: Text(
+                              _questions[_currentQuestionIndex]['question'],
+                              style: TextStyle(fontSize: 16.0),
                             ),
                           ),
-                        )).toList(),
-                        carouselController: buttonCarouselController,
-                        options: CarouselOptions(
-                          height: MediaQuery.of(context).size.height * 0.55,
-                          autoPlay: false,
-                          enlargeCenterPage: true,
-                          viewportFraction: 0.9,
-                          aspectRatio: 2.0,
-                          initialPage: 2,
-                          clipBehavior: Clip.none,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => buttonCarouselController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.linear),
-                            child: Text('←'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => buttonCarouselController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.linear),
-                            child: Text('skip'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => buttonCarouselController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.linear),
-                            child: Text('→'),
-                          ),
+                          Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: CircularCountDownTimer(
+                              duration: _duration,
+                              initialDuration: 0,
+                              controller: _controller,
+                              width: MediaQuery.of(context).size.width / 8,
+                              height: MediaQuery.of(context).size.height / 8,
+                              ringColor: Colors.grey[300]!,
+                              ringGradient: null,
+                              fillColor: Color(0xffbdbcfd),
+                              fillGradient: null,
+                              backgroundColor: Colors.white,
+                              backgroundGradient: null,
+                              strokeWidth: 8.0,
+                              strokeCap: StrokeCap.round,
+                              textStyle: TextStyle(fontSize: 18.0, color: Color(0xffbdbcfd), fontWeight: FontWeight.bold),
+                              textFormat: CountdownTextFormat.S,
+                              isReverse: true,
+                              isReverseAnimation: false,
+                              isTimerTextShown: true,
+                              autoStart: false,
+                              onStart: () {
+                                debugPrint('Countdown Started');
+                              },
+                              onComplete: () {
+                                debugPrint('Countdown Ended');
+                              },
+                              onChange: (String timeStamp) {
+                                debugPrint('Countdown Changed $timeStamp');
+                              },
+                              timeFormatterFunction: (defaultFormatterFunction, duration) {
+                                if (duration.inSeconds == 0) {
+                                  return _duration.toString();
+                                } else {
+                                  return Function.apply(defaultFormatterFunction, [duration]);
+                                }
+                              },
+                            ),
+                          )
                         ],
-                      )
+                      ),
                     ],
-                  ),
-                ),
-              ],
-
+                  )),
             ),
-          ),
+
+            SizedBox(height: 16.0),
+            // Display options
+            Column(
+              children: List.generate(
+                _questions[_currentQuestionIndex]['options'].length,
+                (index) => RadioListTile(
+                  title: Text(_questions[_currentQuestionIndex]['options'][index]),
+                  groupValue: _selectedAnswer,
+                  value: _questions[_currentQuestionIndex]['options'][index],
+                  onChanged: (value) => _selectAnswer(value),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _isAnswered ? _nextQuestion : null,
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xffbdbcfd),
+                onPrimary: Colors.white,
+                elevation: 5.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                fixedSize: Size(200.0, 50.0),
+              ),
+              child: _controller.isStarted?Text('Next'):Text('Start'),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
-}
 
-class Qustion {
-  String question;
-  String answer;
-  Qustion({required this.question, required this.answer});
+  void showAlertDilog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Quiz Completed"),
+            content: Text("Your score is $_score. Do you want to play again?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      _currentQuestionIndex = 0;
+                      _isAnswered = false;
+                    });
+
+                   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
+                  },
+                  child: Text("Yes")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
+                  },
+                  child: Text("No")),
+            ],
+          );
+        });
+  }
+
+
 }

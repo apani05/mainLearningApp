@@ -13,7 +13,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'flash_card_page.dart';
 
 class VocabularyGame extends ConsumerStatefulWidget {
-  const VocabularyGame({super.key});
+  final String category;
+   const VocabularyGame({required this.category,super.key});
 
   @override
   HomeViewState createState() => HomeViewState();
@@ -47,15 +48,15 @@ class HomeViewState extends ConsumerState<VocabularyGame> {
             radius: 23,
             child: CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage('https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+              backgroundImage: AssetImage("assets/person_logo.png"),
             ),
           ),
           actions: [
             IconButton(
                 onPressed: () {
-                  theme.toggleTheme();
+                 // theme.toggleTheme();
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.menu,
                   color:Colors.black,
                 )),
@@ -114,7 +115,7 @@ class HomeViewState extends ConsumerState<VocabularyGame> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    FlashCradPage(),
+                    FlashCradPage(category: widget.category,),
                    PracticePage(),
                    SavedPage(),
                   ]

@@ -5,7 +5,7 @@ import 'lederborad_model.dart';
 
 class LeaderBoardRepo extends ChangeNotifier {
   final databaseReference = FirebaseDatabase.instance.ref();
-
+  final currentUser = FirebaseAuth.instance.currentUser;
   Future<Iterable<LeaderBoardModel>> getTopHighScores() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     final userId = currentUser?.uid;
@@ -15,7 +15,7 @@ class LeaderBoardRepo extends ChangeNotifier {
         .ref()
         .child('leaderboard')
         .orderByChild('score')
-        .limitToLast(20)
+        .limitToLast(500)
         .once();
 
     final leaderboardScores = result.snapshot.children
@@ -28,6 +28,32 @@ class LeaderBoardRepo extends ChangeNotifier {
       print(element.score);
     });
     return leaderboardScores.reversed;
+  }
+
+  addToLeaderBoard(String name, int score) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      final uid = currentUser.uid;
+      await databaseReference.child('leaderboard').child(uid).set({
+        'name': name,
+        'score': score,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  updateScore(String userId, int newScore) async {
+    try {
+      print("updating score");
+      await databaseReference.child('leaderboard').child(userId).update({
+        'score': newScore,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
   Future<void> saveHighScore(String name, int newScore) async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -68,5 +94,12 @@ class LeaderBoardRepo extends ChangeNotifier {
     final img_url = currentUser?.photoURL;
     final uid = currentUser?.uid;
     return (userName ?? k,img_url ?? '',uid ?? '');
+  }
+
+  getScore(String uid) async {
+    final scoreRef = FirebaseDatabase.instance.ref('leaderboard/$uid');
+    final userScoreResult = await scoreRef.child('score').once();
+    final score = (userScoreResult.snapshot.value as int?) ?? 0;
+    return score;
   }
 }

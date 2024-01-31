@@ -51,6 +51,7 @@ class DefaultFirebaseOptions {
     authDomain: 'blackfootapplication.firebaseapp.com',
     storageBucket: 'blackfootapplication.appspot.com',
     measurementId: 'G-SWKZTBLM2X',
+    databaseURL: "https://blackfootapplication-default-rtdb.firebaseio.com",
   );
 
   static const FirebaseOptions android = FirebaseOptions(

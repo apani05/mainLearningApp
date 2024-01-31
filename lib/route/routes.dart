@@ -26,8 +26,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => DisscussionPage());
       case vocabularyRoute:
         return MaterialPageRoute(builder: (context) => VocabularyHome());
-      case vGame:
-        return MaterialPageRoute(builder: (context) => VocabularyGame());
       case blogRoute:
         return MaterialPageRoute(builder: (context) => BlogPage());
       default:
