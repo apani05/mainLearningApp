@@ -46,37 +46,76 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
       (index) => false,
     );
 
-    // Fetch questions from Firestore and randomize options
-    fetchQuestions();
+    _showSeriesSelectionDialog();
   }
 
-  Future<void> fetchQuestions() async {
+  Future<void> _showSeriesSelectionDialog() async {
+    List<String> seriesOptions = await _getSeriesNamesFromFirestore();
+
+    String? selectedSeries = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Select Series"),
+        content: Column(
+          children: seriesOptions.map((series) {
+            return ListTile(
+              title: Text(series),
+              onTap: () {
+                Navigator.pop(context, series);
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+
+    if (selectedSeries != null) {
+      await fetchQuestionsForSeries(selectedSeries);
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<List<String>> _getSeriesNamesFromFirestore() async {
+    List<String> seriesNames = [];
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('Conversations').get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('ConversationTypes')
+          .get();
+
+      seriesNames = querySnapshot.docs.map((doc) {
+        String seriesName = doc['seriesName'];
+        return seriesName;
+      }).toList();
+    } catch (error) {
+      print("Error fetching series names: $error");
+    }
+
+    return seriesNames;
+  }
+
+  Future<void> fetchQuestionsForSeries(String series) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Conversations')
+          .where('seriesName', isEqualTo: series)
+          .get();
 
       List<Question> fetchedQuestions = querySnapshot.docs.map((doc) {
         Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
 
-        // Fetch other Blackfoot texts to use as options
         List<String> allBlackfootTexts = querySnapshot.docs
             .map((otherDoc) => otherDoc['blackfootText'] as String)
             .toList();
 
-        // Remove the current Blackfoot text from the options
         allBlackfootTexts.remove(docData['blackfootText']);
 
-        // Randomly select a subset of options
-        List<String> options = allBlackfootTexts
-          ..shuffle(); // Adjust the shuffle logic as needed
+        List<String> options = allBlackfootTexts..shuffle();
 
-        // Take a specific number of options (e.g., 3)
         options = options.take(3).toList();
 
-        // Include the correct answer in the options
         options.add(docData['blackfootText']);
 
-        // Shuffle the options to randomize the order
         options.shuffle();
 
         return Question(
@@ -86,10 +125,8 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
         );
       }).toList();
 
-      // Randomize the order of questions
       fetchedQuestions.shuffle();
 
-      // Take the first 10 (or less) questions
       questions =
           fetchedQuestions.take(min(fetchedQuestions.length, 10)).toList();
 
@@ -135,7 +172,6 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
         _isNextButtonEnabled = false;
       } else {
         _isNextButtonEnabled = false;
-        // Quiz is completed
         calculateScore();
       }
 
@@ -151,7 +187,6 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
       }
     }
 
-    // Navigate to a new screen to display the quiz results
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -297,7 +332,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                 _isNextButtonEnabled = true;
               });
             },
-            activeColor: Color(0xFFcccbff), // Change radio button color
+            activeColor: Color(0xFFcccbff),
           ),
         )
         .toList();

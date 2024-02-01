@@ -1,4 +1,4 @@
-import 'package:bfootlearn/auth/auth.dart';
+import 'package:bfootlearn/login/authentication/auth.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:bfootlearn/route/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,7 +38,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     var theme = ref.watch(themeProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Ipoyit',
       theme: theme.themeData,
       onGenerateRoute: RouteGenerator.generateRoute,
       home: const AuthPage(),

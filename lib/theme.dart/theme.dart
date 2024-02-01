@@ -24,7 +24,7 @@ class ThemeNotifier extends ChangeNotifier {
     _animation = animation;
   }
 
-  Color lightPurple = const Color(0xffbdbcfd);
+  Color lightPurple = const Color(0xFFcccbff);
   Color darkPurple = const Color(0xff6562df);
 
   ThemeData get darkTheme => ThemeData(

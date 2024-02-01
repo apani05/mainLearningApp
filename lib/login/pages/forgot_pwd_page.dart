@@ -1,18 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bfootlearn/riverpod/river_pod.dart';
+import '../../components/my_button.dart';
+import '../../components/my_textfield.dart';
+import '../../helper/helper_functions.dart';
 
-import '../components/my_button.dart';
-import '../components/my_textfield.dart';
-import '../helper/helper_functions.dart';
-
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final TextEditingController emailController = TextEditingController();
   Future passwordReset() async {
     showDialog(
@@ -34,9 +35,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFFcccbff),
+          backgroundColor: theme.lightPurple,
         ),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -53,9 +55,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
               SizedBox(height: 10),
               MyTextField(
-                  hintText: "Email",
+                  labelText: "Email",
                   obscureText: false,
-                  controller: emailController),
+                  controller: emailController,
+                  textColor: theme.lightPurple),
               SizedBox(height: 10),
               MyButton(
                 text: "Reset Password",

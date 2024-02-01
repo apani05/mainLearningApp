@@ -59,7 +59,6 @@ class QuizResultScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10.0),
-            // Display correct answers here
             ...questions
                 .asMap()
                 .entries

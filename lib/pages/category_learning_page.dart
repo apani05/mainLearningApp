@@ -1,5 +1,5 @@
+import 'package:bfootlearn/pages/quiz_page.dart';
 import 'package:flutter/material.dart';
-import 'quiz_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LearningPage extends StatefulWidget {
@@ -12,7 +12,6 @@ class LearningPage extends StatefulWidget {
 }
 
 class _LearningPageState extends State<LearningPage> {
-  List<bool> _isAccordionExpanded = [];
   late List<CardData> cardDataList = [];
   late Future<String> seriesNameFuture;
 
@@ -31,7 +30,6 @@ class _LearningPageState extends State<LearningPage> {
               .doc(widget.seriesName)
               .get();
 
-      // Check if seriesNameSnapshot exists and has data
       if (seriesNameSnapshot.exists) {
         String seriesName = seriesNameSnapshot.data()!['seriesName'];
         return seriesName;
@@ -63,16 +61,11 @@ class _LearningPageState extends State<LearningPage> {
       }).toList();
 
       setState(() {
-        _isAccordionExpanded = List.filled(data.length, false);
         cardDataList = data;
       });
     } catch (error) {
       print("Error fetching data: $error");
     }
-  }
-
-  bool get isContinueButtonEnabled {
-    return _isAccordionExpanded.every((value) => value);
   }
 
   @override
@@ -100,13 +93,7 @@ class _LearningPageState extends State<LearningPage> {
         body: cardDataList.isNotEmpty
             ? CardSlider(
                 cardDataList: cardDataList,
-                isAccordionExpanded: _isAccordionExpanded,
-                onAccordionTapped: (index) {
-                  setState(() {
-                    _isAccordionExpanded[index] = !_isAccordionExpanded[index];
-                  });
-                },
-                isContinueButtonEnabled: isContinueButtonEnabled,
+                seriesNameFuture: seriesNameFuture,
               )
             : Center(child: CircularProgressIndicator()),
       ),
@@ -116,15 +103,11 @@ class _LearningPageState extends State<LearningPage> {
 
 class CardSlider extends StatelessWidget {
   final List<CardData> cardDataList;
-  final List<bool> isAccordionExpanded;
-  final Function(int) onAccordionTapped;
-  final bool isContinueButtonEnabled;
+  final Future<String> seriesNameFuture;
 
   CardSlider({
     required this.cardDataList,
-    required this.isAccordionExpanded,
-    required this.onAccordionTapped,
-    required this.isContinueButtonEnabled,
+    required this.seriesNameFuture,
   });
 
   @override
@@ -138,10 +121,6 @@ class CardSlider extends StatelessWidget {
               return CardWidget(
                 englishText: cardDataList[index].englishText,
                 blackfootText: cardDataList[index].blackfootText,
-                isAccordionExpanded: isAccordionExpanded[index],
-                onAccordionTapped: () {
-                  onAccordionTapped(index);
-                },
               );
             },
           ),
@@ -149,24 +128,21 @@ class CardSlider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
-            onPressed: isContinueButtonEnabled
-                ? () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QuizPage()),
-                    );
-                  }
-                : null,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QuizPage(),
+                ),
+              );
+            },
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
                 EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
               ),
               backgroundColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.disabled)) {
-                    return Color(0xFFcecece); // Disabled color
-                  }
-                  return Color(0xFFcccbff); // Enabled color
+                  return Color(0xFFcccbff);
                 },
               ),
             ),
@@ -181,14 +157,10 @@ class CardSlider extends StatelessWidget {
 class CardWidget extends StatelessWidget {
   final String englishText;
   final String blackfootText;
-  final bool isAccordionExpanded;
-  final VoidCallback onAccordionTapped;
 
   CardWidget({
     required this.englishText,
     required this.blackfootText,
-    required this.isAccordionExpanded,
-    required this.onAccordionTapped,
   });
 
   @override
@@ -201,28 +173,12 @@ class CardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InkWell(
-              onTap: onAccordionTapped,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      englishText,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    isAccordionExpanded
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
-                    color: Colors.white,
-                    size: 32.0,
-                  ),
-                ],
+            Text(
+              englishText,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             Divider(
@@ -233,35 +189,26 @@ class CardWidget extends StatelessWidget {
               endIndent: 0,
             ),
             SizedBox(height: 8.0),
-            AnimatedCrossFade(
-              crossFadeState: isAccordionExpanded
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              duration: Duration(milliseconds: 300),
-              firstChild: Container(),
-              secondChild: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      blackfootText,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.volume_up,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    blackfootText,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
-                    onPressed: () {
-                      // Add your audio play logic here
-                    },
                   ),
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.volume_up,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
             ),
           ],
         ),
