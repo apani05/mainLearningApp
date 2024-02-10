@@ -23,31 +23,38 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPwdController = TextEditingController();
   bool showPassword = false;
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    userNameController.dispose();
+    confirmPwdController.dispose();
+    super.dispose();
+  }
 
   void registerUser() async {
     showDialog(
       context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
     );
 
     if (passwordController.text != confirmPwdController.text) {
       Navigator.pop(context);
-      displayMessageToUser("Passwords don't match", context);
+      displaySnackBarMessageToUser("Passwords don't match", context);
     } else {
       try {
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
         Navigator.pop(context);
-        displayMessageToUser("Successfully Registered", context);
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         String errorMessage = e.code.replaceAll('-', ' ');
         errorMessage =
             errorMessage[0].toUpperCase() + errorMessage.substring(1);
-        displayMessageToUser(errorMessage, context);
+        displaySnackBarMessageToUser(errorMessage, context);
       }
     }
   }

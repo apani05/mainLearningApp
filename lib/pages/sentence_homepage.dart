@@ -91,71 +91,71 @@ class SentenceHomePage extends ConsumerStatefulWidget {
 }
 
 class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
-  void logout(BuildContext context) {
-    FirebaseAuth.instance.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     List<String> displayedSeriesNames = [];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Conversation Learning"),
-        backgroundColor: theme.lightPurple,
-        actions: [
-          IconButton(
-            onPressed: () => logout(context),
-            icon: Icon(Icons.logout),
-          )
-        ],
-      ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-              child: Text(
-                'Features',
-                style: theme.themeData.textTheme.headline6,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          title: Text("Phrases Learning"),
+          backgroundColor: theme.lightPurple,
+        ),
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                child: Text(
+                  'Features',
+                  style: theme.themeData.textTheme.headline6,
+                ),
               ),
-            ),
-            Container(
-              height: 120,
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  FeatureItem('Saved'),
-                  FeatureItem('Quiz'),
-                  FeatureItem('Location Based'),
-                ],
+              Container(
+                height: 120,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: const [
+                    FeatureItem('Saved'),
+                    FeatureItem('Quiz'),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-              child: Text(
-                'Categories',
-                style: theme.themeData.textTheme.headline6,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                child: Text(
+                  'Categories',
+                  style: theme.themeData.textTheme.headline6,
+                ),
               ),
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: _getSeriesNames(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: seriesNames.length,
-                    itemBuilder: (context, index) {
-                      return CategoryItem(seriesNames[index], Icons.category);
-                    },
-                  );
-                },
+              Expanded(
+                child: FutureBuilder(
+                  future: _getSeriesNames(),
+                  builder: (context, snapshot) {
+                    return ListView.builder(
+                      itemCount: seriesNames.length,
+                      itemBuilder: (context, index) {
+                        return CategoryItem(seriesNames[index], Icons.category);
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

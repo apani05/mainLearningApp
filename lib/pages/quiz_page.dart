@@ -1,45 +1,28 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class QuizPage extends StatefulWidget {
-  const QuizPage({Key? key}) : super(key: key);
+class QuizPage extends ConsumerStatefulWidget {
+  const QuizPage({super.key});
 
   @override
   _QuizPageState createState() => _QuizPageState();
 }
 
-class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
-  int _timerSeconds = 20;
+class _QuizPageState extends ConsumerState<QuizPage>
+    with TickerProviderStateMixin {
   int _currentIndex = 0;
-  late Timer _timer;
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
   List<Question> questions = [];
-
-  bool _shouldPauseTimer = false;
-  int _originalTimerSeconds = 20;
   late List<bool> _isQuestionAnswered;
   bool _isNextButtonEnabled = false;
+  List<String> selectedSeries = [];
 
   @override
   void initState() {
     super.initState();
-    _originalTimerSeconds = _timerSeconds;
-    _timer = Timer(Duration.zero, () {});
-    startTimer();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: _timerSeconds),
-    )..addListener(() {
-        setState(() {});
-      });
-
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
-    _controller.forward();
 
     _isQuestionAnswered = List.generate(
       questions.length,
@@ -52,27 +35,109 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   Future<void> _showSeriesSelectionDialog() async {
     List<String> seriesOptions = await _getSeriesNamesFromFirestore();
 
-    String? selectedSeries = await showDialog<String>(
+    List<bool> isSelected =
+        List.generate(seriesOptions.length, (index) => false);
+
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Select Series"),
-        content: Column(
-          children: seriesOptions.map((series) {
-            return ListTile(
-              title: Text(series),
-              onTap: () {
-                Navigator.pop(context, series);
-              },
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              children: seriesOptions.asMap().entries.map((entry) {
+                int index = entry.key;
+                String series = entry.value;
+                return CheckboxListTile(
+                  title: Text(series),
+                  value: isSelected[index],
+                  onChanged: (value) {
+                    setState(() {
+                      isSelected[index] = value!;
+                    });
+                  },
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              selectedSeries = [];
+              for (int i = 0; i < isSelected.length; i++) {
+                if (isSelected[i]) {
+                  selectedSeries.add(seriesOptions[i]);
+                }
+              }
+              if (selectedSeries.isNotEmpty) {
+                fetchQuestionsForSelectedSeries();
+                Navigator.pop(context);
+              }
+            },
+            child: Text("OK"),
+          ),
+        ],
       ),
     );
+  }
 
-    if (selectedSeries != null) {
-      await fetchQuestionsForSeries(selectedSeries);
-    } else {
-      Navigator.pop(context);
+  Future<void> fetchQuestionsForSelectedSeries() async {
+    try {
+      List<Question> fetchedQuestions = [];
+
+      for (String series in selectedSeries) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('Conversations')
+            .where('seriesName', isEqualTo: series)
+            .get();
+
+        List<Question> seriesQuestions = querySnapshot.docs.map((doc) {
+          Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+
+          List<String> allBlackfootTexts = querySnapshot.docs
+              .map((otherDoc) => otherDoc['blackfootText'] as String)
+              .toList();
+
+          allBlackfootTexts.remove(docData['blackfootText']);
+
+          List<String> options = allBlackfootTexts..shuffle();
+
+          options = options.take(3).toList();
+
+          options.add(docData['blackfootText']);
+
+          options.shuffle();
+
+          return Question(
+            docData['englishText'],
+            docData['blackfootText'],
+            options,
+          );
+        }).toList();
+
+        fetchedQuestions.addAll(seriesQuestions);
+      }
+
+      fetchedQuestions.shuffle();
+
+      questions =
+          fetchedQuestions.take(min(fetchedQuestions.length, 10)).toList();
+
+      setState(() {
+        _isQuestionAnswered = List.generate(
+          questions.length,
+          (index) => false,
+        );
+      });
+    } catch (error) {
+      print("Error fetching questions: $error");
     }
   }
 
@@ -94,81 +159,10 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     return seriesNames;
   }
 
-  Future<void> fetchQuestionsForSeries(String series) async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Conversations')
-          .where('seriesName', isEqualTo: series)
-          .get();
-
-      List<Question> fetchedQuestions = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
-
-        List<String> allBlackfootTexts = querySnapshot.docs
-            .map((otherDoc) => otherDoc['blackfootText'] as String)
-            .toList();
-
-        allBlackfootTexts.remove(docData['blackfootText']);
-
-        List<String> options = allBlackfootTexts..shuffle();
-
-        options = options.take(3).toList();
-
-        options.add(docData['blackfootText']);
-
-        options.shuffle();
-
-        return Question(
-          docData['englishText'],
-          docData['blackfootText'],
-          options,
-        );
-      }).toList();
-
-      fetchedQuestions.shuffle();
-
-      questions =
-          fetchedQuestions.take(min(fetchedQuestions.length, 10)).toList();
-
-      setState(() {
-        _isQuestionAnswered = List.generate(
-          questions.length,
-          (index) => false,
-        );
-      });
-    } catch (error) {
-      print("Error fetching questions: $error");
-    }
-  }
-
-  void startTimer() {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
-    }
-
-    const oneSecond = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSecond, (timer) {
-      if (_timerSeconds == 0) {
-        timer.cancel();
-        nextQuestion();
-      } else if (!_shouldPauseTimer) {
-        setState(() {
-          _timerSeconds--;
-        });
-
-        _controller.duration = Duration(seconds: _timerSeconds);
-      }
-    });
-  }
-
   void nextQuestion() {
     setState(() {
       _currentIndex++;
       if (_currentIndex < questions.length) {
-        _timerSeconds = _originalTimerSeconds;
-        _controller.reset();
-        _controller.forward();
-        startTimer();
         _isNextButtonEnabled = false;
       } else {
         _isNextButtonEnabled = false;
@@ -208,16 +202,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     });
   }
 
-  @override
-  void dispose() {
-    _timer.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
   Future<bool> _onBackPressed() async {
-    _shouldPauseTimer = true;
-
     if (_currentIndex < questions.length) {
       bool shouldExit = await showDialog(
         context: context,
@@ -228,15 +213,12 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                _timer.cancel();
-                _shouldPauseTimer = false;
                 Navigator.of(context).pop(true);
               },
               child: Text("Yes"),
             ),
             TextButton(
               onPressed: () {
-                _shouldPauseTimer = false;
                 Navigator.of(context).pop(false);
               },
               child: Text("No"),
@@ -253,21 +235,34 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Quiz'),
-          backgroundColor: Color(0xFFcccbff),
+    final theme = ref.watch(themeProvider);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                if (mounted) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            title: Text('Quiz'),
+            backgroundColor: theme.lightPurple,
+          ),
+          body: _currentIndex < questions.length
+              ? buildQuestionCard(questions[_currentIndex])
+              : Container(),
         ),
-        body: _currentIndex < questions.length
-            ? buildQuestionCard(questions[_currentIndex])
-            : Container(),
       ),
     );
   }
 
   Widget buildQuestionCard(Question question) {
+    final theme = ref.watch(themeProvider);
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
@@ -280,7 +275,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
+                color: theme.lightPurple,
               ),
             ),
             SizedBox(height: 10.0),
@@ -289,26 +284,10 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               children: buildRadioOptionsList(question.options),
             ),
             SizedBox(height: 10.0),
-            AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _animation.value * 2 * 3.1416,
-                  child: Icon(Icons.access_time,
-                      size: 60.0, color: Color(0xFFcccbff)),
-                );
-              },
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              "Time left: $_timerSeconds seconds",
-              style: TextStyle(fontSize: 24.0, color: Color(0xFFcccbff)),
-            ),
-            SizedBox(height: 10.0),
             ElevatedButton(
               onPressed: _isNextButtonEnabled ? nextQuestion : null,
               child: Text("Next"),
-              style: ElevatedButton.styleFrom(primary: Color(0xFFcccbff)),
+              style: ElevatedButton.styleFrom(primary: theme.lightPurple),
             ),
           ],
         ),
@@ -317,6 +296,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   }
 
   List<Widget> buildRadioOptionsList(List<String> options) {
+    final theme = ref.watch(themeProvider);
     return options
         .map(
           (option) => RadioListTile<String>(
@@ -332,7 +312,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                 _isNextButtonEnabled = true;
               });
             },
-            activeColor: Color(0xFFcccbff),
+            activeColor: theme.lightPurple,
           ),
         )
         .toList();

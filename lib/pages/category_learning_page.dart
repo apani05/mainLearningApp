@@ -1,8 +1,10 @@
-import 'package:bfootlearn/pages/quiz_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../riverpod/river_pod.dart';
+import 'package:bfootlearn/pages/quiz_page.dart';
 
-class LearningPage extends StatefulWidget {
+class LearningPage extends ConsumerStatefulWidget {
   final String seriesName;
 
   LearningPage({required this.seriesName});
@@ -11,7 +13,7 @@ class LearningPage extends StatefulWidget {
   _LearningPageState createState() => _LearningPageState();
 }
 
-class _LearningPageState extends State<LearningPage> {
+class _LearningPageState extends ConsumerState<LearningPage> {
   late List<CardData> cardDataList = [];
   late Future<String> seriesNameFuture;
 
@@ -70,7 +72,9 @@ class _LearningPageState extends State<LearningPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -88,12 +92,11 @@ class _LearningPageState extends State<LearningPage> {
               return Text('loading');
             },
           ),
-          backgroundColor: Color(0xFFcccbff),
+          backgroundColor: theme.lightPurple,
         ),
         body: cardDataList.isNotEmpty
             ? CardSlider(
                 cardDataList: cardDataList,
-                seriesNameFuture: seriesNameFuture,
               )
             : Center(child: CircularProgressIndicator()),
       ),
@@ -103,17 +106,16 @@ class _LearningPageState extends State<LearningPage> {
 
 class CardSlider extends StatelessWidget {
   final List<CardData> cardDataList;
-  final Future<String> seriesNameFuture;
 
   CardSlider({
     required this.cardDataList,
-    required this.seriesNameFuture,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: 10),
         Expanded(
           child: ListView.builder(
             itemCount: cardDataList.length,
@@ -167,7 +169,7 @@ class CardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Color(0xFFcccbff),
-      margin: EdgeInsets.all(16.0),
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

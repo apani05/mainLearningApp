@@ -42,7 +42,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           },
           child: Card(
             elevation: 10,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             color: theme.lightPurple,
             child: SizedBox(
               height: MediaQuery.of(context).size.height * 0.25,
@@ -61,18 +62,22 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SentenceHomePage()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SentenceHomePage()));
           },
           child: Card(
             elevation: 10,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            color:  theme.lightPurple,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            color: theme.lightPurple,
             child: SizedBox(
               height: MediaQuery.of(context).size.height * 0.25,
               width: MediaQuery.of(context).size.width * 0.9,
               child: Center(
                 child: Text(
-                  'Sentences',
+                  'Phrases',
                   style: widget.theme.textTheme.headline1,
                 ),
               ),

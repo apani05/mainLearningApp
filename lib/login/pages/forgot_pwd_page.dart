@@ -15,6 +15,13 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
 
 class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
   Future passwordReset() async {
     showDialog(
       context: context,
@@ -25,19 +32,31 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: emailController.text.trim());
-      Navigator.pop(context);
       displayMessageToUser("Password Reset link sent!", context);
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      displayMessageToUser(e.message.toString(), context);
+      displaySnackBarMessageToUser(e.message.toString(), context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
-    return Scaffold(
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (mounted) {
+                Navigator.pop(context);
+              }
+            },
+          ),
+          title: Text('Forgot Password'),
           backgroundColor: theme.lightPurple,
         ),
         body: Padding(
@@ -68,6 +87,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

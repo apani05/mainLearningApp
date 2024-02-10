@@ -22,9 +22,9 @@ void displayMessageToUser(String message, BuildContext context) {
     },
   );
   // Automatically dismiss the AlertDialog after 3 seconds
-  Future.delayed(Duration(seconds: 3), () {
-    Navigator.of(context).pop();
-  });
+  //Future.delayed(Duration(seconds: 3), () {
+  //  Navigator.of(context).pop();
+  //});
 }
 
 void displaySnackBarMessageToUser(String message, BuildContext context) {

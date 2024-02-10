@@ -22,23 +22,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool showPassword = false;
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void login() async {
     showDialog(
       context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
     );
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
-      if (context.mounted) Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
       String errorMessage = e.code.replaceAll('-', ' ');
       errorMessage = errorMessage[0].toUpperCase() + errorMessage.substring(1);
-      displayMessageToUser(errorMessage, context);
+      Navigator.pop(context);
+      displaySnackBarMessageToUser(errorMessage, context);
     }
   }
 
