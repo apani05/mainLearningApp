@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod/river_pod.dart';
 import 'package:bfootlearn/pages/quiz_page.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+import '../riverpod/river_pod.dart';
+
+final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
 class LearningPage extends ConsumerStatefulWidget {
   final String seriesName;
@@ -16,6 +21,7 @@ class LearningPage extends ConsumerStatefulWidget {
 class _LearningPageState extends ConsumerState<LearningPage> {
   late List<CardData> cardDataList = [];
   late Future<String> seriesNameFuture;
+  int? currentPlayingIndex;
 
   @override
   void initState() {
@@ -59,6 +65,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
         return CardData(
           englishText: docData['englishText'],
           blackfootText: docData['blackfootText'],
+          blackfootAudio: docData['blackfootAudio'],
         );
       }).toList();
 
@@ -73,6 +80,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -97,6 +105,18 @@ class _LearningPageState extends ConsumerState<LearningPage> {
         body: cardDataList.isNotEmpty
             ? CardSlider(
                 cardDataList: cardDataList,
+                currentPlayingIndex: currentPlayingIndex,
+                onPlayButtonPressed: (index) {
+                  setState(() {
+                    if (currentPlayingIndex == index) {
+                      // Stop if the same button is pressed again
+                      currentPlayingIndex = null;
+                    } else {
+                      // Play the clicked audio
+                      currentPlayingIndex = index;
+                    }
+                  });
+                },
               )
             : Center(child: CircularProgressIndicator()),
       ),
@@ -106,9 +126,13 @@ class _LearningPageState extends ConsumerState<LearningPage> {
 
 class CardSlider extends StatelessWidget {
   final List<CardData> cardDataList;
+  final int? currentPlayingIndex;
+  final Function(int) onPlayButtonPressed;
 
   CardSlider({
     required this.cardDataList,
+    required this.currentPlayingIndex,
+    required this.onPlayButtonPressed,
   });
 
   @override
@@ -123,6 +147,11 @@ class CardSlider extends StatelessWidget {
               return CardWidget(
                 englishText: cardDataList[index].englishText,
                 blackfootText: cardDataList[index].blackfootText,
+                blackfootAudio: cardDataList[index].blackfootAudio,
+                isPlaying: currentPlayingIndex == index,
+                onPlayButtonPressed: () {
+                  onPlayButtonPressed(index);
+                },
               );
             },
           ),
@@ -156,32 +185,49 @@ class CardSlider extends StatelessWidget {
   }
 }
 
-class CardWidget extends StatelessWidget {
+class CardWidget extends ConsumerWidget {
   final String englishText;
   final String blackfootText;
+  final String blackfootAudio;
+  final bool isPlaying;
+  final VoidCallback onPlayButtonPressed;
 
   CardWidget({
     required this.englishText,
     required this.blackfootText,
+    required this.blackfootAudio,
+    required this.isPlaying,
+    required this.onPlayButtonPressed,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final player = ref.watch(audioPlayerProvider);
+    final theme = ref.watch(themeProvider);
+
     return Card(
-      color: Color(0xFFcccbff),
+      color: theme.lightPurple,
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              englishText,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    englishText,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Icon(Icons.favorite, color: Colors.white), // Heart icon
+              ],
             ),
             Divider(
               color: Colors.white,
@@ -203,12 +249,19 @@ class CardWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(
-                    Icons.volume_up,
-                    color: Colors.white,
+                ElevatedButton.icon(
+                  onPressed: () {
+                    onPlayButtonPressed();
+                    playAudio(context, blackfootAudio, player, isPlaying);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isPlaying ? theme.red : Colors.white,
                   ),
-                  onPressed: () {},
+                  icon: Icon(
+                    isPlaying ? Icons.stop : Icons.volume_up,
+                    color: isPlaying ? Colors.white : theme.lightPurple,
+                  ),
+                  label: Text(''),
                 ),
               ],
             ),
@@ -217,11 +270,30 @@ class CardWidget extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> playAudio(BuildContext context, String audioUrl,
+      AudioPlayer player, bool isPlaying) async {
+    try {
+      Uri downloadUrl = Uri.parse(
+          await FirebaseStorage.instance.refFromURL(audioUrl).getDownloadURL());
+      await player.stop();
+      if (!isPlaying) {
+        await player.play(UrlSource(downloadUrl.toString()));
+      }
+    } catch (e) {
+      print('Error in audio player: $e');
+    }
+  }
 }
 
 class CardData {
   final String englishText;
   final String blackfootText;
+  final String blackfootAudio;
 
-  CardData({required this.englishText, required this.blackfootText});
+  CardData({
+    required this.englishText,
+    required this.blackfootText,
+    required this.blackfootAudio,
+  });
 }

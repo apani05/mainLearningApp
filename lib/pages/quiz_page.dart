@@ -18,17 +18,14 @@ class _QuizPageState extends ConsumerState<QuizPage>
   List<Question> questions = [];
   late List<bool> _isQuestionAnswered;
   bool _isNextButtonEnabled = false;
+  bool _isSubmitButtonEnabled = false;
   List<String> selectedSeries = [];
 
   @override
   void initState() {
     super.initState();
 
-    _isQuestionAnswered = List.generate(
-      questions.length,
-      (index) => false,
-    );
-
+    _isQuestionAnswered = [];
     _showSeriesSelectionDialog();
   }
 
@@ -40,6 +37,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
     await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text("Select Series"),
         content: StatefulBuilder(
@@ -62,12 +60,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
           },
         ),
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Cancel"),
-          ),
           TextButton(
             onPressed: () {
               selectedSeries = [];
@@ -127,8 +119,13 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
       fetchedQuestions.shuffle();
 
-      questions =
-          fetchedQuestions.take(min(fetchedQuestions.length, 10)).toList();
+      int numberOfQuestionsToKeep = fetchedQuestions.length < 10
+          ? fetchedQuestions.length
+          : fetchedQuestions.length < 20
+              ? 10
+              : 20;
+
+      questions = fetchedQuestions.take(numberOfQuestionsToKeep).toList();
 
       setState(() {
         _isQuestionAnswered = List.generate(
@@ -165,11 +162,18 @@ class _QuizPageState extends ConsumerState<QuizPage>
       if (_currentIndex < questions.length) {
         _isNextButtonEnabled = false;
       } else {
-        _isNextButtonEnabled = false;
         calculateScore();
       }
 
       updateIsQuestionAnswered();
+    });
+  }
+
+  void submitAnswer(Question question) {
+    _isNextButtonEnabled = true;
+    question.showCorrectAnswer = true;
+    setState(() {
+      _isSubmitButtonEnabled = false;
     });
   }
 
@@ -227,7 +231,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
         ),
       );
 
-      return shouldExit;
+      return shouldExit ?? false;
     } else {
       return true;
     }
@@ -246,7 +250,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 if (mounted) {
-                  Navigator.pop(context);
+                  _onBackPressed().then((shouldPop) {
+                    if (shouldPop) {
+                      Navigator.pop(context);
+                    }
+                  });
                 }
               },
             ),
@@ -256,6 +264,29 @@ class _QuizPageState extends ConsumerState<QuizPage>
           body: _currentIndex < questions.length
               ? buildQuestionCard(questions[_currentIndex])
               : Container(),
+          bottomNavigationBar: BottomAppBar(
+            color: theme.lightPurple,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Question ${_currentIndex + 1} of ${questions.length}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: _isNextButtonEnabled ? nextQuestion : null,
+                    child: Text("Next"),
+                    style: ElevatedButton.styleFrom(primary: theme.lightPurple),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -283,10 +314,23 @@ class _QuizPageState extends ConsumerState<QuizPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: buildRadioOptionsList(question.options),
             ),
+            if (question.showCorrectAnswer)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  "Correct Answer: ${question.correctAnswer}",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
             SizedBox(height: 10.0),
             ElevatedButton(
-              onPressed: _isNextButtonEnabled ? nextQuestion : null,
-              child: Text("Next"),
+              onPressed:
+                  _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
+              child: Text("Submit"),
               style: ElevatedButton.styleFrom(primary: theme.lightPurple),
             ),
           ],
@@ -297,25 +341,25 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
   List<Widget> buildRadioOptionsList(List<String> options) {
     final theme = ref.watch(themeProvider);
-    return options
-        .map(
-          (option) => RadioListTile<String>(
-            title: Text(
-              option,
-              style: TextStyle(fontSize: 18.0, color: Colors.black),
-            ),
-            value: option,
-            groupValue: questions[_currentIndex].selectedAnswer,
-            onChanged: (value) {
-              setState(() {
-                questions[_currentIndex].selectedAnswer = value!;
-                _isNextButtonEnabled = true;
-              });
-            },
-            activeColor: theme.lightPurple,
-          ),
-        )
-        .toList();
+    return options.map((option) {
+      return RadioListTile<String>(
+        title: Text(
+          option,
+          style: TextStyle(fontSize: 18.0, color: Colors.black),
+        ),
+        value: option,
+        groupValue: questions[_currentIndex].selectedAnswer,
+        onChanged: (value) {
+          setState(() {
+            if (!questions[_currentIndex].showCorrectAnswer) {
+              questions[_currentIndex].selectedAnswer = value!;
+              _isSubmitButtonEnabled = true;
+            }
+          });
+        },
+        activeColor: theme.lightPurple,
+      );
+    }).toList();
   }
 }
 
@@ -324,6 +368,8 @@ class Question {
   String correctAnswer;
   List<String> options;
   String? selectedAnswer;
+  bool showCorrectAnswer;
 
-  Question(this.questionText, this.correctAnswer, this.options);
+  Question(this.questionText, this.correctAnswer, this.options)
+      : showCorrectAnswer = false;
 }

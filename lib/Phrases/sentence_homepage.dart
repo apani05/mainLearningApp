@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../riverpod/river_pod.dart';
 import 'category_learning_page.dart';
-import 'quiz_page.dart';
+import '../pages/quiz_page.dart';
 
 class FeatureItem extends StatelessWidget {
   final String title;
@@ -162,14 +162,14 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   }
 
   List<String> seriesNames = [];
-  Future _getSeriesNames() async {
-    await FirebaseFirestore.instance.collection('ConversationTypes').get().then(
-          (snapshot) => snapshot.docs.forEach(
-            (doc) {
-              seriesNames.add(doc.reference.id);
-            },
-          ),
-        );
+  Future<List<String>> _getSeriesNames() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('ConversationTypes')
+        .orderBy('seriesName')
+        .get();
+
+    seriesNames = querySnapshot.docs.map((doc) => doc.id).toList();
+    return seriesNames;
   }
 }
 
