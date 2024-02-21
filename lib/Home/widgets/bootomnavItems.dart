@@ -16,10 +16,10 @@ class BottomNavItem {
      key:vProvider.bottomNavigationKey,
      color:  theme.lightPurple,
      items: <Widget>[
-       Icon(Icons.home, size: 30),
-       Icon(Icons.leaderboard, size: 30),
-       Icon(Icons.group, size: 30),
-       Icon(Icons.ac_unit,size:30)
+       Icon(Icons.home, size: 30, color: vProvider.currentPage == 0 ? Colors.white : Colors.grey),
+       Icon(Icons.leaderboard, size: 30, color: vProvider.currentPage == 1 ? Colors.white : Colors.grey),
+       Icon(Icons.group, size: 30, color: vProvider.currentPage == 2 ? Colors.white : Colors.grey),
+       Icon(Icons.ac_unit, size: 30, color: vProvider.currentPage == 3 ? Colors.white : Colors.grey)
      ],
      onTap: (index) {
        vProvider.currentPage = index;

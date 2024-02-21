@@ -48,7 +48,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                imageUrl: userCredential.user!.photoURL ?? '',
                score: 0,
                rank: 0,
-               savedWords: []),userCredential.user!.uid
+               savedWords: [],
+             badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+           ),userCredential.user!.uid
          );
         }
         Navigator.pop(context);

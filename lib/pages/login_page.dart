@@ -42,7 +42,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 imageUrl: UserCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,
-                savedWords: []),UserCredential.user!.uid
+                savedWords: [],
+            badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+            ),UserCredential.user!.uid
         );
         print("user is created with uid ${UserCredential.user!.uid}");
       }

@@ -1,4 +1,6 @@
 import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -12,7 +14,26 @@ class UserProvider extends ChangeNotifier {
   String _expiresIn = '';
   int _score = 0;
   int _rank = 0;
-  List<Data> _savedWords = [];
+  UserModel _user;
+
+  UserProvider() : _user = UserModel(
+    badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+    name: '',
+    uid: '',
+    imageUrl: '',
+    score: 0,
+    rank: 0,
+    savedWords: [],
+  ); // Initialize _user in the constructor
+
+  UserModel get user => _user;
+  setUserData(UserModel user) {
+    _user = user;
+    notifyListeners();
+  }
+CardBadge _badge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
+
+  List<SavedWords> _savedWords = [];
   String get name => _name;
 
   String get email => _email;
@@ -31,8 +52,14 @@ class UserProvider extends ChangeNotifier {
 
   int get rank => _rank;
 
-  List<Data> get savedWords => _savedWords;
+  List<SavedWords> get savedWords => _savedWords;
 
+CardBadge get badge => _badge;
+
+setBadge(CardBadge badge){
+  _badge = badge;
+  notifyListeners();
+}
   void setUid(String uid) {
     _uid = uid;
     notifyListeners();
@@ -78,7 +105,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setWords(Data words) {
+  void setWords(SavedWords words) {
     if (!_savedWords.contains(words)) {
       _savedWords.add(words);
       notifyListeners();
@@ -117,11 +144,12 @@ class UserProvider extends ChangeNotifier {
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
+      print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   setWords(element);
       // });
       //setWords(user.savedWords[0]);
-
+print("user exists ${documentSnapshot.data()}");
     }
     return documentSnapshot.exists;
   }
@@ -131,11 +159,13 @@ class UserProvider extends ChangeNotifier {
     print("user from db ${documentSnapshot.data()}");
     if(documentSnapshot.exists){
       final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+      setUserData(user);
       setEmail(user.name);
       setUid(user.uid);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
+      print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   if(!_savedWords.contains(element))
       //   setWords(element);
@@ -145,6 +175,14 @@ class UserProvider extends ChangeNotifier {
     return UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
   }
 
+
+  Future<void> updateBadge(String uid, CardBadge badge) async {
+  setBadge(badge);
+  print("badge to be updated ${badge.toJson()}");
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'badge': badge.toJson()
+    });
+  }
   Future<void>getSavedWords(String uid) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if(documentSnapshot.exists){
@@ -158,7 +196,10 @@ class UserProvider extends ChangeNotifier {
     }
    // return Data.fromJson(documentSnapshot.data() as Map<String, dynamic>);
   }
-  removeWord(String word) async {
+  removeWord(String word,String uid) async {
+    int i = _savedWords.indexWhere((element) => element.blackfoot == word);
+    print("deleting index $i");
+    await removeWordFromUser( uid, _savedWords[i]);
     _savedWords.removeWhere((element) => element.blackfoot == word);
     notifyListeners();
   }
@@ -184,7 +225,7 @@ class UserProvider extends ChangeNotifier {
   //   });
   // }
 
-  Future<void> addWordToUser(String uid, Data word) async {
+  Future<void> addWordToUser(String uid, SavedWords word) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (documentSnapshot.exists) {
       UserModel user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
@@ -195,7 +236,7 @@ class UserProvider extends ChangeNotifier {
       }
     }
   }
-  Future<void> removeWordFromUser(String uid, Words word) async {
+  Future<void> removeWordFromUser(String uid, SavedWords word) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'savedWords': FieldValue.arrayRemove([word.toJson()])
     });
@@ -216,4 +257,11 @@ class UserProvider extends ChangeNotifier {
   Future<void> getRank(String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['rank']);
   }
+
+  updateRank(String uid, int rank) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'rank': rank
+    });
+  }
+
 }

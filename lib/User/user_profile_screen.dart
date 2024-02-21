@@ -176,7 +176,7 @@ String score = "0";
                               ),
                             ),
                             Text(
-                              "Hearts",
+                              "Score",
                               style:  TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold,

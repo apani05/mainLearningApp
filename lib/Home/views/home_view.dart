@@ -40,7 +40,7 @@ class HomeViewState extends ConsumerState<HomeView> {
     return Scaffold(
       backgroundColor:  Colors.white,
       appBar: AppBar(
-        backgroundColor:  Colors.white,
+        backgroundColor:  theme.lightPurple,
         title: Row(
           children: [
              GestureDetector(

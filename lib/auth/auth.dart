@@ -1,4 +1,5 @@
 import 'package:bfootlearn/Home/views/home_view.dart';
+import 'package:bfootlearn/User/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               print("building auth page");
                UserProvide.getUserFromDb(snapshot.data!.uid);
                print("score is ${UserProvide.score}");
+               print("user is $UserProvide");
 
               return const HomeView();
             } else {

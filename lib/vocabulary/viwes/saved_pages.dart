@@ -20,7 +20,7 @@ class SavedPage extends ConsumerStatefulWidget {
 class _SavedPageState extends ConsumerState<SavedPage> {
 
   CarouselController buttonCarouselController = CarouselController();
-  List<Data> savedWords = [];
+  List<SavedWords> savedWords = [];
   String uid = "";
   final player = AudioPlayer();
   @override
@@ -74,7 +74,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
                                   IconButton(
                                     onPressed: (){
                                       final UserProvide = ref.read(userProvider);
-                                      UserProvide.removeWord(savedWords[index].blackfoot);
+                                      UserProvide.removeWord(savedWords[index].blackfoot,UserProvide.uid);
                                       setState(() {
                                         savedWords.removeAt(index);
                                       });

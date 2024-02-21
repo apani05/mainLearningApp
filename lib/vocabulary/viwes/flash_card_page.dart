@@ -1,17 +1,23 @@
+import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
+import 'package:bfootlearn/vocabulary/provider/voca_provider.dart';
+import 'package:bfootlearn/vocabulary/viwes/vocabulary_home.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confetti/confetti.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../User/user_model.dart';
 
 class FlashCradPage extends ConsumerStatefulWidget {
-  final String category;
-  const FlashCradPage({
+   String category;
+   FlashCradPage({
     required this.category,
     super.key,
   });
@@ -20,26 +26,78 @@ class FlashCradPage extends ConsumerStatefulWidget {
   _FlashCradPageState createState() => _FlashCradPageState();
 }
 
-class _FlashCradPageState extends ConsumerState<FlashCradPage> {
+class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProviderStateMixin{
 
   CarouselController buttonCarouselController = CarouselController();
   final player = AudioPlayer();
    late int score ;
-  @override
+   var lottieController;
+   var progress2 = 0.0;
+   CardBadge newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
+
+  late ConfettiController _controllerCenter;
   void initState() {
     final userRepo = ref.read(userProvider);
     score = userRepo.score;
     userRepo.getSavedWords(userRepo.uid);
-    getQustions();
+    print("init state categoy is ${widget.category}");
+    //getQustions();
+    _controllerCenter =
+        ConfettiController(duration: const Duration(seconds: 10));
+     lottieController = AnimationController(vsync: this, duration: Duration(seconds: 2));
     super.initState();
   }
 
-  getQustions() async {
-    final vProvider = ref.read(vocaProvider);
-    await vProvider.getDataByCategory(widget.category, 'class_c_', 0);
-    await vProvider.getDataByCategory2(widget.category, 'class_c_');
+@override
+  dispose() {
+    _controllerCenter.dispose();
+    lottieController.dispose();
+    super.dispose();
   }
-
+  setNewBadge(String category){
+    switch(category){
+      case 'Weather':
+        setState(() {
+          newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
+        });
+        break;
+      case 'Times of the day':
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
+        break;
+      case 'Classroom Commands':
+        setState(() {
+          newBadge = CardBadge(kinship: false, dirrection: false, classroom: true, time: false);
+        });
+        break;
+      case 'Days':
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: true, time: false);
+        break;
+      case 'Kinship Terms':
+        newBadge = CardBadge(kinship: true, dirrection: false, classroom: false, time: false);
+        break;
+      case 'Directions and Time':
+        newBadge = CardBadge(kinship: false, dirrection: true, classroom: false, time: true);
+        break;
+      case 'Food':
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
+        break;
+      case 'Animals':
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
+        break;
+      case 'Numbers':
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
+        break;
+      default:
+        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
+    }
+  }
+  // getQustions() async {
+  //   final vProvider = ref.read(vocaProvider);
+  //   await vProvider.getDataByCategory(widget.category, 'class_c_', 0);
+  //   await vProvider.getDataByCategory2(widget.category, 'class_c_');
+  // }
+ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
+  ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
 int index = 0;
 int scoreIndex = 0;
   setDocRefCat(String s){
@@ -54,8 +112,8 @@ int scoreIndex = 0;
         return 'class_d_';
       case 'Kinship Terms':
         return 'class_e_';
-      case 'Plants':
-        return 'class_f_';
+      case 'Directions and Time':
+        return 'directions_time_';
       case 'Food':
         return 'class_g_';
       case 'Animals':
@@ -71,16 +129,26 @@ int scoreIndex = 0;
     final theme = ref.watch(themeProvider);
     final leaderboardRepo = ref.watch(leaderboardProvider);
     final userRepo = ref.watch(userProvider);
+    final vocaProvide = ref.read(vocaProvider);
+    print("build state categoy is ${widget.category}");
     return FutureBuilder(
-      future: ref.watch(vocaProvider).getDataByCategory2(widget.category, setDocRefCat(widget.category)),
+      future: vocaProvide.getDataByCategory2(widget.category, setDocRefCat(widget.category)),
       builder: (context,snapshot) {
        // print("snapshot.data"+"${widget.category}");
         //print(snapshot.data);
         if(snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
-        }else if(snapshot.hasError) {
+        }else if(snapshot.hasError
+        //){
+            ||
+            snapshot.data!.where((element) =>
+            element["data"] == null ||
+                (element["data"] != null && (element["data"]["blackfoot"] == null ||
+                    element["data"]["english"] == null || element["data"]["sound"] == null))).length > 0 || snapshot.data!.isEmpty) {
+          print("snapshot.data""${widget.category} + ${snapshot.data}");
           return Center(child: Text('Error'));
         }else{
+        //  print("snapshot.data""${widget.category} + ${snapshot.data}");
           return Stack(
             children: [
               Container(
@@ -152,6 +220,16 @@ int scoreIndex = 0;
                                 userRepo.updateScore(userRepo.uid, score);
                                 leaderboardRepo.addToLeaderBoard(userRepo.name, score);
                                 print("score is -------------- $score");
+                                double progress = (scoreIndex / snapshot.data!.length) ; // replace totalNumberOfCards with the actual number of cards
+                                print("progress is -------------- $progress");
+                                 isPlaying.value = true;
+                                 vocaProvide.lProgress = progress;
+                                 if(progress <= 0.8) {
+                                   lottieController.animateTo(progress);
+                                 }else if(progress > 0.8){
+                                   lottieController.animateTo(1.toDouble());
+                                 }
+                                progressNotifier.value = progress;
                               }},
                           );
                           }).toList(),
@@ -164,6 +242,7 @@ int scoreIndex = 0;
                             aspectRatio: 2.0,
                             initialPage: 0,
                             clipBehavior: Clip.hardEdge,
+                            enableInfiniteScroll: false,
                           ),
                         ),
                       ),
@@ -190,7 +269,7 @@ int scoreIndex = 0;
                     onPressed: () {
                       leaderboardRepo.getTopHighScores();
                      // leaderboardRepo.saveHighScore("shrek", );
-                      userRepo.addWordToUser(userRepo.uid, Data.fromJson(snapshot.data![index]["data"]), );
+                      userRepo.addWordToUser(userRepo.uid, SavedWords.fromJson(snapshot.data![index]["data"]), );
                     },
                     child: Text('save',style: TextStyle(color: Colors.black),),
                     style: ElevatedButton.styleFrom(
@@ -207,6 +286,39 @@ int scoreIndex = 0;
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple
                     )
+                ),
+              ),
+              Positioned(
+                bottom: 50,
+                right: MediaQuery.of(context).size.width * 0.25 ,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => VocabularyHome()));
+                    },
+                    child: Text('Explore related phrases?',style: TextStyle(color: Colors.black),),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.lightPurple
+                    )
+                ),
+              ),
+              
+              Positioned(
+                top: 0,
+                left: MediaQuery.of(context).size.width * 0.5,
+                child: ConfettiWidget(
+                  confettiController: _controllerCenter,
+                 // blastDirectionality: BlastDirectionality.explosive, // don't specify a direction, blast randomly
+                  shouldLoop: true, // start again as soon as the animation is finished
+                  colors: const [
+                    Colors.green,
+                    Colors.blue,
+                    Colors.pink,
+                    Colors.orange,
+                    Colors.purple
+                  ], // manually specify the colors to be used
+                  blastDirection: pi / 2,
+                  numberOfParticles: 40,// apply the direction
+                  //createParticlePath: drawStar, // define a custom shape/path.
                 ),
               ),
             ],
@@ -232,7 +344,85 @@ int scoreIndex = 0;
       print('Error: $e');
     }
   }
+  Path drawStar(Size size) {
+    // Method to convert degree to radians
+    double degToRad(double deg) => deg * (pi / 180.0);
 
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+    path.moveTo(size.width, halfWidth);
+
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step),
+          halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
+          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
+  }
+
+  void _showMyDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(
+          fit: StackFit.passthrough,
+          children: [
+            AlertDialog(
+              title: const Text('Congratulations'),
+              content: Text('You have completed the category and earned a badge. Your score is $score.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Choose a new category'),
+                  onPressed: () async{
+                    setNewBadge(widget.category);
+                    await ref.read(userProvider).updateBadge(ref.read(userProvider).uid, newBadge);
+                    _controllerCenter.stop();
+                    progressNotifier.value = 0.0;
+                    if(mounted) {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => VocabularyHome()));
+                    }
+
+                  },
+                ),
+                TextButton(
+                  child: const Text('Master Again'),
+                  onPressed: () {
+                    _controllerCenter.stop();
+                    scoreIndex = 0;
+                    index = 0;
+                    buttonCarouselController.jumpToPage(0);
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Practice'),
+                  onPressed: () {
+                   //vocaProvide.tabController.index = 1;
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              top: 220, // Adjust this value as needed
+              right: 60, // Adjust this value as needed
+              child: Lottie.asset('assets/badge.json', width: 100, height: 100),
+            ),
+
+          ],
+        );
+      },
+    );
+  }
 }
 
 class Qustion {

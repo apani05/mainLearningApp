@@ -4,7 +4,8 @@ class UserModel {
   final String imageUrl;
   final int score;
   final int rank;
-  final List<Data> savedWords;
+  final CardBadge badge;
+  final List<SavedWords> savedWords;
 
   UserModel({
     required this.name,
@@ -13,6 +14,7 @@ class UserModel {
     required this.score,
     required this.rank,
     required this.savedWords,
+    required this.badge,
   });
 
   String get getName => name;
@@ -20,7 +22,7 @@ class UserModel {
   String get getImageUrl => imageUrl;
   int get getScore => score;
   int get getRank => rank;
-  List<Data> get getSavedWords => savedWords;
+  List<SavedWords> get getSavedWords => savedWords;
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -28,11 +30,13 @@ class UserModel {
         'imageUrl': imageUrl,
         'score': score,
         'rank': rank,
+    "badge": badge.toJson(),
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      badge: CardBadge.fromJson(json["badge"]),
       name: json['name'],
       uid: json['uid'],
       imageUrl: json['imageUrl'],
@@ -41,21 +45,62 @@ class UserModel {
       savedWords: (json['savedWords'] as List)
           .map((item) {
             print("item to be added $item");
-            return Data.fromJson(item);
+            return SavedWords.fromJson(item);
           })
           .toList(),
     );
   }
+  String getBadgeCategory() {
+    if (badge.kinship) {
+      return 'Kinship Terms';
+    } else if (badge.dirrection) {
+      return 'Directions and Time';
+    } else if (badge.classroom) {
+      return 'Classroom Commands';
+    } else if (badge.time) {
+      return 'Times of the day';
+    } else {
+      return 'No badge';
+    }
+  }
+}
+
+class CardBadge {
+  final bool kinship;
+  final bool dirrection;
+  final bool classroom;
+  final bool time;
+
+  CardBadge({
+    required this.kinship,
+    required this.dirrection,
+    required this.classroom,
+    required this.time,
+  });
+
+  factory CardBadge.fromJson(Map<String, dynamic> json) => CardBadge(
+    kinship: json["kinship"],
+    dirrection: json["dirrection"],
+    classroom: json["classroom"],
+    time: json["time"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "kinship": kinship,
+    "dirrection": dirrection,
+    "classroom": classroom,
+    "time": time,
+  };
 }
 
 class Words {
-  final Data data;
+  final SavedWords data;
 
   Words({required this.data});
 
   factory Words.fromJson(Map<String, dynamic> json) {
     return Words(
-      data: Data.fromJson(json['data']),
+      data: SavedWords.fromJson(json['data']),
     );
   }
 
@@ -64,15 +109,15 @@ class Words {
       };
 }
 
-class Data {
+class SavedWords {
   final String sound;
   final String english;
   final String blackfoot;
 
-  Data({required this.sound, required this.english, required this.blackfoot});
+  SavedWords({required this.sound, required this.english, required this.blackfoot});
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
+  factory SavedWords.fromJson(Map<String, dynamic> json) {
+    return SavedWords(
       sound: json['sound'],
       english: json['english'],
       blackfoot: json['blackfoot'],
