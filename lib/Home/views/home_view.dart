@@ -53,7 +53,7 @@ class HomeViewState extends ConsumerState<HomeView> {
     final theme = ref.watch(themeProvider);
     final vProvider = ref.watch(vocaProvider);
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.lightPurple,
       title: Row(
         children: [
           GestureDetector(

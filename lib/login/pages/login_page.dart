@@ -49,13 +49,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         if (!isExsist) {
           await userProvide.createUserInDb(
               UserModel(
-                  name:
-                      UserCredential.user!.displayName ?? emailController.text,
-                  uid: UserCredential.user!.uid,
-                  imageUrl: UserCredential.user!.photoURL ?? '',
-                  score: 0,
-                  rank: 0,
-                  savedWords: []),
+                name: UserCredential.user!.displayName ?? emailController.text,
+                uid: UserCredential.user!.uid,
+                imageUrl: UserCredential.user!.photoURL ?? '',
+                score: 0,
+                rank: 0,
+                savedWords: [],
+                badge: CardBadge(
+                    kinship: false,
+                    dirrection: false,
+                    classroom: false,
+                    time: false),
+              ),
               UserCredential.user!.uid);
           print("user is created with uid ${UserCredential.user!.uid}");
         }

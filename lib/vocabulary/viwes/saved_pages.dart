@@ -18,9 +18,8 @@ class SavedPage extends ConsumerStatefulWidget {
 }
 
 class _SavedPageState extends ConsumerState<SavedPage> {
-
   CarouselController buttonCarouselController = CarouselController();
-  List<Data> savedWords = [];
+  List<SavedWords> savedWords = [];
   String uid = "";
   final player = AudioPlayer();
   @override
@@ -45,69 +44,68 @@ class _SavedPageState extends ConsumerState<SavedPage> {
     return Stack(
       children: [
         Container(
-          color:  Color(0xffbdbcfd),
+          color: Color(0xffbdbcfd),
           child: ListView.builder(
             itemBuilder: (context, index) {
-
-
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 100,
-                    width: 100,
-                    child: Card(
-                      child: ListTile(
-                          title: Text(savedWords[index].blackfoot),
-                          subtitle: Text(savedWords[index].english),
-                          trailing: Container(
-                            width: 150,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 53.0),
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: (){
-                                      playAudio(savedWords[index].sound);
-                                    },
-                                    icon: const Icon(Icons.volume_down_outlined),
-                                  ),
-                                  IconButton(
-                                    onPressed: (){
-                                      final UserProvide = ref.read(userProvider);
-                                      UserProvide.removeWord(savedWords[index].blackfoot);
-                                      setState(() {
-                                        savedWords.removeAt(index);
-                                      });
-                                    },
-                                    icon: const Icon(Icons.delete),
-                                  ),
-                                ],
-                              ),
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  child: Card(
+                    child: ListTile(
+                        title: Text(savedWords[index].blackfoot),
+                        subtitle: Text(savedWords[index].english),
+                        trailing: Container(
+                          width: 150,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 53.0),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    playAudio(savedWords[index].sound);
+                                  },
+                                  icon: const Icon(Icons.volume_down_outlined),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    final UserProvide = ref.read(userProvider);
+                                    UserProvide.removeWord(
+                                        savedWords[index].blackfoot,
+                                        UserProvide.uid);
+                                    setState(() {
+                                      savedWords.removeAt(index);
+                                    });
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                ),
+                              ],
                             ),
-                          )
-                      ),
-                    ),
+                          ),
+                        )),
                   ),
-                );
-
-
-          },
+                ),
+              );
+            },
             itemCount: savedWords.length,
           ),
         ),
       ],
     );
   }
+
   Future<void> playAudio(String Url) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     String audioUrl = Url;
 
     try {
       // Get the download URL for the audio file
-      Uri downloadUrl =Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL()) ;
+      Uri downloadUrl =
+          Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL());
 
       // Play the audio using the audioplayers package
-      await player.play(UrlSource( downloadUrl.toString()));
+      await player.play(UrlSource(downloadUrl.toString()));
       print('Playing');
     } catch (e) {
       // Handle errors
@@ -115,5 +113,3 @@ class _SavedPageState extends ConsumerState<SavedPage> {
     }
   }
 }
-
-

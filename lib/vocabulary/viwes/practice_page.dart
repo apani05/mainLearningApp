@@ -16,7 +16,6 @@ class PracticePage extends ConsumerStatefulWidget {
 }
 
 class PracticePageState extends ConsumerState<PracticePage> {
-
   final int _duration = 20;
   int _score = 0;
   final CountDownController _controller = CountDownController();
@@ -24,7 +23,8 @@ class PracticePageState extends ConsumerState<PracticePage> {
   int _currentQuestionIndex = 0;
   final List<Map<String, dynamic>> _questions = [
     {
-      'question': "Choose the correct translation and usage of the Blackfoot word \"i\' poyít\" in a sentence",
+      'question':
+          "Choose the correct translation and usage of the Blackfoot word \"i\' poyít\" in a sentence",
       'options': [
         'After dinner, we will i\'poyít under the stars - Speak',
         'Please fetch some i\'poyít from the stream -  Water',
@@ -44,23 +44,20 @@ class PracticePageState extends ConsumerState<PracticePage> {
       'correctAnswer': 'Please isstsííyik to the river\'s flow. - Listen',
     },
     {
-      'question': 'Select the set where all Blackfoot words are correctly matched with their English meanings:',
+      'question':
+          'Select the set where all Blackfoot words are correctly matched with their English meanings:',
       'options': [
         'tsimá - How?, takáá - Where?, tsa - Who?',
         'tsimá - Who?, takáá - How?, tsa - Where?',
         'tsimá - Where?, takáá - Who?, tsa - How?',
         'tsimá - Who?, takáá - Where?, tsa - How?'
-    ],
-      'correctAnswer':  'tsimá - Where?, takáá - Who?, tsa - How?',
+      ],
+      'correctAnswer': 'tsimá - Where?, takáá - Who?, tsa - How?',
     },
     {
-      'question': 'Imagine you\'re learning to cook a traditional dish with a Blackfoot-speaking elder. To ask about the process in their language, which word would you use?',
-      'options': [
-        'Why? (tsa)',
-    'How? (tsa)',
-    'When? (tsa)',
-    'What? (tsa)'
-    ],
+      'question':
+          'Imagine you\'re learning to cook a traditional dish with a Blackfoot-speaking elder. To ask about the process in their language, which word would you use?',
+      'options': ['Why? (tsa)', 'How? (tsa)', 'When? (tsa)', 'What? (tsa)'],
       'correctAnswer': 'How? (tsa)',
     },
     // Add more questions as needed
@@ -106,7 +103,7 @@ class PracticePageState extends ConsumerState<PracticePage> {
         _currentQuestionIndex++;
         _secondsRemaining = 10;
         _isAnswered = false;
-       // _startTimer();
+        // _startTimer();
         _controller.restart();
       } else {
         // Navigate to result page or perform any desired action
@@ -125,8 +122,8 @@ class PracticePageState extends ConsumerState<PracticePage> {
         _selectedAnswer = selectedAnswer;
       });
 
-      if (selectedAnswer == _questions[_currentQuestionIndex]['correctAnswer']) {
-
+      if (selectedAnswer ==
+          _questions[_currentQuestionIndex]['correctAnswer']) {
         //Future.delayed(Duration(seconds: 2), () => _nextQuestion());
         // _nextQuestion();
         _score++;
@@ -163,7 +160,8 @@ class PracticePageState extends ConsumerState<PracticePage> {
                     children: [
                       Text(
                         'Question ${_currentQuestionIndex + 1}:',
-                        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.0),
                       Row(
@@ -192,7 +190,10 @@ class PracticePageState extends ConsumerState<PracticePage> {
                               backgroundGradient: null,
                               strokeWidth: 8.0,
                               strokeCap: StrokeCap.round,
-                              textStyle: TextStyle(fontSize: 18.0, color: Color(0xffbdbcfd), fontWeight: FontWeight.bold),
+                              textStyle: TextStyle(
+                                  fontSize: 18.0,
+                                  color: Color(0xffbdbcfd),
+                                  fontWeight: FontWeight.bold),
                               textFormat: CountdownTextFormat.S,
                               isReverse: true,
                               isReverseAnimation: false,
@@ -207,11 +208,13 @@ class PracticePageState extends ConsumerState<PracticePage> {
                               onChange: (String timeStamp) {
                                 debugPrint('Countdown Changed $timeStamp');
                               },
-                              timeFormatterFunction: (defaultFormatterFunction, duration) {
+                              timeFormatterFunction:
+                                  (defaultFormatterFunction, duration) {
                                 if (duration.inSeconds == 0) {
                                   return _duration.toString();
                                 } else {
-                                  return Function.apply(defaultFormatterFunction, [duration]);
+                                  return Function.apply(
+                                      defaultFormatterFunction, [duration]);
                                 }
                               },
                             ),
@@ -228,7 +231,8 @@ class PracticePageState extends ConsumerState<PracticePage> {
               children: List.generate(
                 _questions[_currentQuestionIndex]['options'].length,
                 (index) => RadioListTile(
-                  title: Text(_questions[_currentQuestionIndex]['options'][index]),
+                  title:
+                      Text(_questions[_currentQuestionIndex]['options'][index]),
                   groupValue: _selectedAnswer,
                   value: _questions[_currentQuestionIndex]['options'][index],
                   onChanged: (value) => _selectAnswer(value),
@@ -240,15 +244,15 @@ class PracticePageState extends ConsumerState<PracticePage> {
             ElevatedButton(
               onPressed: _isAnswered ? _nextQuestion : null,
               style: ElevatedButton.styleFrom(
-                primary: Color(0xffbdbcfd),
-                onPrimary: Colors.white,
+                backgroundColor: Color(0xffbdbcfd),
+                foregroundColor: Colors.white,
                 elevation: 5.0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 fixedSize: Size(200.0, 50.0),
               ),
-              child: _controller.isStarted?Text('Next'):Text('Start'),
+              child: _controller.isStarted ? Text('Next') : Text('Start'),
             ),
           ],
         ),
@@ -272,19 +276,17 @@ class PracticePageState extends ConsumerState<PracticePage> {
                       _isAnswered = false;
                     });
 
-                   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
+                    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
                   },
                   child: Text("Yes")),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                   // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
+                    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => QuizPage()));
                   },
                   child: Text("No")),
             ],
           );
         });
   }
-
-
 }

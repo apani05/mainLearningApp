@@ -281,7 +281,8 @@ class _QuizPageState extends ConsumerState<QuizPage>
                   ElevatedButton(
                     onPressed: _isNextButtonEnabled ? nextQuestion : null,
                     child: Text("Next"),
-                    style: ElevatedButton.styleFrom(primary: theme.lightPurple),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.lightPurple),
                   ),
                 ],
               ),
@@ -331,7 +332,8 @@ class _QuizPageState extends ConsumerState<QuizPage>
               onPressed:
                   _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
               child: Text("Submit"),
-              style: ElevatedButton.styleFrom(primary: theme.lightPurple),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: theme.lightPurple),
             ),
           ],
         ),

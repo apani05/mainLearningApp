@@ -53,13 +53,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         if (userCredential.user != null) {
           await userProvide.createUserInDb(
               UserModel(
-                  name: userCredential.user!.displayName ??
-                      userNameController.text,
-                  uid: userCredential.user!.uid,
-                  imageUrl: userCredential.user!.photoURL ?? '',
-                  score: 0,
-                  rank: 0,
-                  savedWords: []),
+                name:
+                    userCredential.user!.displayName ?? userNameController.text,
+                uid: userCredential.user!.uid,
+                imageUrl: userCredential.user!.photoURL ?? '',
+                score: 0,
+                rank: 0,
+                savedWords: [],
+                badge: CardBadge(
+                    kinship: false,
+                    dirrection: false,
+                    classroom: false,
+                    time: false),
+              ),
               userCredential.user!.uid);
         }
         Navigator.pop(context);

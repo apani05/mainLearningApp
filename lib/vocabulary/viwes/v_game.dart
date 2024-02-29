@@ -14,13 +14,13 @@ import 'flash_card_page.dart';
 
 class VocabularyGame extends ConsumerStatefulWidget {
   final String category;
-   const VocabularyGame({required this.category,super.key});
+  const VocabularyGame({required this.category, super.key});
 
   @override
-  HomeViewState createState() => HomeViewState();
+  VocabularyViewState createState() => VocabularyViewState();
 }
 
-class HomeViewState extends ConsumerState<VocabularyGame> {
+class VocabularyViewState extends ConsumerState<VocabularyGame> {
   @override
   void initState() {
     super.initState();
@@ -32,102 +32,52 @@ class HomeViewState extends ConsumerState<VocabularyGame> {
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
-    return Scaffold(
-        backgroundColor:  Colors.white,
+    return DefaultTabController(
+      length: 3, // The number of tabs
+      child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
             color: Colors.black,
           ),
-          backgroundColor:Colors.white,
-          title: const CircleAvatar(
-            backgroundColor: Colors.green,
-            radius: 23,
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage("assets/person_logo.png"),
+          backgroundColor: theme.lightPurple,
+          title: Text(
+            widget.category,
+            style: TextStyle(color: Colors.white),
+          ),
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                text: 'Flash Card',
+              ),
+              Tab(text: 'Practice'),
+              Tab(text: 'Saved'),
+            ],
+            labelStyle: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
             ),
           ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                 // theme.toggleTheme();
-                },
-                icon: const Icon(
-                  Icons.menu,
-                  color:Colors.black,
-                )),
+        ),
+        body: TabBarView(
+          // controller: vprovider.tabController,
+          children: [
+            // The widgets that will be shown when the corresponding tab is selected
+            // Replace these with your own widgets
+            FlashCradPage(
+              category: widget.category,
+            ),
+            PracticePage(),
+            SavedPage(),
           ],
         ),
-        body: DefaultTabController(
-          length: 3,
-          child: Column(
-            children: <Widget>[
-              ButtonsTabBar(
-                physics: const ScrollPhysics(),
-                // Customize the appearance and behavior of the tab bar
-               // backgroundColor: Colors.white,
-                height: 60,
-                borderColor: Colors.black,
-              //  unselectedBackgroundColor: Colors.blueAccent,
-                labelStyle: TextStyle(color: Colors.black),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: theme.lightPurple,
-                ),
-                unselectedDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.white),
-                unselectedLabelStyle: TextStyle(color: Colors.white),
-                // Add your tabs here
-                tabs: [
-                  Tab(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width/3.5,
-                        child: Center(
-                          child: Text("Flash Card",style: TextStyle(color: Colors.black),),
-                        ),
-                      )
-                  ),
-                  Tab(
-                   // text: "practice",
-                    child: Container(
-                      width: MediaQuery.of(context).size.width/3.5,
-                      child: Center(
-                        child: Text("Practice",
-                            style: TextStyle(color: Colors.black)),
-                      ),
-                    )
-                  ),
-                  Tab(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width/3.5,
-                        child: Center(
-                          child: Text("Saved",style: TextStyle(color: Colors.black)),
-                        ),
-                      )
-                  ),
-                ]
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    FlashCradPage(category: widget.category,),
-                   PracticePage(),
-                   SavedPage(),
-                  ]
-                ),
-              ),
-            ],
-          ),
-        ),
+      ),
     );
   }
 }
-
-
-
-

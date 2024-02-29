@@ -5,6 +5,7 @@ import '../../riverpod/river_pod.dart';
 import 'login_or_register.dart';
 import 'verify_email.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bfootlearn/User/user_model.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -27,6 +28,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               print("building auth page");
               UserProvide.getUserFromDb(snapshot.data!.uid);
               print("score is ${UserProvide.score}");
+              print("user is $UserProvide");
 
               return const EmailVerifyPage();
             } else {
