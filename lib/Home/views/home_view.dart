@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flippy/flippy.dart';
 import '../../login/pages/reset_password.dart';
+import '../../notifications/notification_page.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -44,6 +45,12 @@ class HomeViewState extends ConsumerState<HomeView> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => PasswordChangePage()),
+        );
+        break;
+      case 'localNotifications':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsPage()),
         );
         break;
     }
@@ -89,6 +96,13 @@ class HomeViewState extends ConsumerState<HomeView> {
                 child: ListTile(
                   leading: Icon(Icons.exit_to_app),
                   title: Text('Sign Out'),
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'localNotifications',
+                child: ListTile(
+                  leading: Icon(Icons.exit_to_app),
+                  title: Text('Notifications'),
                 ),
               ),
               PopupMenuItem<String>(

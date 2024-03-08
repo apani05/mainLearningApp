@@ -1,4 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Required permissions for scheduling notifications -->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+<!-- Specify either SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM based on your requirements -->
+
+<!-- Required permission for using full-screen intent notifications -->
+<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+
 <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="l'poyit"
@@ -31,5 +39,19 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <!-- Receiver for handling scheduled notifications -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Receiver for handling notification actions -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
+
     </application>
 </manifest>
