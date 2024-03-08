@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../Home/views/home_view.dart';
 import '../../helper/helper_functions.dart';
 import '../../riverpod/river_pod.dart';
@@ -28,7 +30,8 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     if (!isEmailVerified) {
       sendVerificationEmail();
-      timer = Timer.periodic(Duration(seconds: 3), (_) => checkEmailVerified());
+      timer = Timer.periodic(
+          const Duration(seconds: 3), (_) => checkEmailVerified());
     }
   }
 
@@ -37,7 +40,7 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
       final user = FirebaseAuth.instance.currentUser!;
       await user.sendEmailVerification();
       setState(() => canResendEmail = false);
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
       setState(() => canResendEmail = true);
     } catch (e) {
       displaySnackBarMessageToUser(e.toString(), context);
@@ -91,6 +94,9 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                       ElevatedButton(
                         onPressed:
                             canResendEmail ? sendVerificationEmail : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.lightPurple,
+                        ),
                         child: const Text(
                           'Resend Email',
                           style: TextStyle(
@@ -99,15 +105,15 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                             color: Colors.white,
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.lightPurple,
-                        ),
                       ),
                       SizedBox(height: mediaQuery.size.height * 0.02),
                       ElevatedButton(
                         onPressed: () {
                           FirebaseAuth.instance.signOut();
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.lightPurple,
+                        ),
                         child: const Text(
                           'Sign Out',
                           style: TextStyle(
@@ -115,9 +121,6 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.lightPurple,
                         ),
                       ),
                     ],

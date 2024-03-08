@@ -1,6 +1,4 @@
 import 'package:bfootlearn/User/user_model.dart';
-import 'package:bfootlearn/User/user_model.dart';
-import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -9,6 +7,7 @@ class UserProvider extends ChangeNotifier {
   String _email = '';
   String _photoUrl = '';
   String _uid = '';
+  String _role = '';
   String _token = '';
   String _refreshToken = '';
   String _expiresIn = '';
@@ -21,7 +20,9 @@ class UserProvider extends ChangeNotifier {
           badge: CardBadge(
               kinship: false, dirrection: false, classroom: false, time: false),
           name: '',
+          email: '',
           uid: '',
+          role: '',
           imageUrl: '',
           score: 0,
           rank: 0,
@@ -45,6 +46,8 @@ class UserProvider extends ChangeNotifier {
   String get photoUrl => _photoUrl;
 
   String get uid => _uid;
+
+  String get role => _role;
 
   String get token => _token;
 
@@ -77,6 +80,11 @@ class UserProvider extends ChangeNotifier {
 
   void setEmail(String email) {
     _email = email;
+    notifyListeners();
+  }
+
+  void setRole(String uid) {
+    _role = role;
     notifyListeners();
   }
 
@@ -122,6 +130,7 @@ class UserProvider extends ChangeNotifier {
     _email = '';
     _photoUrl = '';
     _uid = '';
+    _role = '';
     _token = '';
     _refreshToken = '';
     _expiresIn = '';
@@ -131,7 +140,9 @@ class UserProvider extends ChangeNotifier {
   createUserInDb(UserModel user, String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'name': user.name,
+      'email': user.email,
       'uid': user.uid,
+      'role': user.role,
       'imageUrl': user.imageUrl,
       'score': user.score,
       'rank': user.rank,
@@ -147,6 +158,7 @@ class UserProvider extends ChangeNotifier {
           UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
       setEmail(user.name);
       setUid(user.uid);
+      setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
@@ -170,6 +182,7 @@ class UserProvider extends ChangeNotifier {
       setUserData(user);
       setEmail(user.name);
       setUid(user.uid);
+      setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
@@ -216,7 +229,9 @@ class UserProvider extends ChangeNotifier {
   Future<void> updateUserInDb(UserModel user, String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'name': user.name,
+      'email': user.email,
       'uid': user.uid,
+      'role': user.role,
       'imageUrl': user.imageUrl,
       'score': user.score,
       'rank': user.rank,
@@ -277,6 +292,16 @@ class UserProvider extends ChangeNotifier {
         .doc(uid)
         .get()
         .then((value) => value.data()!['rank']);
+  }
+
+  Future<String> getRole(String uid) async {
+    String v;
+    v = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((value) => value.data()!['role']);
+    return v;
   }
 
   updateRank(String uid, int rank) async {

@@ -1,11 +1,11 @@
-import 'package:bfootlearn/Home/views/home_view.dart';
+import 'package:bfootlearn/login/pages/admin_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../riverpod/river_pod.dart';
 import 'login_or_register.dart';
 import 'verify_email.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bfootlearn/User/user_model.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -18,23 +18,35 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final UserProvide = ref.read(userProvider);
-              // final leaderBoardRepo = ref.read(leaderboardProvider);
-              // return const SentenceHomePage();
-              print("building auth page");
-              UserProvide.getUserFromDb(snapshot.data!.uid);
-              print("score is ${UserProvide.score}");
-              print("user is $UserProvide");
+      body: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final userProvide = ref.read(userProvider);
+            return FutureBuilder(
+              future: userProvide.getRole(snapshot.data!.uid),
+              builder: (context, roleSnapshot) {
+                if (roleSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (roleSnapshot.hasError) {
+                  return Center(child: Text('Error: ${roleSnapshot.error}'));
+                } else {
+                  String role = roleSnapshot.data ?? '';
+                  debugPrint("role: $role");
 
-              return const EmailVerifyPage();
-            } else {
-              return const LoginOrRegister();
-            }
-          }),
+                  if (role == 'admin') {
+                    return const AdminPage();
+                  } else {
+                    return const EmailVerifyPage();
+                  }
+                }
+              },
+            );
+          } else {
+            return const LoginOrRegister();
+          }
+        },
+      ),
     );
   }
 }

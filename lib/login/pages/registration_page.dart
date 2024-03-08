@@ -1,13 +1,14 @@
+import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/riverpod/river_pod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
+import '../../helper/helper_functions.dart';
 import '../widget/fadein_animation.dart';
 import '../widget/login_theme_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bfootlearn/riverpod/river_pod.dart';
-import '../../helper/helper_functions.dart';
-import 'package:bfootlearn/User/user_model.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
@@ -55,7 +56,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               UserModel(
                 name:
                     userCredential.user!.displayName ?? userNameController.text,
+                email: emailController.text,
                 uid: userCredential.user!.uid,
+                role: 'user',
                 imageUrl: userCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,
