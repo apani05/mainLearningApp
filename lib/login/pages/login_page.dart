@@ -1,14 +1,15 @@
 import 'package:bfootlearn/helper/helper_functions.dart';
+import 'package:bfootlearn/riverpod/river_pod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../User/user_model.dart';
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
-import 'forgot_pwd_page.dart';
 import '../widget/fadein_animation.dart';
 import '../widget/login_theme_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bfootlearn/riverpod/river_pod.dart';
-import '../../User/user_model.dart';
+import 'forgot_pwd_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
@@ -50,7 +51,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           await userProvide.createUserInDb(
               UserModel(
                 name: UserCredential.user!.displayName ?? emailController.text,
+                email: emailController.text,
                 uid: UserCredential.user!.uid,
+                role: 'user',
                 imageUrl: UserCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,

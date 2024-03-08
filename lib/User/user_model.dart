@@ -1,6 +1,8 @@
 class UserModel {
   final String name;
+  final String email;
   final String uid;
+  final String role;
   final String imageUrl;
   final int score;
   final int rank;
@@ -9,7 +11,9 @@ class UserModel {
 
   UserModel({
     required this.name,
+    required this.email,
     required this.uid,
+    required this.role,
     required this.imageUrl,
     required this.score,
     required this.rank,
@@ -18,7 +22,9 @@ class UserModel {
   });
 
   String get getName => name;
+  String get getEmail => email;
   String get getUid => uid;
+  String get getRole => role;
   String get getImageUrl => imageUrl;
   int get getScore => score;
   int get getRank => rank;
@@ -26,7 +32,9 @@ class UserModel {
 
   Map<String, dynamic> toJson() => {
         'name': name,
+        'email': email,
         'uid': uid,
+        'role': role,
         'imageUrl': imageUrl,
         'score': score,
         'rank': rank,
@@ -38,7 +46,9 @@ class UserModel {
     return UserModel(
       badge: CardBadge.fromJson(json["badge"]),
       name: json['name'],
+      email: json['email'],
       uid: json['uid'],
+      role: json['role'],
       imageUrl: json['imageUrl'],
       score: json['score'],
       rank: json['rank'],
