@@ -2,6 +2,8 @@
 <!-- Required permissions for scheduling notifications -->
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 <!-- Specify either SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM based on your requirements -->
 
 <!-- Required permission for using full-screen intent notifications -->

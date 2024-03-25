@@ -33,28 +33,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   void login() async {
     final userProvide = ref.read(userProvider);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
+
     try {
-      final UserCredential = await FirebaseAuth.instance
+      final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: emailController.text, password: passwordController.text);
-      if (UserCredential.user != null && UserCredential.user!.uid.isNotEmpty) {
-        var isExsist =
-            await userProvide.checkIfUserExistsInDb(UserCredential.user!.uid);
-        print("user is exsist $isExsist");
-        if (!isExsist) {
+      if (userCredential.user != null && userCredential.user!.uid.isNotEmpty) {
+        var isExists =
+            await userProvide.checkIfUserExistsInDb(userCredential.user!.uid);
+        print("user is exist $isExists");
+
+        if (!isExists) {
           await userProvide.createUserInDb(
               UserModel(
-                name: UserCredential.user!.displayName ?? emailController.text,
+                name: userCredential.user!.displayName ?? emailController.text,
                 email: emailController.text,
-                uid: UserCredential.user!.uid,
+                uid: userCredential.user!.uid,
                 role: 'user',
-                imageUrl: UserCredential.user!.photoURL ?? '',
+                imageUrl: userCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,
                 savedWords: [],
@@ -64,15 +60,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     classroom: false,
                     time: false),
               ),
-              UserCredential.user!.uid);
-          print("user is created with uid ${UserCredential.user!.uid}");
+              userCredential.user!.uid);
+          print("user is created with uid ${userCredential.user!.uid}");
         }
       }
-      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       String errorMessage = e.code.replaceAll('-', ' ');
       errorMessage = errorMessage[0].toUpperCase() + errorMessage.substring(1);
-      Navigator.pop(context);
+
       displaySnackBarMessageToUser(errorMessage, context);
     }
   }
@@ -89,7 +84,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           children: [
             LoginPageTop(),
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   FadeIn(
@@ -130,7 +125,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) {
-                                return ForgotPasswordPage();
+                                return const ForgotPasswordPage();
                               }),
                             );
                           },

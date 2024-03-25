@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../User/user_provider.dart';
+
 import '../riverpod/river_pod.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
@@ -29,7 +29,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
             future: UserProvide.getUserFromDb(UserProvide.uid),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else {
@@ -131,7 +131,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     Positioned(
                         top: MediaQuery.of(context).size.height * 0.62,
                         left: MediaQuery.of(context).size.width * 0.02,
-                        child: SizedBox(
+                        child: const SizedBox(
                           height: 2,
                           width: 400,
                           child: Divider(
@@ -144,7 +144,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     Positioned(
                         top: MediaQuery.of(context).size.height * 0.62,
                         left: MediaQuery.of(context).size.width * 0.5,
-                        child: SizedBox(
+                        child: const SizedBox(
                           height: 200,
                           width: 2,
                           child: VerticalDivider(
@@ -168,7 +168,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                             children: [
                               Text(
                                 snapshot.data!.score.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff6562df),
@@ -202,7 +202,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                             children: [
                               Text(
                                 UserProvide.rank.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff6562df),
