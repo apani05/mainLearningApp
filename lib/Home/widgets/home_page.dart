@@ -1,5 +1,5 @@
-import 'package:bfootlearn/Phrases/sentence_homepage.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:bfootlearn/Phrases/sentence_homepage.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,12 +18,12 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   List<Color> colorizeColors = [
-    Color(0xFFE6E6FA),
-    Color(0xFFFFF0F5),
-    Color(0xFF967BB6),
-    Color(0xFFA76BCF)
+    const Color(0xFFE6E6FA),
+    const Color(0xFFFFF0F5),
+    const Color(0xFF967BB6),
+    const Color(0xFFA76BCF)
   ];
-  TextStyle colorizeTextStyle = TextStyle(
+  TextStyle colorizeTextStyle = const TextStyle(
     fontSize: 28.0,
     fontFamily: 'Horizon',
   );
