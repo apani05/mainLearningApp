@@ -96,11 +96,14 @@ class LocalNotifications {
       _scheduleDaily(scheduledTimeHour, scheduledTimeMinute),
       payload: payload,
       const NotificationDetails(
-          android: AndroidNotificationDetails('channel 3', 'your channel name',
-              channelDescription: 'your channel description',
-              importance: Importance.max,
-              priority: Priority.high,
-              ticker: 'ticker')),
+          android: AndroidNotificationDetails(
+        'channel 3',
+        'your channel name',
+        channelDescription: 'your channel description',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker',
+      )),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,

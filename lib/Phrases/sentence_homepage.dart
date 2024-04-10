@@ -1,48 +1,47 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bfootlearn/Phrases/saved_page.dart';
+import 'package:bfootlearn/pages/quiz_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../riverpod/river_pod.dart';
 import 'category_learning_page.dart';
-import '../pages/quiz_page.dart';
 
 class FeatureItem extends StatelessWidget {
   final String title;
+  final VoidCallback onTap;
 
-  const FeatureItem(this.title);
+  const FeatureItem({
+    super.key,
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (title == 'Quiz') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => QuizPage()),
-          );
-        }
-      },
+      onTap: onTap,
       child: Container(
         width: 120,
         height: 120,
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: Color(0xFFcccbff),
+          color: const Color(0xFFcccbff),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.image,
               color: Colors.white,
               size: 40,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
@@ -55,7 +54,7 @@ class CategoryItem extends StatelessWidget {
   final String title;
   final IconData icon;
 
-  const CategoryItem(this.title, this.icon);
+  const CategoryItem(this.title, this.icon, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +68,14 @@ class CategoryItem extends StatelessWidget {
       },
       child: Container(
         height: 60,
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(10),
         ),
         child: ListTile(
           leading: Icon(icon),
-          title: displaySeriesName(seriesId: title, returnText: true),
+          title: DisplaySeriesName(seriesId: title, returnText: true),
         ),
       ),
     );
@@ -101,12 +100,12 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          title: Text("Phrases Learning"),
+          title: const Text("Phrases Learning"),
           backgroundColor: theme.lightPurple,
         ),
         body: Container(
@@ -124,12 +123,30 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
               ),
               Container(
                 height: 120,
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  children: const [
-                    FeatureItem('Saved'),
-                    FeatureItem('Quiz'),
+                  children: [
+                    FeatureItem(
+                      title: 'Saved',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SavedPage()),
+                        );
+                      },
+                    ),
+                    FeatureItem(
+                      title: 'Quiz',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QuizPage()),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -173,11 +190,11 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   }
 }
 
-class displaySeriesName extends StatelessWidget {
+class DisplaySeriesName extends StatelessWidget {
   final String seriesId;
   final bool returnText;
 
-  displaySeriesName(
+  const DisplaySeriesName(
       {super.key, required this.seriesId, required this.returnText});
 
   @override
@@ -195,7 +212,7 @@ class displaySeriesName extends StatelessWidget {
               ? Text('${data['seriesName']}')
               : data['seriesName'];
         }
-        return Text('loading');
+        return const Text('loading');
       }),
     );
   }

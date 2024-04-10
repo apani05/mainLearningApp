@@ -39,7 +39,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
 
@@ -94,7 +94,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           children: [
             LoginPageTop(),
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   FadeIn(
