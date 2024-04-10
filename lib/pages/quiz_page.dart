@@ -1,9 +1,13 @@
 import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:audioplayers/audioplayers.dart';
+
+final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
 class QuizPage extends ConsumerStatefulWidget {
   const QuizPage({super.key});
@@ -110,6 +114,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
           return Question(
             docData['englishText'],
             docData['blackfootText'],
+            docData['blackfootAudio'],
             options,
           );
         }).toList();
@@ -249,13 +254,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                if (mounted) {
-                  _onBackPressed().then((shouldPop) {
-                    if (shouldPop) {
-                      Navigator.pop(context);
-                    }
-                  });
-                }
+                _onBackPressed().then((shouldPop) {
+                  if (shouldPop) {
+                    Navigator.pop(context);
+                  }
+                });
               },
             ),
             title: Text('Quiz'),
@@ -293,7 +296,19 @@ class _QuizPageState extends ConsumerState<QuizPage>
     );
   }
 
+  Future<void> playAudio(String audioUrl, AudioPlayer player) async {
+    try {
+      Uri downloadUrl = Uri.parse(
+          await FirebaseStorage.instance.refFromURL(audioUrl).getDownloadURL());
+      await player.play(UrlSource(downloadUrl.toString()));
+    } catch (e) {
+      print('Error in audio player: $e');
+    }
+  }
+
+  // Modify the buildQuestionCard method
   Widget buildQuestionCard(Question question) {
+    final player = ref.watch(audioPlayerProvider);
     final theme = ref.watch(themeProvider);
     return Card(
       margin: EdgeInsets.all(8.0),
@@ -309,6 +324,15 @@ class _QuizPageState extends ConsumerState<QuizPage>
                 fontWeight: FontWeight.bold,
                 color: theme.lightPurple,
               ),
+            ),
+            SizedBox(height: 10.0),
+            // Add audio player for Blackfoot audio
+            ElevatedButton.icon(
+              onPressed: () {
+                playAudio(question.blackfootAudio, player);
+              },
+              icon: Icon(Icons.volume_up),
+              label: Text('Play Blackfoot Audio'),
             ),
             SizedBox(height: 10.0),
             Column(
@@ -367,11 +391,13 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
 class Question {
   String questionText;
+  String blackfootAudio;
   String correctAnswer;
   List<String> options;
   String? selectedAnswer;
   bool showCorrectAnswer;
 
-  Question(this.questionText, this.correctAnswer, this.options)
+  Question(
+      this.questionText, this.blackfootAudio, this.correctAnswer, this.options)
       : showCorrectAnswer = false;
 }
