@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,8 +35,8 @@ class _QuizPageState extends ConsumerState<QuizPage>
   }
 
   Future<void> _showSeriesSelectionDialog() async {
-    List<String> seriesOptions = await _getSeriesNamesFromFirestore();
-
+    List<String> seriesOptions =
+        await ref.read(blogProvider).getSeriesNamesFromFirestore();
     List<bool> isSelected =
         List.generate(seriesOptions.length, (index) => false);
 
@@ -82,39 +83,31 @@ class _QuizPageState extends ConsumerState<QuizPage>
         ],
       ),
     );
-  }
+  } //
 
   Future<void> fetchQuestionsForSelectedSeries() async {
     try {
       List<Question> fetchedQuestions = [];
 
       for (String series in selectedSeries) {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('Conversations')
-            .where('seriesName', isEqualTo: series)
-            .get();
+        List<CardData> cardsForSeries =
+            ref.read(blogProvider).filterDataBySeriesName(series);
 
-        List<Question> seriesQuestions = querySnapshot.docs.map((doc) {
-          Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
-
-          List<String> allBlackfootTexts = querySnapshot.docs
-              .map((otherDoc) => otherDoc['blackfootText'] as String)
+        List<Question> seriesQuestions = cardsForSeries.map((card) {
+          List<String> allBlackfootTexts = cardsForSeries
+              .where((c) => c.blackfootText != card.blackfootText)
+              .map((c) => c.blackfootText)
               .toList();
 
-          allBlackfootTexts.remove(docData['blackfootText']);
+          allBlackfootTexts.shuffle();
 
-          List<String> options = allBlackfootTexts..shuffle();
-
-          options = options.take(3).toList();
-
-          options.add(docData['blackfootText']);
-
+          List<String> options = allBlackfootTexts.take(3).toList();
+          options.add(card.blackfootText);
           options.shuffle();
 
           return Question(
-            docData['englishText'],
-            docData['blackfootText'],
-            docData['blackfootAudio'],
+            card.englishText,
+            card.blackfootText,
             options,
           );
         }).toList();
@@ -141,24 +134,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
     } catch (error) {
       print("Error fetching questions: $error");
     }
-  }
-
-  Future<List<String>> _getSeriesNamesFromFirestore() async {
-    List<String> seriesNames = [];
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('ConversationTypes')
-          .get();
-
-      seriesNames = querySnapshot.docs.map((doc) {
-        String seriesName = doc['seriesName'];
-        return seriesName;
-      }).toList();
-    } catch (error) {
-      print("Error fetching series names: $error");
-    }
-
-    return seriesNames;
   }
 
   void nextQuestion() {
@@ -254,11 +229,13 @@ class _QuizPageState extends ConsumerState<QuizPage>
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                _onBackPressed().then((shouldPop) {
-                  if (shouldPop) {
-                    Navigator.pop(context);
-                  }
-                });
+                if (mounted) {
+                  _onBackPressed().then((shouldPop) {
+                    if (shouldPop) {
+                      Navigator.pop(context);
+                    }
+                  });
+                }
               },
             ),
             title: Text('Quiz'),
@@ -306,7 +283,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
     }
   }
 
-  // Modify the buildQuestionCard method
   Widget buildQuestionCard(Question question) {
     final player = ref.watch(audioPlayerProvider);
     final theme = ref.watch(themeProvider);
@@ -324,15 +300,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
                 fontWeight: FontWeight.bold,
                 color: theme.lightPurple,
               ),
-            ),
-            SizedBox(height: 10.0),
-            // Add audio player for Blackfoot audio
-            ElevatedButton.icon(
-              onPressed: () {
-                playAudio(question.blackfootAudio, player);
-              },
-              icon: Icon(Icons.volume_up),
-              label: Text('Play Blackfoot Audio'),
             ),
             SizedBox(height: 10.0),
             Column(
@@ -391,13 +358,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
 class Question {
   String questionText;
-  String blackfootAudio;
   String correctAnswer;
   List<String> options;
   String? selectedAnswer;
   bool showCorrectAnswer;
 
-  Question(
-      this.questionText, this.blackfootAudio, this.correctAnswer, this.options)
+  Question(this.questionText, this.correctAnswer, this.options)
       : showCorrectAnswer = false;
 }

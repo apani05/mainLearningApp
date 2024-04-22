@@ -4,6 +4,7 @@ import 'package:bfootlearn/theme.dart/theme.dart';
 import 'package:bfootlearn/vocabulary/provider/voca_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../Phrases/provider/blogProvider.dart';
 import '../User/user_provider.dart';
 
 final themeProvider = ChangeNotifierProvider((ref) {
@@ -18,7 +19,9 @@ final leaderboardProvider = ChangeNotifierProvider((ref) {
 final userProvider = ChangeNotifierProvider((ref) {
   return UserProvider();
 });
-
+final blogProvider = ChangeNotifierProvider<BlogProvider>((ref) {
+  return BlogProvider();
+});
 final notificationProvider = ChangeNotifierProvider((ref) {
   return NotificationProvider()..loadSettings();
 });

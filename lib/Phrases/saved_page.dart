@@ -13,21 +13,6 @@ class SavedPage extends ConsumerStatefulWidget {
 class _SavedPageState extends ConsumerState<SavedPage> {
   int? currentPlayingIndex;
 
-  Future<void> _fetchDataAndUpdateState() async {
-    try {
-      List<CardData> data = await fetchAllData();
-      ref.read(blogProvider).updateCardDataList(data);
-    } catch (error) {
-      print("Error fetching data: $error");
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchDataAndUpdateState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
@@ -54,7 +39,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
               cardDataList: savedBlogs,
               currentPlayingIndex: currentPlayingIndex,
               onSavedButtonPressed: (index) {
-                blogProviderObj.toggleSavedStatus(index);
+                blogProviderObj.toggleSavedStatus(savedBlogs, index);
               },
               onPlayButtonPressed: (index) {
                 setState(() {

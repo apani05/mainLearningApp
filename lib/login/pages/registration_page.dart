@@ -63,6 +63,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 score: 0,
                 rank: 0,
                 savedWords: [],
+                savedPhrases: [],
                 badge: CardBadge(
                     kinship: false,
                     dirrection: false,

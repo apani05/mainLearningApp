@@ -1,3 +1,5 @@
+import '../Phrases/provider/blogProvider.dart';
+
 class UserModel {
   final String name;
   final String email;
@@ -8,6 +10,7 @@ class UserModel {
   final int rank;
   final CardBadge badge;
   final List<SavedWords> savedWords;
+  final List<CardData> savedPhrases;
 
   UserModel({
     required this.name,
@@ -18,6 +21,7 @@ class UserModel {
     required this.score,
     required this.rank,
     required this.savedWords,
+    required this.savedPhrases,
     required this.badge,
   });
 
@@ -29,6 +33,7 @@ class UserModel {
   int get getScore => score;
   int get getRank => rank;
   List<SavedWords> get getSavedWords => savedWords;
+  List<CardData> get getSavedPhrases => savedPhrases;
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -40,6 +45,7 @@ class UserModel {
         'rank': rank,
         "badge": badge.toJson(),
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
+        'savedPhrases': savedPhrases.map((phrase) => phrase.toJson()).toList(),
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -55,6 +61,10 @@ class UserModel {
       savedWords: (json['savedWords'] as List).map((item) {
         print("item to be added $item");
         return SavedWords.fromJson(item);
+      }).toList(),
+      savedPhrases: (json['savedPhrases'] as List).map((item) {
+        print("item to be added $item");
+        return CardData.fromJson(item);
       }).toList(),
     );
   }

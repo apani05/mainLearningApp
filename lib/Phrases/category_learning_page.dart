@@ -10,32 +10,20 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
 class LearningPage extends ConsumerStatefulWidget {
   final String seriesName;
+  final List<CardData> data;
 
-  const LearningPage({super.key, required this.seriesName});
+  const LearningPage({
+    super.key,
+    required this.seriesName,
+    required this.data,
+  });
 
   @override
   _LearningPageState createState() => _LearningPageState();
 }
 
 class _LearningPageState extends ConsumerState<LearningPage> {
-  late Future<String> seriesNameFuture;
   int? currentPlayingIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    seriesNameFuture = fetchSeriesName(widget.seriesName);
-    _fetchDataAndUpdateState();
-  }
-
-  Future<void> _fetchDataAndUpdateState() async {
-    try {
-      List<CardData> data = await fetchDataGroupBySeriesName(seriesNameFuture);
-      ref.read(blogProvider).updateCardDataList(data);
-    } catch (error) {
-      print("Error fetching data: $error");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,23 +40,15 @@ class _LearningPageState extends ConsumerState<LearningPage> {
               Navigator.pop(context);
             },
           ),
-          title: FutureBuilder<String>(
-            future: seriesNameFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Text(snapshot.data ?? 'Series Name');
-              }
-              return const Text('Loading');
-            },
-          ),
+          title: Text(widget.seriesName),
           backgroundColor: theme.lightPurple,
         ),
-        body: blogProviderObj.cardDataList.isNotEmpty
+        body: widget.data.isNotEmpty
             ? CardSlider(
-                cardDataList: blogProviderObj.cardDataList,
+                cardDataList: widget.data,
                 currentPlayingIndex: currentPlayingIndex,
                 onSavedButtonPressed: (index) {
-                  blogProviderObj.toggleSavedStatus(index);
+                  blogProviderObj.toggleSavedStatus(widget.data, index);
                 },
                 onPlayButtonPressed: (index) {
                   setState(() {

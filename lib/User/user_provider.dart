@@ -1,6 +1,7 @@
 import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import '../Phrases/provider/blogProvider.dart';
 
 class UserProvider extends ChangeNotifier {
   String _name = '';
@@ -27,6 +28,7 @@ class UserProvider extends ChangeNotifier {
           score: 0,
           rank: 0,
           savedWords: [],
+          savedPhrases: [],
         ); // Initialize _user in the constructor
 
   UserModel get user => _user;
@@ -39,6 +41,7 @@ class UserProvider extends ChangeNotifier {
       kinship: false, dirrection: false, classroom: false, time: false);
 
   List<SavedWords> _savedWords = [];
+  List<CardData> _savedPhrases = [];
   String get name => _name;
 
   String get email => _email;
@@ -60,6 +63,8 @@ class UserProvider extends ChangeNotifier {
   int get rank => _rank;
 
   List<SavedWords> get savedWords => _savedWords;
+
+  List<CardData> get savedPhrases => _savedPhrases;
 
   CardBadge get badge => _badge;
 
@@ -83,7 +88,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setRole(String uid) {
+  void setRole(String role) {
     _role = role;
     notifyListeners();
   }
@@ -147,6 +152,8 @@ class UserProvider extends ChangeNotifier {
       'score': user.score,
       'rank': user.rank,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
+      'savedPhrases':
+          user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
     });
   }
 
@@ -236,6 +243,8 @@ class UserProvider extends ChangeNotifier {
       'score': user.score,
       'rank': user.rank,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
+      'savedPhrases':
+          user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
     });
   }
 

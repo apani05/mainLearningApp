@@ -1,6 +1,6 @@
 import 'package:bfootlearn/Phrases/saved_page.dart';
 import 'package:bfootlearn/pages/quiz_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,20 +50,28 @@ class FeatureItem extends StatelessWidget {
   }
 }
 
-class CategoryItem extends StatelessWidget {
-  final String title;
+//
+class CategoryItem extends ConsumerWidget {
+  final String seriesName;
   final IconData icon;
 
-  const CategoryItem(this.title, this.icon, {super.key});
+  const CategoryItem(this.seriesName, this.icon, {super.key});
 
+  ///
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final blogProviderObj = ref.read(blogProvider);
+
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        List<CardData> filteredData =
+            blogProviderObj.filterDataBySeriesName(seriesName);
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => LearningPage(seriesName: title)),
+            builder: (context) =>
+                LearningPage(seriesName: seriesName, data: filteredData),
+          ),
         );
       },
       child: Container(
@@ -75,7 +83,7 @@ class CategoryItem extends StatelessWidget {
         ),
         child: ListTile(
           leading: Icon(icon),
-          title: DisplaySeriesName(seriesId: title, returnText: true),
+          title: Text(seriesName),
         ),
       ),
     );
@@ -90,10 +98,25 @@ class SentenceHomePage extends ConsumerStatefulWidget {
 }
 
 class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
+  List<String> seriesOptions = [];
+  late List<CardData> allData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPhrasesData();
+  }
+
+  Future<void> _fetchPhrasesData() async {
+    final blogProviderObj = ref.read(blogProvider);
+    seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
+    allData = await blogProviderObj.fetchAllData();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
-    List<String> displayedSeriesNames = [];
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -159,61 +182,20 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                 ),
               ),
               Expanded(
-                child: FutureBuilder(
-                  future: _getSeriesNames(),
-                  builder: (context, snapshot) {
-                    return ListView.builder(
-                      itemCount: seriesNames.length,
-                      itemBuilder: (context, index) {
-                        return CategoryItem(seriesNames[index], Icons.category);
-                      },
-                    );
-                  },
-                ),
+                child: seriesOptions.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: seriesOptions.length,
+                        itemBuilder: (context, index) {
+                          return CategoryItem(
+                              seriesOptions[index], Icons.category);
+                        },
+                      )
+                    : const Center(child: CircularProgressIndicator()),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  List<String> seriesNames = [];
-  Future<List<String>> _getSeriesNames() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('ConversationTypes')
-        .orderBy('seriesName')
-        .get();
-
-    seriesNames = querySnapshot.docs.map((doc) => doc.id).toList();
-    return seriesNames;
-  }
-}
-
-class DisplaySeriesName extends StatelessWidget {
-  final String seriesId;
-  final bool returnText;
-
-  const DisplaySeriesName(
-      {super.key, required this.seriesId, required this.returnText});
-
-  @override
-  Widget build(BuildContext context) {
-    CollectionReference conversations =
-        FirebaseFirestore.instance.collection('ConversationTypes');
-
-    return FutureBuilder<DocumentSnapshot>(
-      future: conversations.doc(seriesId).get(),
-      builder: ((context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
-          return returnText
-              ? Text('${data['seriesName']}')
-              : data['seriesName'];
-        }
-        return const Text('loading');
-      }),
     );
   }
 }

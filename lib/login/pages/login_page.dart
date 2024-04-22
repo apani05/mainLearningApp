@@ -54,6 +54,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 score: 0,
                 rank: 0,
                 savedWords: [],
+                savedPhrases: [],
                 badge: CardBadge(
                     kinship: false,
                     dirrection: false,
