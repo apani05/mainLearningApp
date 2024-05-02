@@ -1,5 +1,5 @@
-import 'package:bfootlearn/Phrases/saved_page.dart';
-import 'package:bfootlearn/pages/quiz_page.dart';
+import 'package:bfootlearn/Phrases/saved_phrases.dart';
+import 'package:bfootlearn/Quizpages/quiz_page.dart';
 import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,15 +52,18 @@ class FeatureItem extends StatelessWidget {
 
 //
 class CategoryItem extends ConsumerWidget {
+  final List<String> vocabCategory;
   final String seriesName;
   final IconData icon;
 
-  const CategoryItem(this.seriesName, this.icon, {super.key});
+  const CategoryItem(this.vocabCategory, this.seriesName, this.icon,
+      {super.key});
 
   ///
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blogProviderObj = ref.read(blogProvider);
+    bool isVocabPresent = vocabCategory.any((element) => element == seriesName);
 
     return GestureDetector(
       onTap: () async {
@@ -69,8 +72,10 @@ class CategoryItem extends ConsumerWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                LearningPage(seriesName: seriesName, data: filteredData),
+            builder: (context) => LearningPage(
+                seriesName: seriesName,
+                data: filteredData,
+                isVocabPresent: isVocabPresent),
           ),
         );
       },
@@ -99,7 +104,8 @@ class SentenceHomePage extends ConsumerStatefulWidget {
 
 class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   List<String> seriesOptions = [];
-  late List<CardData> allData;
+  List<CardData> allData = [];
+  List<String> vocabCategory = [];
 
   @override
   void initState() {
@@ -111,6 +117,9 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
     final blogProviderObj = ref.read(blogProvider);
     seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
     allData = await blogProviderObj.fetchAllData();
+    blogProviderObj.updatePhraseData();
+    final vProvider = ref.read(vocaProvider);
+    vocabCategory = await vProvider.getAllCategories();
     setState(() {});
   }
 
@@ -186,7 +195,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     ? ListView.builder(
                         itemCount: seriesOptions.length,
                         itemBuilder: (context, index) {
-                          return CategoryItem(
+                          return CategoryItem(vocabCategory,
                               seriesOptions[index], Icons.category);
                         },
                       )

@@ -4,7 +4,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../pages/quiz_page.dart';
+import '../../Quizpages/quiz_page.dart';
 
 class PracticePage extends ConsumerStatefulWidget {
   const PracticePage({

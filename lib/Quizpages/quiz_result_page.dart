@@ -5,13 +5,11 @@ import 'quiz_page.dart';
 
 class QuizResultScreen extends ConsumerStatefulWidget {
   final int correctAnswers;
-  final int totalQuestions;
   final List<Question> questions;
 
   const QuizResultScreen({
     Key? key,
     required this.correctAnswers,
-    required this.totalQuestions,
     required this.questions,
   }) : super(key: key);
 
@@ -61,7 +59,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                 ),
                 SizedBox(height: screenWidth * 0.04),
                 Text(
-                  'You answered ${widget.correctAnswers} out of ${widget.totalQuestions} questions correctly.',
+                  'You answered ${widget.correctAnswers} out of ${widget.questions.length} questions correctly.',
                   style: TextStyle(
                     fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,

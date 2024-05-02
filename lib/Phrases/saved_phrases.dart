@@ -1,5 +1,4 @@
-import 'package:bfootlearn/Phrases/card_slider.dart';
-import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
+import 'package:bfootlearn/Phrases/widgets/card_slider.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +16,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     final blogProviderObj = ref.watch(blogProvider);
-    final savedBlogs =
-        blogProviderObj.cardDataList.where((blog) => blog.isSaved).toList();
+    final savedBlogs = blogProviderObj.getUserPhraseProgress().savedPhrases;
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +37,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
               cardDataList: savedBlogs,
               currentPlayingIndex: currentPlayingIndex,
               onSavedButtonPressed: (index) {
-                blogProviderObj.toggleSavedStatus(savedBlogs, index);
+                blogProviderObj.toggleSavedPhrase(savedBlogs[index]);
               },
               onPlayButtonPressed: (index) {
                 setState(() {

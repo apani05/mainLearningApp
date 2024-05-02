@@ -1,6 +1,5 @@
 import 'package:bfootlearn/Disscussion/viwes/disscusion_page.dart';
 import 'package:bfootlearn/leaderboard/views/leader_board_page.dart';
-import 'package:bfootlearn/pages/blog_page.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +24,7 @@ class BottomNavItem {
             color: vProvider.currentPage == 1 ? Colors.white : Colors.grey),
         Icon(Icons.group,
             size: 30,
-            color: vProvider.currentPage == 2 ? Colors.white : Colors.grey),
-        Icon(Icons.ac_unit,
-            size: 30,
-            color: vProvider.currentPage == 3 ? Colors.white : Colors.grey)
+            color: vProvider.currentPage == 2 ? Colors.white : Colors.grey)
       ],
       onTap: (index) {
         vProvider.currentPage = index;
@@ -45,8 +41,6 @@ class BottomNavItem {
       return LeaderBoardPage();
     } else if (index == 2) {
       return DisscussionPage();
-    } else if (index == 3) {
-      return BlogPage();
     }
   }
 }

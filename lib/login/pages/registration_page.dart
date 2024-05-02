@@ -48,6 +48,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       displaySnackBarMessageToUser("Passwords don't match", context);
     } else {
       try {
+        Navigator.pop(context);
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
@@ -72,7 +73,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
               userCredential.user!.uid);
         }
-        Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         String errorMessage = e.code.replaceAll('-', ' ');

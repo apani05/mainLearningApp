@@ -2,13 +2,11 @@ import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Phrases/provider/audioPlayerProvider.dart';
 import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:audioplayers/audioplayers.dart';
-
-final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
 class QuizPage extends ConsumerStatefulWidget {
   const QuizPage({super.key});
@@ -36,7 +34,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
   Future<void> _showSeriesSelectionDialog() async {
     List<String> seriesOptions =
-        await ref.read(blogProvider).getSeriesNamesFromFirestore();
+        await ref.read(blogProvider).getSeriesOptions();
     List<bool> isSelected =
         List.generate(seriesOptions.length, (index) => false);
 
@@ -170,7 +168,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
       MaterialPageRoute(
         builder: (context) => QuizResultScreen(
           correctAnswers: correctAnswers,
-          totalQuestions: questions.length,
           questions: questions,
         ),
       ),
@@ -271,16 +268,6 @@ class _QuizPageState extends ConsumerState<QuizPage>
         ),
       ),
     );
-  }
-
-  Future<void> playAudio(String audioUrl, AudioPlayer player) async {
-    try {
-      Uri downloadUrl = Uri.parse(
-          await FirebaseStorage.instance.refFromURL(audioUrl).getDownloadURL());
-      await player.play(UrlSource(downloadUrl.toString()));
-    } catch (e) {
-      print('Error in audio player: $e');
-    }
   }
 
   Widget buildQuestionCard(Question question) {
