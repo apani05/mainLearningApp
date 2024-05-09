@@ -24,14 +24,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   void _scheduleNotification() {
     final notificationProvide = ref.watch(notificationProvider);
-    double commitedTime = notificationProvide.commitedTime;
+    // double commitedTime = notificationProvide.commitedTime;
     int remindTimeHr = notificationProvide.remindTimeHr;
     int remindTimeMin = notificationProvide.remindTimeMin;
     debugPrint("$remindTimeHr : $remindTimeMin");
     LocalNotifications().showScheduleNotification(
       title: "Study time!",
-      body: "Start your daily session for ${commitedTime.toInt()} minutes.",
-      payload: 'lol',
+      body: "Start your daily session.",
+      payload: "You can do it!",
       scheduledTimeHour: remindTimeHr,
       scheduledTimeMinute: remindTimeMin,
     );
@@ -63,7 +63,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     _buildReminderRow0(isReminderOn),
                     _buildReminderRow1(isReminderOn),
                     const SizedBox(height: 8),
-                    _buildReminderRow2(isReminderOn),
+                    // _buildReminderRow2(isReminderOn),
                   ],
                 ),
               )

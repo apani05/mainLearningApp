@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
-import 'quiz_page.dart';
 
 class QuizResultScreen extends ConsumerStatefulWidget {
-  final int correctAnswers;
-  final List<Question> questions;
+  final int quizScore;
+  final List<Question> quizQuestions;
 
   const QuizResultScreen({
     Key? key,
-    required this.correctAnswers,
-    required this.questions,
+    required this.quizScore,
+    required this.quizQuestions,
   }) : super(key: key);
 
   @override
@@ -59,7 +59,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                 ),
                 SizedBox(height: screenWidth * 0.04),
                 Text(
-                  'You answered ${widget.correctAnswers} out of ${widget.questions.length} questions correctly.',
+                  'You answered ${widget.quizScore} out of ${widget.quizQuestions.length} questions correctly.',
                   style: TextStyle(
                     fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.02),
-                ...widget.questions
+                ...widget.quizQuestions
                     .asMap()
                     .entries
                     .map(

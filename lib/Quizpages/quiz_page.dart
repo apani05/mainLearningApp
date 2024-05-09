@@ -18,7 +18,7 @@ class QuizPage extends ConsumerStatefulWidget {
 class _QuizPageState extends ConsumerState<QuizPage>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
-  List<Question> questions = [];
+  List<Question> quizQuestions = [];
   late List<bool> _isQuestionAnswered;
   bool _isNextButtonEnabled = false;
   bool _isSubmitButtonEnabled = false;
@@ -81,7 +81,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
         ],
       ),
     );
-  } //
+  }
 
   Future<void> fetchQuestionsForSelectedSeries() async {
     try {
@@ -91,11 +91,18 @@ class _QuizPageState extends ConsumerState<QuizPage>
         List<CardData> cardsForSeries =
             ref.read(blogProvider).filterDataBySeriesName(series);
 
-        List<Question> seriesQuestions = cardsForSeries.map((card) {
+        for (CardData card in cardsForSeries) {
+          if (card.blackfootText.isEmpty) {
+            continue;
+          }
+
           List<String> allBlackfootTexts = cardsForSeries
               .where((c) => c.blackfootText != card.blackfootText)
               .map((c) => c.blackfootText)
               .toList();
+
+          allBlackfootTexts =
+              allBlackfootTexts.where((text) => text.isNotEmpty).toList();
 
           allBlackfootTexts.shuffle();
 
@@ -103,14 +110,12 @@ class _QuizPageState extends ConsumerState<QuizPage>
           options.add(card.blackfootText);
           options.shuffle();
 
-          return Question(
-            card.englishText,
-            card.blackfootText,
-            options,
-          );
-        }).toList();
-
-        fetchedQuestions.addAll(seriesQuestions);
+          fetchedQuestions.add(Question(
+            questionText: card.englishText,
+            correctAnswer: card.blackfootText,
+            options: options,
+          ));
+        }
       }
 
       fetchedQuestions.shuffle();
@@ -121,11 +126,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
               ? 10
               : 20;
 
-      questions = fetchedQuestions.take(numberOfQuestionsToKeep).toList();
+      quizQuestions = fetchedQuestions.take(numberOfQuestionsToKeep).toList();
 
       setState(() {
         _isQuestionAnswered = List.generate(
-          questions.length,
+          quizQuestions.length,
           (index) => false,
         );
       });
@@ -137,7 +142,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
   void nextQuestion() {
     setState(() {
       _currentIndex++;
-      if (_currentIndex < questions.length) {
+      if (_currentIndex < quizQuestions.length) {
         _isNextButtonEnabled = false;
       } else {
         calculateScore();
@@ -156,19 +161,20 @@ class _QuizPageState extends ConsumerState<QuizPage>
   }
 
   void calculateScore() {
-    int correctAnswers = 0;
-    for (int i = 0; i < questions.length; i++) {
-      if (questions[i].correctAnswer == questions[i].selectedAnswer) {
-        correctAnswers++;
+    int quizScore = 0;
+    for (int i = 0; i < quizQuestions.length; i++) {
+      if (quizQuestions[i].correctAnswer == quizQuestions[i].selectedAnswer) {
+        quizScore++;
       }
     }
+    ref.read(blogProvider).saveQuizResults(quizScore, quizQuestions);
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => QuizResultScreen(
-          correctAnswers: correctAnswers,
-          questions: questions,
+          quizScore: quizScore,
+          quizQuestions: quizQuestions,
         ),
       ),
     );
@@ -177,14 +183,14 @@ class _QuizPageState extends ConsumerState<QuizPage>
   void updateIsQuestionAnswered() {
     setState(() {
       _isQuestionAnswered = List.generate(
-        questions.length,
+        quizQuestions.length,
         (index) => false,
       );
     });
   }
 
   Future<bool> _onBackPressed() async {
-    if (_currentIndex < questions.length) {
+    if (_currentIndex < quizQuestions.length) {
       bool shouldExit = await showDialog(
         context: context,
         barrierDismissible: false,
@@ -238,9 +244,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
             title: Text('Quiz'),
             backgroundColor: theme.lightPurple,
           ),
-          body: _currentIndex < questions.length
-              ? buildQuestionCard(questions[_currentIndex])
-              : Container(),
+          body: SingleChildScrollView(
+            child: _currentIndex < quizQuestions.length
+                ? buildQuestionCard(quizQuestions[_currentIndex])
+                : Container(),
+          ),
           bottomNavigationBar: BottomAppBar(
             color: theme.lightPurple,
             child: Padding(
@@ -249,7 +257,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Question ${_currentIndex + 1} of ${questions.length}',
+                    'Question ${_currentIndex + 1} of ${quizQuestions.length}',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -328,11 +336,11 @@ class _QuizPageState extends ConsumerState<QuizPage>
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         ),
         value: option,
-        groupValue: questions[_currentIndex].selectedAnswer,
+        groupValue: quizQuestions[_currentIndex].selectedAnswer,
         onChanged: (value) {
           setState(() {
-            if (!questions[_currentIndex].showCorrectAnswer) {
-              questions[_currentIndex].selectedAnswer = value!;
+            if (!quizQuestions[_currentIndex].showCorrectAnswer) {
+              quizQuestions[_currentIndex].selectedAnswer = value!;
               _isSubmitButtonEnabled = true;
             }
           });
@@ -341,15 +349,4 @@ class _QuizPageState extends ConsumerState<QuizPage>
       );
     }).toList();
   }
-}
-
-class Question {
-  String questionText;
-  String correctAnswer;
-  List<String> options;
-  String? selectedAnswer;
-  bool showCorrectAnswer;
-
-  Question(this.questionText, this.correctAnswer, this.options)
-      : showCorrectAnswer = false;
 }

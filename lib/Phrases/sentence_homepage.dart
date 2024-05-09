@@ -1,9 +1,9 @@
 import 'package:bfootlearn/Phrases/saved_phrases.dart';
 import 'package:bfootlearn/Quizpages/quiz_page.dart';
+import 'package:bfootlearn/Quizpages/quiz_result_list.dart';
 import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../riverpod/river_pod.dart';
 import 'category_learning_page.dart';
 
@@ -50,7 +50,6 @@ class FeatureItem extends StatelessWidget {
   }
 }
 
-//
 class CategoryItem extends ConsumerWidget {
   final List<String> vocabCategory;
   final String seriesName;
@@ -59,7 +58,6 @@ class CategoryItem extends ConsumerWidget {
   const CategoryItem(this.vocabCategory, this.seriesName, this.icon,
       {super.key});
 
-  ///
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blogProviderObj = ref.read(blogProvider);
@@ -176,6 +174,16 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const QuizPage()),
+                        );
+                      },
+                    ),
+                    FeatureItem(
+                      title: 'Quiz Results',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QuizResultList()),
                         );
                       },
                     ),

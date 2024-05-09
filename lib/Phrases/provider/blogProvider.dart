@@ -5,6 +5,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../riverpod/river_pod.dart';
 
+class Question {
+  String questionText;
+  String correctAnswer;
+  List<String> options;
+  String? selectedAnswer;
+  bool showCorrectAnswer;
+
+  Question(
+      {required this.questionText,
+      required this.correctAnswer,
+      required this.options})
+      : showCorrectAnswer = false;
+}
+
+class Quiz {
+  final Timestamp dateSubmitted;
+  final int quizScore;
+  final int totalPoints;
+  final List<Question> questionSet;
+  Quiz({
+    required this.dateSubmitted,
+    required this.quizScore,
+    required this.totalPoints,
+    required this.questionSet,
+  });
+}
+
 class CardData {
   final String documentId;
   final String englishText;
@@ -95,19 +122,14 @@ class BlogProvider extends ChangeNotifier {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance
               .collection('users')
-              .where('email',
-                  isEqualTo: currentUserEmail) // Filter by user email
+              .where('email', isEqualTo: currentUserEmail)
               .get();
 
-      // Iterate through each document found
       querySnapshot.docs.forEach((doc) {
-        // Get the 'savedPhrases' field from the document
         List<dynamic> savedPhrasesData = doc.data()['savedPhrases'];
         uid = doc.data()['uid'];
 
-        // Iterate through each saved phrase and add it to the list
         savedPhrasesData.forEach((phraseData) {
-          // Construct a CardData object from the data
           CardData phrase = CardData(
             blackfootAudio: phraseData['blackfootAudio'],
             blackfootText: phraseData['blackfootText'],
@@ -119,7 +141,6 @@ class BlogProvider extends ChangeNotifier {
         });
       });
 
-      // Update the user phrase progress
       PhraseData data = PhraseData(
         uid: uid,
         savedPhrases: savedPhrases,
@@ -133,26 +154,6 @@ class BlogProvider extends ChangeNotifier {
     // Notify listeners about the updated data
     notifyListeners();
   }
-  // Future<void> toggleSavedStatus(List<CardData> dataList, int index) async {
-  //   try {
-  //     bool isSaved = dataList[index].isSaved;
-  //     DocumentReference docRef = FirebaseFirestore.instance
-  //         .collection('Conversations')
-  //         .doc(dataList[index].documentId);
-
-  //     // Check if the document exists before trying to update it
-  //     DocumentSnapshot snapshot = await docRef.get();
-  //     if (snapshot.exists) {
-  //       await docRef.update({'isSaved': !isSaved});
-  //       dataList[index].isSaved = !isSaved;
-  //       notifyListeners();
-  //     } else {
-  //       print("Document not found: ${dataList[index].documentId}");
-  //     }
-  //   } catch (error) {
-  //     print("Error updating saved status: $error");
-  //   }
-  // }
 
   Future<List<String>> getSeriesNamesFromFirestore() async {
     List<String> seriesNames = [];
@@ -175,49 +176,6 @@ class BlogProvider extends ChangeNotifier {
 
     return seriesNames;
   }
-
-  // Future<List<String>> fetchAllSeriesNames() async {
-  //   try {
-  //     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //         .collection('ConversationTypes')
-  //         .orderBy('seriesName')
-  //         .get();
-
-  //     // Check if the collection is not empty
-  //     if (querySnapshot.docs.isNotEmpty) {
-  //       List<String> seriesNames =
-  //           querySnapshot.docs.map((doc) => doc.id).toList();
-  //       return seriesNames;
-  //     } else {
-  //       print("ConversationTypes collection is empty.");
-  //       return [];
-  //     }
-  //   } catch (error) {
-  //     print("Error fetching series names: $error");
-  //     rethrow;
-  //   }
-  // }
-
-  // Future<String> fetchSeriesNameFromId(String? seriesName) async {
-  //   try {
-  //     DocumentSnapshot<Map<String, dynamic>> seriesNameSnapshot =
-  //         await FirebaseFirestore.instance
-  //             .collection('ConversationTypes')
-  //             .doc(seriesName)
-  //             .get();
-
-  //     if (seriesNameSnapshot.exists) {
-  //       String seriesName = seriesNameSnapshot.data()!['seriesName'];
-  //       return seriesName;
-  //     } else {
-  //       print('Series name not found: ${seriesName}');
-  //       return 'Series Not Found';
-  //     }
-  //   } catch (error) {
-  //     print("Error fetching series name: $error");
-  //     return 'Error Fetching Series Name';
-  //   }
-  // }
 
 //
   // Future<List<CardData>> fetchDataGroupBySeriesName(String seriesName) async {
@@ -271,11 +229,10 @@ class BlogProvider extends ChangeNotifier {
             englishText: docData['englishText'],
             blackfootText: docData['blackfootText'],
             blackfootAudio: docData['blackfootAudio'],
-            seriesName: docData[
-                'seriesName'], // Make sure you are setting the series name
+            seriesName: docData['seriesName'],
           );
         }).toList();
-        updateCardDataList(allData); // Update the provider list
+        updateCardDataList(allData);
         return allData;
       } else {
         print("Conversations collection is empty.");
@@ -297,13 +254,11 @@ class BlogProvider extends ChangeNotifier {
           .collection('users')
           .doc(_userPhraseProgress.uid);
 
-      // Get the document snapshot from Firestore
       DocumentSnapshot documentSnapshot = await userDocRef.get();
 
       if (documentSnapshot.exists) {
         // Update the user's saved phrases based on whether the phrase is already saved
         if (isPhraseSaved) {
-          // Remove the phrase from saved phrases
           _userPhraseProgress.savedPhrases
               .removeWhere((e) => e.documentId == phrase.documentId);
           await userDocRef.update({
@@ -311,7 +266,6 @@ class BlogProvider extends ChangeNotifier {
           });
           print('Phrase unsaved successfully.');
         } else {
-          // Add the phrase to saved phrases
           _userPhraseProgress.savedPhrases.add(phrase);
           await userDocRef.update({
             'savedPhrases': FieldValue.arrayUnion([phrase.toJson()]),
@@ -327,6 +281,87 @@ class BlogProvider extends ChangeNotifier {
     } catch (error) {
       // Handle errors that may occur during the process
       print('Error toggling saved phrase: $error');
+    }
+  }
+
+  Future<List<Quiz>> getUserQuizResults() async {
+    List<Quiz> quizResults = [];
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('uid', isEqualTo: _userPhraseProgress.uid)
+              .get();
+
+      querySnapshot.docs.forEach((doc) {
+        List<dynamic> quizResultsData = doc.data()['quizResults'] ?? [];
+        quizResultsData.forEach((quizData) {
+          List<Question> questionSet = [];
+          List<dynamic> questionsData = quizData['questionSet'] ?? [];
+          questionsData.forEach((questionData) {
+            Question question = Question(
+              questionText: questionData['questionText'],
+              correctAnswer: questionData['correctAnswer'],
+              options: [],
+            );
+            question.selectedAnswer = questionData['selectedAnswer'];
+            questionSet.add(question);
+          });
+
+          Quiz quiz = Quiz(
+            dateSubmitted: quizData['dateSubmitted'],
+            quizScore: quizData['quizScore'],
+            totalPoints: quizData['totalPoints'],
+            questionSet: questionSet,
+          );
+          quizResults.add(quiz);
+        });
+      });
+    } catch (error) {
+      print('Error fetching quiz results: $error');
+    }
+    return quizResults;
+  }
+
+// Save quiz results
+  Future<void> saveQuizResults(int quizScore, List<Question> questions) async {
+    try {
+      DocumentReference userDocRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userPhraseProgress.uid);
+
+      Timestamp now = Timestamp.now();
+
+      DocumentSnapshot documentSnapshot = await userDocRef.get();
+
+      if (documentSnapshot.exists) {
+        List<Map<String, dynamic>> questionSet = questions.map((question) {
+          return {
+            'questionText': question.questionText,
+            'correctAnswer': question.correctAnswer,
+            'selectedAnswer': question.selectedAnswer,
+          };
+        }).toList();
+
+        await userDocRef.update({
+          'quizResults': FieldValue.arrayUnion([
+            {
+              'dateSubmitted': now,
+              'quizScore': quizScore,
+              'totalPoints': questions.length,
+              'questionSet': questionSet,
+            }
+          ]),
+        });
+
+        print('Quiz Results saved successfully.');
+        notifyListeners();
+      } else {
+        print('User document not found for UID: ${_userPhraseProgress.uid}');
+      }
+    } catch (error) {
+      // Handle errors that may occur during the process
+      print('Error saving quiz results: $error');
     }
   }
 }
