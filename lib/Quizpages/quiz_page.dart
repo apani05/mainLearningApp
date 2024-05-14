@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Phrases/provider/audioPlayerProvider.dart';
@@ -15,8 +13,7 @@ class QuizPage extends ConsumerStatefulWidget {
   _QuizPageState createState() => _QuizPageState();
 }
 
-class _QuizPageState extends ConsumerState<QuizPage>
-    with TickerProviderStateMixin {
+class _QuizPageState extends ConsumerState<QuizPage> {
   int _currentIndex = 0;
   List<Question> quizQuestions = [];
   late List<bool> _isQuestionAnswered;
@@ -33,7 +30,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
   }
 
   Future<void> _showSeriesSelectionDialog() async {
-    List<String> seriesOptions =
+    List<Map<String, dynamic>> seriesOptions =
         await ref.read(blogProvider).getSeriesOptions();
     List<bool> isSelected =
         List.generate(seriesOptions.length, (index) => false);
@@ -48,7 +45,8 @@ class _QuizPageState extends ConsumerState<QuizPage>
             return Column(
               children: seriesOptions.asMap().entries.map((entry) {
                 int index = entry.key;
-                String series = entry.value;
+                Map<String, dynamic> seriesMap = entry.value;
+                String series = seriesMap['seriesName'];
                 return CheckboxListTile(
                   title: Text(series),
                   value: isSelected[index],
@@ -68,7 +66,7 @@ class _QuizPageState extends ConsumerState<QuizPage>
               selectedSeries = [];
               for (int i = 0; i < isSelected.length; i++) {
                 if (isSelected[i]) {
-                  selectedSeries.add(seriesOptions[i]);
+                  selectedSeries.add(seriesOptions[i]['seriesName']);
                 }
               }
               if (selectedSeries.isNotEmpty) {
@@ -85,54 +83,66 @@ class _QuizPageState extends ConsumerState<QuizPage>
 
   Future<void> fetchQuestionsForSelectedSeries() async {
     try {
-      List<Question> fetchedQuestions = [];
+      List<Question> audioQuestions = [];
+      List<Question> textQuestions = [];
 
-      for (String series in selectedSeries) {
+      selectedSeries.forEach((series) {
         List<CardData> cardsForSeries =
             ref.read(blogProvider).filterDataBySeriesName(series);
 
-        for (CardData card in cardsForSeries) {
+        cardsForSeries.forEach((card) {
           if (card.blackfootText.isEmpty) {
-            continue;
+            return;
           }
 
           List<String> allBlackfootTexts = cardsForSeries
-              .where((c) => c.blackfootText != card.blackfootText)
+              .where((c) =>
+                  c.blackfootText != card.blackfootText &&
+                  c.blackfootText.isNotEmpty)
               .map((c) => c.blackfootText)
               .toList();
 
-          allBlackfootTexts =
-              allBlackfootTexts.where((text) => text.isNotEmpty).toList();
-
           allBlackfootTexts.shuffle();
-
-          List<String> options = allBlackfootTexts.take(3).toList();
-          options.add(card.blackfootText);
+          List<String> options = [
+            card.blackfootText,
+            ...allBlackfootTexts.take(3)
+          ];
           options.shuffle();
 
-          fetchedQuestions.add(Question(
-            questionText: card.englishText,
+          Question questionCard = Question(
+            questionText: '${card.englishText}| ${card.blackfootAudio}',
             correctAnswer: card.blackfootText,
             options: options,
-          ));
-        }
-      }
+            isAudioTypeQuestion: cardsForSeries.indexOf(card) % 2 == 0,
+          );
 
-      fetchedQuestions.shuffle();
+          if (questionCard.isAudioTypeQuestion) {
+            audioQuestions.add(questionCard);
+          } else {
+            textQuestions.add(questionCard);
+          }
+        });
+      });
 
-      int numberOfQuestionsToKeep = fetchedQuestions.length < 10
-          ? fetchedQuestions.length
-          : fetchedQuestions.length < 20
-              ? 10
-              : 20;
+      audioQuestions.shuffle();
+      textQuestions.shuffle();
 
-      quizQuestions = fetchedQuestions.take(numberOfQuestionsToKeep).toList();
+      int numberOfQuestionsToKeep =
+          audioQuestions.length + textQuestions.length < 10
+              ? audioQuestions.length + textQuestions.length
+              : 10;
+
+      List<Question> selectedQuestions = [];
+      selectedQuestions
+          .addAll(audioQuestions.take(numberOfQuestionsToKeep ~/ 2));
+      selectedQuestions
+          .addAll(textQuestions.take(numberOfQuestionsToKeep ~/ 2));
+      selectedQuestions.shuffle();
 
       setState(() {
-        _isQuestionAnswered = List.generate(
-          quizQuestions.length,
-          (index) => false,
-        );
+        quizQuestions = selectedQuestions;
+        _isQuestionAnswered =
+            List.generate(quizQuestions.length, (index) => false);
       });
     } catch (error) {
       print("Error fetching questions: $error");
@@ -279,8 +289,8 @@ class _QuizPageState extends ConsumerState<QuizPage>
   }
 
   Widget buildQuestionCard(Question question) {
-    final player = ref.watch(audioPlayerProvider);
     final theme = ref.watch(themeProvider);
+    bool isPlaying = false;
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
@@ -289,16 +299,38 @@ class _QuizPageState extends ConsumerState<QuizPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              question.questionText,
+              question.isAudioTypeQuestion
+                  ? "Match the audio with the corresponding blackfoot text?"
+                  : "${question.questionText.split('|')[0]}",
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
                 color: theme.lightPurple,
               ),
             ),
-            SizedBox(height: 10.0),
+            if (question.isAudioTypeQuestion) SizedBox(height: 20.0),
+            if (question.isAudioTypeQuestion)
+              ElevatedButton.icon(
+                onPressed: () {
+                  final player = ref.watch(audioPlayerProvider);
+                  playAudio(
+                      question.questionText.split('|')[1], player, isPlaying);
+                  setState(() {
+                    isPlaying = !isPlaying;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isPlaying ? theme.red : Colors.white,
+                ),
+                icon: Icon(
+                  isPlaying ? Icons.stop : Icons.volume_up,
+                  color: isPlaying ? Colors.white : theme.lightPurple,
+                ),
+                label: const Text(''),
+              ),
+            SizedBox(height: question.isAudioTypeQuestion ? 0 : 20.0),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: buildRadioOptionsList(question.options),
             ),
             if (question.showCorrectAnswer)

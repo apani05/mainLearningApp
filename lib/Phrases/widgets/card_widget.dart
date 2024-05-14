@@ -96,8 +96,7 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
                 ElevatedButton.icon(
                   onPressed: () {
                     widget.onPlayButtonPressed();
-                    playAudio(context, widget.blackfootAudio, player,
-                        widget.isPlaying);
+                    playAudio(widget.blackfootAudio, player, widget.isPlaying);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:

@@ -5,9 +5,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
-Future<void> playAudio(BuildContext context, String audioUrl,
-    AudioPlayer player, bool isPlaying) async {
+Future<void> playAudio(
+    String audioUrl, AudioPlayer player, bool isPlaying) async {
   try {
+    audioUrl = audioUrl.trim();
     Uri downloadUrl = Uri.parse(
         await FirebaseStorage.instance.refFromURL(audioUrl).getDownloadURL());
     await player.stop();
@@ -17,4 +18,11 @@ Future<void> playAudio(BuildContext context, String audioUrl,
   } catch (e) {
     print('Error in audio player: $e');
   }
+}
+
+Future<String> getImageUrl(String imageUrl) async {
+  String downloadUrl =
+      await FirebaseStorage.instance.refFromURL(imageUrl).getDownloadURL();
+  print('downloadUrl: $downloadUrl');
+  return downloadUrl;
 }
