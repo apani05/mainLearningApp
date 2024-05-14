@@ -11,11 +11,13 @@ class Question {
   List<String> options;
   String? selectedAnswer;
   bool showCorrectAnswer;
+  bool isAudioTypeQuestion;
 
   Question(
       {required this.questionText,
       required this.correctAnswer,
-      required this.options})
+      required this.options,
+      required this.isAudioTypeQuestion})
       : showCorrectAnswer = false;
 }
 
@@ -92,7 +94,7 @@ class PhraseData {
 
 class BlogProvider extends ChangeNotifier {
   List<CardData> _cardDataList = [];
-  List<String> _seriesOptions = [];
+  List<Map<String, dynamic>> _seriesOptions = [];
   PhraseData _userPhraseProgress = PhraseData(uid: '', savedPhrases: []);
 
   List<CardData> getCardDataList() {
@@ -103,7 +105,7 @@ class BlogProvider extends ChangeNotifier {
     return _userPhraseProgress;
   }
 
-  List<String> getSeriesOptions() {
+  List<Map<String, dynamic>> getSeriesOptions() {
     return _seriesOptions;
   }
 
@@ -155,26 +157,26 @@ class BlogProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<String>> getSeriesNamesFromFirestore() async {
-    List<String> seriesNames = [];
+  Future<dynamic> getSeriesNamesFromFirestore() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('ConversationTypes')
           .orderBy('seriesName')
           .get();
 
-      seriesNames = querySnapshot.docs.map((doc) {
-        String seriesName = doc['seriesName'];
-        return seriesName;
+      List<Map<String, dynamic>> seriesOptions = querySnapshot.docs.map((doc) {
+        return {
+          'seriesName': doc['seriesName'],
+          'iconImage': doc['iconImage'],
+        };
       }).toList();
-      _seriesOptions = seriesNames;
+      _seriesOptions = seriesOptions;
       notifyListeners();
-      return seriesNames;
+      return seriesOptions;
     } catch (error) {
       print("Error fetching series names: $error");
     }
-
-    return seriesNames;
+    return;
   }
 
 //
@@ -303,6 +305,7 @@ class BlogProvider extends ChangeNotifier {
               questionText: questionData['questionText'],
               correctAnswer: questionData['correctAnswer'],
               options: [],
+              isAudioTypeQuestion: questionData['isAudioTypeQuestion'],
             );
             question.selectedAnswer = questionData['selectedAnswer'];
             questionSet.add(question);
@@ -340,6 +343,7 @@ class BlogProvider extends ChangeNotifier {
             'questionText': question.questionText,
             'correctAnswer': question.correctAnswer,
             'selectedAnswer': question.selectedAnswer,
+            'isAudioTypeQuestion': question.isAudioTypeQuestion,
           };
         }).toList();
 

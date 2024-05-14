@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Phrases/provider/audioPlayerProvider.dart';
 import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
 
@@ -86,12 +87,31 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Q${entry.key + 1}: ${entry.value.questionText}',
+                              entry.value.isAudioTypeQuestion
+                                  ? "Q${entry.key + 1}: Match the audio with the corresponding blackfoot text?"
+                                  : 'Q${entry.key + 1}: ${entry.value.questionText.split('|')[0]}',
                               style: TextStyle(
                                 fontSize: screenWidth * 0.04,
                                 color: theme.lightPurple,
                               ),
                             ),
+                            if (entry.value.isAudioTypeQuestion)
+                              SizedBox(height: screenWidth * 0.02),
+                            if (entry.value.isAudioTypeQuestion)
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  final player = ref.watch(audioPlayerProvider);
+                                  playAudio(
+                                      entry.value.questionText.split('|')[1],
+                                      player,
+                                      false);
+                                },
+                                icon: Icon(
+                                  Icons.volume_up,
+                                  color: theme.lightPurple,
+                                ),
+                                label: const Text(''),
+                              ),
                             SizedBox(height: screenWidth * 0.02),
                             if (entry.value.selectedAnswer !=
                                 entry.value.correctAnswer)
