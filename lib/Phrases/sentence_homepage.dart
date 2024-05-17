@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bfootlearn/Phrases/provider/audioPlayerProvider.dart';
 import 'package:bfootlearn/Phrases/saved_phrases.dart';
 import 'package:bfootlearn/Quizpages/quiz_page.dart';
 import 'package:bfootlearn/Quizpages/quiz_result_list.dart';
 import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../riverpod/river_pod.dart';
 import 'category_learning_page.dart';
 
@@ -19,11 +21,16 @@ class FeatureItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    IconData iconData = (title == 'Quiz')
+        ? Icons.quiz
+        : (title == 'Saved')
+            ? Icons.saved_search
+            : Icons.newspaper;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 120,
-        height: 120,
+        width: MediaQuery.of(context).size.width * 0.25,
+        height: MediaQuery.of(context).size.width * 0.25,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: const Color(0xFFcccbff),
@@ -32,8 +39,8 @@ class FeatureItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.image,
+            Icon(
+              iconData,
               color: Colors.white,
               size: 40,
             ),
@@ -54,8 +61,10 @@ class CategoryItem extends ConsumerWidget {
   final List<String> vocabCategory;
   final String seriesName;
   final IconData icon;
+  final String imageUrl;
 
-  const CategoryItem(this.vocabCategory, this.seriesName, this.icon,
+  const CategoryItem(
+      this.vocabCategory, this.seriesName, this.icon, this.imageUrl,
       {super.key});
 
   @override
@@ -78,15 +87,30 @@ class CategoryItem extends ConsumerWidget {
         );
       },
       child: Container(
-        height: 60,
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          leading: Icon(icon),
-          title: Text(seriesName),
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              imageUrl,
+              height: MediaQuery.of(context).size.width * 0.3,
+              width: MediaQuery.of(context).size.width * 0.3,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 5),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: Text(
+                seriesName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -101,14 +125,18 @@ class SentenceHomePage extends ConsumerStatefulWidget {
 }
 
 class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
-  List<String> seriesOptions = [];
+  List<Map<String, dynamic>> seriesOptions = [];
   List<CardData> allData = [];
   List<String> vocabCategory = [];
+  late Future<String> _imageUrlFuture;
+  String _imageUrl = "";
 
   @override
   void initState() {
     super.initState();
     _fetchPhrasesData();
+    _imageUrlFuture = getImageUrl(
+        'gs://blackfootapplication.appspot.com/images/phrase_image.jpg');
   }
 
   Future<void> _fetchPhrasesData() async {
@@ -125,6 +153,8 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
 
+    final Size screenSize = MediaQuery.of(context).size;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -138,78 +168,118 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
           title: const Text("Phrases Learning"),
           backgroundColor: theme.lightPurple,
         ),
-        body: Container(
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-                child: Text(
-                  'Features',
-                  style: theme.themeData.textTheme.headlineSmall,
+        body: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FutureBuilder<String>(
+                  future: _imageUrlFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      _imageUrl = snapshot.data!;
+                      return Image.network(
+                        _imageUrl,
+                        height: screenSize.height * 0.35,
+                        width: screenSize.width,
+                        fit: BoxFit.cover,
+                      );
+                    }
+                  },
                 ),
-              ),
-              Container(
-                height: 120,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    FeatureItem(
-                      title: 'Saved',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SavedPage()),
-                        );
-                      },
-                    ),
-                    FeatureItem(
-                      title: 'Quiz',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const QuizPage()),
-                        );
-                      },
-                    ),
-                    FeatureItem(
-                      title: 'Quiz Results',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const QuizResultList()),
-                        );
-                      },
-                    ),
-                  ],
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                  child: Text(
+                    'Features',
+                    style: theme.themeData.textTheme.headline6,
+                  ),
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-                child: Text(
-                  'Categories',
-                  style: theme.themeData.textTheme.headlineSmall,
-                ),
-              ),
-              Expanded(
-                child: seriesOptions.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: seriesOptions.length,
-                        itemBuilder: (context, index) {
-                          return CategoryItem(vocabCategory,
-                              seriesOptions[index], Icons.category);
+                Container(
+                  height: MediaQuery.of(context).size.width * 0.25,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      FeatureItem(
+                        title: 'Saved',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SavedPage()),
+                          );
                         },
-                      )
-                    : const Center(child: CircularProgressIndicator()),
-              ),
-            ],
+                      ),
+                      FeatureItem(
+                        title: 'Quiz',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const QuizPage()),
+                          );
+                        },
+                      ),
+                      FeatureItem(
+                        title: 'Quiz Results',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const QuizResultList()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                  child: Text(
+                    'Categories',
+                    style: theme.themeData.textTheme.headline6,
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.width * 0.7,
+                  child: seriesOptions.isNotEmpty
+                      ? ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: seriesOptions.map((seriesData) {
+                            final imageUrl =
+                                getImageUrl(seriesData['iconImage']);
+                            return FutureBuilder<String>(
+                              future: imageUrl,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  final String downloadUrl = snapshot.data!;
+                                  return CategoryItem(
+                                      vocabCategory,
+                                      seriesData['seriesName'],
+                                      Icons.category,
+                                      downloadUrl);
+                                }
+                              },
+                            );
+                          }).toList(),
+                        )
+                      : const Center(child: CircularProgressIndicator()),
+                ),
+              ],
+            ),
           ),
         ),
       ),

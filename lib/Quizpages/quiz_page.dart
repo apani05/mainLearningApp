@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Phrases/provider/audioPlayerProvider.dart';
@@ -20,13 +21,18 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   bool _isNextButtonEnabled = false;
   bool _isSubmitButtonEnabled = false;
   List<String> selectedSeries = [];
+  late Future<String> _imageUrlFuture;
+  String _imageUrl = "";
+  late final AudioPlayer player;
+  bool isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-
     _isQuestionAnswered = [];
     _showSeriesSelectionDialog();
+    _imageUrlFuture = getImageUrl(
+        'gs://blackfootapplication.appspot.com/images/quiz_image.jpg');
   }
 
   Future<void> _showSeriesSelectionDialog() async {
@@ -149,7 +155,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     }
   }
 
-  void nextQuestion() {
+  void nextQuestion() async {
+    if (isPlaying) {
+      await player.stop();
+    }
+    isPlaying = false;
     setState(() {
       _currentIndex++;
       if (_currentIndex < quizQuestions.length) {
@@ -209,7 +219,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           content: Text("Are you sure you want to exit the quiz?"),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                if (isPlaying) {
+                  await player.stop();
+                }
+                isPlaying = false;
                 Navigator.of(context).pop(true);
               },
               child: Text("Yes"),
@@ -254,10 +268,34 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             title: Text('Quiz'),
             backgroundColor: theme.lightPurple,
           ),
-          body: SingleChildScrollView(
-            child: _currentIndex < quizQuestions.length
-                ? buildQuestionCard(quizQuestions[_currentIndex])
-                : Container(),
+          body: Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  FutureBuilder<String>(
+                    future: _imageUrlFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        _imageUrl = snapshot.data!;
+                        return Image.network(
+                          _imageUrl,
+                          height: MediaQuery.of(context).size.height * 0.35,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    },
+                  ),
+                  _currentIndex < quizQuestions.length
+                      ? buildQuestionCard(quizQuestions[_currentIndex])
+                      : Container(),
+                ],
+              ),
+            ),
           ),
           bottomNavigationBar: BottomAppBar(
             color: theme.lightPurple,
@@ -290,7 +328,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
 
   Widget buildQuestionCard(Question question) {
     final theme = ref.watch(themeProvider);
-    bool isPlaying = false;
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
@@ -349,7 +386,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             ElevatedButton(
               onPressed:
                   _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
-              child: Text("Submit"),
+              child: Text("Check Answer"),
               style:
                   ElevatedButton.styleFrom(backgroundColor: theme.lightPurple),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Phrases/provider/audioPlayerProvider.dart';
 import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
+import 'widgets/circular_graph.dart';
 
 class QuizResultScreen extends ConsumerStatefulWidget {
   final int quizScore;
@@ -53,10 +54,9 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.04),
-                Icon(
-                  Icons.done_all,
-                  size: screenWidth * 0.15,
-                  color: theme.lightPurple,
+                CircularGraph(
+                  quizScore: widget.quizScore,
+                  totalQuestions: widget.quizQuestions.length,
                 ),
                 SizedBox(height: screenWidth * 0.04),
                 Text(
