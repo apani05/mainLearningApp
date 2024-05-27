@@ -15,6 +15,7 @@ class UserProvider extends ChangeNotifier {
   int _score = 0;
   int _rank = 0;
   UserModel _user;
+  int _heart = 0;
 
   UserProvider()
       : _user = UserModel(
@@ -27,6 +28,8 @@ class UserProvider extends ChangeNotifier {
           imageUrl: '',
           score: 0,
           rank: 0,
+          heart: 0,
+          joinedDate: '',
           savedWords: [],
           savedPhrases: [],
         ); // Initialize _user in the constructor
@@ -61,6 +64,8 @@ class UserProvider extends ChangeNotifier {
   int get score => _score;
 
   int get rank => _rank;
+
+  int get heart => _heart;
 
   List<SavedWords> get savedWords => _savedWords;
 
@@ -123,6 +128,11 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setHeart(int heart) {
+    _heart = heart;
+    notifyListeners();
+  }
+
   void setWords(SavedWords words) {
     if (!_savedWords.contains(words)) {
       _savedWords.add(words);
@@ -139,6 +149,9 @@ class UserProvider extends ChangeNotifier {
     _token = '';
     _refreshToken = '';
     _expiresIn = '';
+    _score = 0;
+    _rank = 0;
+    _heart = 0;
     notifyListeners();
   }
 
@@ -151,6 +164,9 @@ class UserProvider extends ChangeNotifier {
       'imageUrl': user.imageUrl,
       'score': user.score,
       'rank': user.rank,
+      'badge': user.badge.toJson(),
+      'joinedDate': user.joinedDate,
+      'heart': user.heart,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
       'savedPhrases':
           user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
@@ -169,6 +185,7 @@ class UserProvider extends ChangeNotifier {
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
+      setHeart(user.heart);
       print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   setWords(element);
@@ -193,6 +210,7 @@ class UserProvider extends ChangeNotifier {
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
+      setHeart(user.heart);
       print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   if(!_savedWords.contains(element))
@@ -295,14 +313,6 @@ class UserProvider extends ChangeNotifier {
     return v;
   }
 
-  Future<void> getRank(String uid) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get()
-        .then((value) => value.data()!['rank']);
-  }
-
   Future<String> getRole(String uid) async {
     String v;
     v = await FirebaseFirestore.instance
@@ -313,10 +323,76 @@ class UserProvider extends ChangeNotifier {
     return v;
   }
 
+  Future<int> getRank(String uid) async {
+    // Fetch all users
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+
+    // Sort the users based on score
+    List<QueryDocumentSnapshot> users = querySnapshot.docs;
+    users.sort((a, b) {
+      var aData = a.data() as Map<String, dynamic>?;
+      var bData = b.data() as Map<String, dynamic>?;
+      if (aData != null && bData != null) {
+        return bData['score'].compareTo(aData['score']);
+      }
+      return 0;
+    });
+
+    // Find the index of the current user
+    int rank = 1;
+    for (var doc in users) {
+      if (doc.id == uid) {
+        break;
+      }
+      rank++;
+    }
+
+    return rank;
+  }
+
   updateRank(String uid, int rank) async {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .update({'rank': rank});
+  }
+
+  getJoinDate(String uid) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((value) => value.data()!['joindate']);
+  }
+
+  updateJoinDate(String uid, String date) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'joindate': date});
+  }
+
+  updateHeart(String uid, int heart) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'heart': heart});
+  }
+
+  getHeart(String uid) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((value) => value.data()!['heart']);
+  }
+
+  Future<void> getBadge(String uid) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((value) => value.data()!['badge']);
   }
 }

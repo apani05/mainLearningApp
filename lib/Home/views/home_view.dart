@@ -1,3 +1,4 @@
+import 'package:bfootlearn/Home/views/ack_page.dart';
 import 'package:bfootlearn/Home/widgets/bootomnavItems.dart';
 import 'package:bfootlearn/Home/widgets/crad_option.dart';
 import 'package:bfootlearn/Home/widgets/home_page.dart';
@@ -61,59 +62,106 @@ class HomeViewState extends ConsumerState<HomeView> {
     final vProvider = ref.watch(vocaProvider);
     return AppBar(
       backgroundColor: theme.lightPurple,
+      centerTitle: true,
+      shape: vProvider.currentPage != 0
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(30),
+              ),
+            )
+          : null,
       title: Row(
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => UserProfileScreen()));
-            },
-            child: CircleAvatar(
-              backgroundColor: theme.lightPurple,
-              radius: 23,
+          Visibility(
+            visible: true,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UserProfileScreen(
+                              isFromLeaderboard: false,
+                            )));
+              },
               child: CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage(FirebaseAuth
-                        .instance.currentUser!.photoURL ??
-                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+                backgroundColor: theme.lightPurple,
+                radius: 23,
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(FirebaseAuth
+                          .instance.currentUser!.photoURL ??
+                      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+                ),
               ),
             ),
           ),
           Visibility(
-            child: const Text("LeaderBoard"),
+            child: Center(
+                child: Padding(
+              padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width / 4.5),
+              child: const Text(
+                "Leaderboard",
+                style: TextStyle(color: Colors.white),
+              ),
+            )),
             visible: vProvider.currentPage == 1 ? true : false,
+          ),
+          Visibility(
+            child: Center(
+                child: Padding(
+              padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width / 5.5),
+              child: const Text(
+                "Discusion Forum",
+                style: TextStyle(color: Colors.white),
+              ),
+            )),
+            visible: vProvider.currentPage == 2 ? true : false,
           ),
         ],
       ),
       actions: [
-        PopupMenuButton<String>(
-          onSelected: handlePopupMenuSelection,
-          color: theme.lightPurple,
-          itemBuilder: (BuildContext context) {
-            return [
-              PopupMenuItem<String>(
-                value: 'signOut',
-                child: ListTile(
-                  leading: Icon(Icons.exit_to_app),
-                  title: Text('Sign Out'),
+        // IconButton(onPressed: (){
+        //   Navigator.push(context,
+        //       MaterialPageRoute(
+        //           builder: (context) => Acknowledegement(),
+        //       ),
+        //   );
+        // },
+        //   icon: Icon(Icons.info_outlined),
+        //   color: Colors.black,  ),
+        Visibility(
+          visible: true,
+          child: PopupMenuButton<String>(
+            onSelected: handlePopupMenuSelection,
+            color: theme.lightPurple,
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'localNotifications',
+                  child: ListTile(
+                    leading: Icon(Icons.exit_to_app),
+                    title: Text('Notifications'),
+                  ),
                 ),
-              ),
-              PopupMenuItem<String>(
-                value: 'localNotifications',
-                child: ListTile(
-                  leading: Icon(Icons.exit_to_app),
-                  title: Text('Notifications'),
+                PopupMenuItem<String>(
+                  value: 'changePassword',
+                  child: ListTile(
+                    leading: Icon(Icons.lock),
+                    title: Text('Change Password'),
+                  ),
                 ),
-              ),
-              PopupMenuItem<String>(
-                value: 'changePassword',
-                child: ListTile(
-                  leading: Icon(Icons.lock),
-                  title: Text('Change Password'),
+                PopupMenuItem<String>(
+                  value: 'signOut',
+                  child: ListTile(
+                    leading: Icon(Icons.exit_to_app),
+                    title: Text('Sign Out'),
+                  ),
                 ),
-              ),
-            ];
-          },
+              ];
+            },
+          ),
         ),
       ],
     );

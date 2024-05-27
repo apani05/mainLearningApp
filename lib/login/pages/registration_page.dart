@@ -63,6 +63,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 imageUrl: userCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,
+                heart: 0,
+                joinedDate: DateTime.now().toString(),
                 savedWords: [],
                 savedPhrases: [],
                 badge: CardBadge(

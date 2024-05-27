@@ -171,16 +171,16 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
                                     shadowColor: Colors.indigo,
                                   ),
                                   Positioned(
-                                    top: 0,
-                                    right: 0,
+                                    top: 5,
+                                    right: 10,
                                     child: Visibility(
                                       visible: badgeCategory ==
                                           snapshot.data![index],
                                       child: Lottie.asset(
                                         'assets/badge.json',
                                         // controller: lottieController,
-                                        height: 50,
-                                        width: 50,
+                                        height: 35,
+                                        width: 35,
                                         fit: BoxFit.fill,
                                       ),
                                     ),

@@ -8,22 +8,25 @@ class UserModel {
   final String imageUrl;
   final int score;
   final int rank;
+  final int heart;
   final CardBadge badge;
+  final String joinedDate;
   final List<SavedWords> savedWords;
   final List<CardData> savedPhrases;
 
-  UserModel({
-    required this.name,
-    required this.email,
-    required this.uid,
-    required this.role,
-    required this.imageUrl,
-    required this.score,
-    required this.rank,
-    required this.savedWords,
-    required this.savedPhrases,
-    required this.badge,
-  });
+  UserModel(
+      {required this.name,
+      required this.email,
+      required this.uid,
+      required this.role,
+      required this.imageUrl,
+      required this.score,
+      required this.rank,
+      required this.heart,
+      required this.savedWords,
+      required this.savedPhrases,
+      required this.badge,
+      required this.joinedDate});
 
   String get getName => name;
   String get getEmail => email;
@@ -32,6 +35,8 @@ class UserModel {
   String get getImageUrl => imageUrl;
   int get getScore => score;
   int get getRank => rank;
+  int get getHeart => heart;
+  String get getJoinedDate => joinedDate;
   List<SavedWords> get getSavedWords => savedWords;
   List<CardData> get getSavedPhrases => savedPhrases;
 
@@ -43,7 +48,9 @@ class UserModel {
         'imageUrl': imageUrl,
         'score': score,
         'rank': rank,
+        'heart': heart,
         "badge": badge.toJson(),
+        'joinedDate': joinedDate,
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
         'savedPhrases': savedPhrases.map((phrase) => phrase.toJson()).toList(),
       };
@@ -58,6 +65,8 @@ class UserModel {
       imageUrl: json['imageUrl'],
       score: json['score'],
       rank: json['rank'],
+      heart: json['heart'],
+      joinedDate: json['joindate'],
       savedWords: (json['savedWords'] as List).map((item) {
         print("item to be added $item");
         return SavedWords.fromJson(item);

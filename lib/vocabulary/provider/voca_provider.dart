@@ -3,6 +3,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../model/quiz_model.dart';
+
 class vocabularyProvider extends ChangeNotifier {
   int _currentPage = 0;
   int get currentPage => _currentPage;
@@ -23,6 +25,32 @@ class vocabularyProvider extends ChangeNotifier {
   String get category => _category;
   set category(String category) {
     _category = category;
+    notifyListeners();
+  }
+
+  bool _isDownloading = false;
+  bool get isDownloading => _isDownloading;
+  set isDownloading(bool isDownloading) {
+    _isDownloading = isDownloading;
+    notifyListeners();
+  }
+
+  String _titleId = '';
+  String get titleId => _titleId;
+  set titleId(String titleId) {
+    switch (titleId) {
+      case 'ueEFv1EI9xm9ciT8u2vt' || 'Classroom Commands':
+        titleId = 'ueEFv1EI9xm9ciT8u2vt';
+        break;
+      case 'Practice':
+        _currentPage = 1;
+        break;
+      case 'Saved':
+        _currentPage = 2;
+        break;
+    }
+    print("title to be set is $titleId");
+    //_titleId = titleId;
     notifyListeners();
   }
 
@@ -123,5 +151,65 @@ class vocabularyProvider extends ChangeNotifier {
       });
     });
     vocabulary = vocab;
+  }
+
+  //quiz from firebase
+
+  Future<List<QuizQuestion>> fetchQuestions(String category) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    List<QuizQuestion> questionsList = [];
+
+    try {
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await firestore.collection('quiz').doc(category).get();
+      // QuerySnapshot querySnapshot = await firestore.collection('quiz').doc('kinship terms').get();
+      print("qustions are from category ${documentSnapshot.data()}");
+      //print("qustions are from category ${}");
+      for (var doc in documentSnapshot.data()!.entries) {
+        Map<String, dynamic> data = doc.value;
+        // print("data to be transformed is $data is ${doc.value}question is ${question.question}");
+        questionsList.add(QuizQuestion.fromMap(data, doc.key));
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+    return questionsList;
+  }
+
+  String _selectedAnswer = '';
+  String get selectedAnswer => _selectedAnswer;
+  set selectedAnswer(String selectedAnswer) {
+    _selectedAnswer = selectedAnswer;
+    notifyListeners();
+  }
+
+  bool _isAnswered = false;
+  bool get isAnswered => _isAnswered;
+  set isAnswered(bool isAnswered) {
+    _isAnswered = isAnswered;
+    notifyListeners();
+  }
+
+  void selectAnswer(String selectedAnswer) {
+    if (!_isAnswered) {
+      _isAnswered = true;
+      _selectedAnswer = selectedAnswer;
+      notifyListeners();
+    }
+  }
+
+  int _currentQuestionIndex = 0;
+  int _score = 0;
+  List<QuizQuestion> _questions = [];
+
+  void nextQuestion(int qLength) {
+    if (_currentQuestionIndex < qLength - 1) {
+      _currentQuestionIndex++;
+      _isAnswered = false;
+    } else {
+      print('Quiz completed!');
+      _score = 0; // Reset score for next quiz
+    }
+    notifyListeners();
   }
 }

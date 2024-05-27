@@ -23,6 +23,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userProvide = ref.read(userProvider);
+            // Update the rank in the database
+            userProvide.getRank(snapshot.data!.uid).then((rank) {
+              // Update the rank in the database
+              userProvide.updateRank(snapshot.data!.uid, rank);
+            });
             return FutureBuilder(
               future: userProvide.getRole(snapshot.data!.uid),
               builder: (context, roleSnapshot) {

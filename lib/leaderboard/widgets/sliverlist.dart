@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../riverpod/river_pod.dart';
 import 'leaderbar.dart';
@@ -44,27 +45,20 @@ class _SliverListWithTopContainerState extends ConsumerState<SliverListWithTopCo
             flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 background: Container(
-                  child: SizedBox.expand(
-                    // child: Image.asset(
-                    //   'assets/podium.png',
-                    //   fit: BoxFit.cover,
-                    // ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children:  [
-                        LeaderBar(barHeight: 120,barWidth: 90,color: Color(0xFFFFDFBA),index: 0, image: 'assets/medal.png', leaderImages: 'assets/person_logo.png',),
-                       LeaderBar(barHeight: 150,barWidth: 90,color: Color(0xFFC1E1DC),index: 1, image: 'assets/1st-place.png', leaderImages: 'assets/person_logo_2.png'),
-                        LeaderBar(barHeight: 90,barWidth: 90,color:Color(0xFFEFD6DA),index: 2, image: 'assets/3rd-place.png', leaderImages: 'assets/th_1.jpg',),
-                      ],
-                    ),
-                  ),
                   decoration: BoxDecoration(
                     // gradient: LinearGradient(
                     //   colors: [Colors.purple, Colors.deepPurple],
                     // ),
                     color: Colors.white,
                   ),
+                  child: SizedBox(
+                    height: 300,
+                    width: 300,
+                      child: Lottie.network(
+                          'https://lottie.host/15e37b33-80de-40e8-8247-d51b4b4c4819/YHXx1MBsrV.json',
+                          repeat: false
+                        ,),
+                  )
                 )
             ),
           ),
