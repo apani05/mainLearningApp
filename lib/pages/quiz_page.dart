@@ -1,103 +1,179 @@
-import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../riverpod/river_pod.dart';
+import 'quiz_result_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class QuizPage extends StatefulWidget {
-  const QuizPage({Key? key}) : super(key: key);
+class QuizPage extends ConsumerStatefulWidget {
+  const QuizPage({super.key});
 
   @override
   _QuizPageState createState() => _QuizPageState();
 }
 
-class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
-  int _timerSeconds = 20;
+class _QuizPageState extends ConsumerState<QuizPage>
+    with TickerProviderStateMixin {
   int _currentIndex = 0;
-  late Timer _timer;
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  List<Question> questions = [
-    Question(
-        "How are you?", "Okihkiita?", ["Good", "Okihkiita?", "Bad", "So-so"]),
-    Question("What is your name?", "Tsá kitáánikko?",
-        ["Option 1", "Tsá kitáánikko?", "Option 3", "Option 4"]),
-    Question("Hello, nice to meet you.", "Tsí̠kʷayímohkiyaki?",
-        ["Option 1", "Tsí̠kʷayímohkiyaki?", "Option 3", "Option 4"]),
-    Question("What are you doing these days?", "Okihkiita moxkíitapi?",
-        ["Option 1", "Okihkiita moxkíitapi?", "Option 3", "Option 4"]),
-  ];
-
-  bool _shouldPauseTimer = false;
-  int _originalTimerSeconds = 20;
+  List<Question> questions = [];
   late List<bool> _isQuestionAnswered;
   bool _isNextButtonEnabled = false;
+  bool _isSubmitButtonEnabled = false;
+  List<String> selectedSeries = [];
 
   @override
   void initState() {
     super.initState();
-    _originalTimerSeconds = _timerSeconds;
-    _timer = Timer(Duration.zero, () {});
-    startTimer();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: _timerSeconds),
-    )..addListener(() {
-        setState(() {});
-      });
 
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
-    _controller.forward();
+    _isQuestionAnswered = [];
+    _showSeriesSelectionDialog();
+  }
 
-    _isQuestionAnswered = List.generate(
-      questions.length,
-      (index) => false,
+  Future<void> _showSeriesSelectionDialog() async {
+    List<String> seriesOptions = await _getSeriesNamesFromFirestore();
+
+    List<bool> isSelected =
+        List.generate(seriesOptions.length, (index) => false);
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text("Select Series"),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              children: seriesOptions.asMap().entries.map((entry) {
+                int index = entry.key;
+                String series = entry.value;
+                return CheckboxListTile(
+                  title: Text(series),
+                  value: isSelected[index],
+                  onChanged: (value) {
+                    setState(() {
+                      isSelected[index] = value!;
+                    });
+                  },
+                );
+              }).toList(),
+            );
+          },
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              selectedSeries = [];
+              for (int i = 0; i < isSelected.length; i++) {
+                if (isSelected[i]) {
+                  selectedSeries.add(seriesOptions[i]);
+                }
+              }
+              if (selectedSeries.isNotEmpty) {
+                fetchQuestionsForSelectedSeries();
+                Navigator.pop(context);
+              }
+            },
+            child: Text("OK"),
+          ),
+        ],
+      ),
     );
   }
 
-  void updateIsQuestionAnswered() {
-    setState(() {
-      _isQuestionAnswered = List.generate(
-        questions.length,
-        (index) => false,
-      );
-    });
+  Future<void> fetchQuestionsForSelectedSeries() async {
+    try {
+      List<Question> fetchedQuestions = [];
+
+      for (String series in selectedSeries) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('Conversations')
+            .where('seriesName', isEqualTo: series)
+            .get();
+
+        List<Question> seriesQuestions = querySnapshot.docs.map((doc) {
+          Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+
+          List<String> allBlackfootTexts = querySnapshot.docs
+              .map((otherDoc) => otherDoc['blackfootText'] as String)
+              .toList();
+
+          allBlackfootTexts.remove(docData['blackfootText']);
+
+          List<String> options = allBlackfootTexts..shuffle();
+
+          options = options.take(3).toList();
+
+          options.add(docData['blackfootText']);
+
+          options.shuffle();
+
+          return Question(
+            docData['englishText'],
+            docData['blackfootText'],
+            options,
+          );
+        }).toList();
+
+        fetchedQuestions.addAll(seriesQuestions);
+      }
+
+      fetchedQuestions.shuffle();
+
+      int numberOfQuestionsToKeep = fetchedQuestions.length < 10
+          ? fetchedQuestions.length
+          : fetchedQuestions.length < 20
+              ? 10
+              : 20;
+
+      questions = fetchedQuestions.take(numberOfQuestionsToKeep).toList();
+
+      setState(() {
+        _isQuestionAnswered = List.generate(
+          questions.length,
+          (index) => false,
+        );
+      });
+    } catch (error) {
+      print("Error fetching questions: $error");
+    }
   }
 
-  void startTimer() {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
+  Future<List<String>> _getSeriesNamesFromFirestore() async {
+    List<String> seriesNames = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('ConversationTypes')
+          .get();
+
+      seriesNames = querySnapshot.docs.map((doc) {
+        String seriesName = doc['seriesName'];
+        return seriesName;
+      }).toList();
+    } catch (error) {
+      print("Error fetching series names: $error");
     }
 
-    const oneSecond = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSecond, (timer) {
-      if (_timerSeconds == 0) {
-        timer.cancel();
-        nextQuestion();
-      } else if (!_shouldPauseTimer) {
-        setState(() {
-          _timerSeconds--;
-        });
-
-        _controller.duration = Duration(seconds: _timerSeconds);
-      }
-    });
+    return seriesNames;
   }
 
   void nextQuestion() {
     setState(() {
       _currentIndex++;
       if (_currentIndex < questions.length) {
-        _timerSeconds = _originalTimerSeconds;
-        _controller.reset();
-        _controller.forward();
-        startTimer();
         _isNextButtonEnabled = false;
       } else {
-        _isNextButtonEnabled = false;
-        // Quiz is completed
         calculateScore();
       }
 
       updateIsQuestionAnswered();
+    });
+  }
+
+  void submitAnswer(Question question) {
+    _isNextButtonEnabled = true;
+    question.showCorrectAnswer = true;
+    setState(() {
+      _isSubmitButtonEnabled = false;
     });
   }
 
@@ -109,7 +185,6 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
       }
     }
 
-    // Navigate to a new screen to display the quiz results
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -122,16 +197,16 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     );
   }
 
-  @override
-  void dispose() {
-    _timer.cancel();
-    _controller.dispose();
-    super.dispose();
+  void updateIsQuestionAnswered() {
+    setState(() {
+      _isQuestionAnswered = List.generate(
+        questions.length,
+        (index) => false,
+      );
+    });
   }
 
   Future<bool> _onBackPressed() async {
-    _shouldPauseTimer = true;
-
     if (_currentIndex < questions.length) {
       bool shouldExit = await showDialog(
         context: context,
@@ -142,15 +217,12 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                _timer.cancel();
-                _shouldPauseTimer = false;
                 Navigator.of(context).pop(true);
               },
               child: Text("Yes"),
             ),
             TextButton(
               onPressed: () {
-                _shouldPauseTimer = false;
                 Navigator.of(context).pop(false);
               },
               child: Text("No"),
@@ -159,7 +231,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
         ),
       );
 
-      return shouldExit;
+      return shouldExit ?? false;
     } else {
       return true;
     }
@@ -167,65 +239,61 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Quiz'),
-          backgroundColor: Color(0xFFcccbff),
-        ),
-        body: _currentIndex < questions.length
-            ? buildQuestionCard(questions[_currentIndex])
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Quiz Completed!',
-                      style: TextStyle(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFcccbff),
-                      ),
+    final theme = ref.watch(themeProvider);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                if (mounted) {
+                  _onBackPressed().then((shouldPop) {
+                    if (shouldPop) {
+                      Navigator.pop(context);
+                    }
+                  });
+                }
+              },
+            ),
+            title: Text('Quiz'),
+            backgroundColor: theme.lightPurple,
+          ),
+          body: _currentIndex < questions.length
+              ? buildQuestionCard(questions[_currentIndex])
+              : Container(),
+          bottomNavigationBar: BottomAppBar(
+            color: theme.lightPurple,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Question ${_currentIndex + 1} of ${questions.length}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 20.0),
-                    Icon(
-                      Icons.done_all,
-                      size: 60.0,
-                      color: Color(0xFFcccbff),
-                    ),
-                    SizedBox(height: 20.0),
-                    Text(
-                      'Correct Answers:',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFcccbff),
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    // Display correct answers here
-                    ...questions
-                        .asMap()
-                        .entries
-                        .map(
-                          (entry) => Text(
-                            'Q${entry.key + 1}: ${entry.value.correctAnswer}',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Color(0xFFcccbff),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ],
-                ),
+                  ),
+                  ElevatedButton(
+                    onPressed: _isNextButtonEnabled ? nextQuestion : null,
+                    child: Text("Next"),
+                    style: ElevatedButton.styleFrom(primary: theme.lightPurple),
+                  ),
+                ],
               ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget buildQuestionCard(Question question) {
+    final theme = ref.watch(themeProvider);
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
@@ -238,7 +306,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
+                color: theme.lightPurple,
               ),
             ),
             SizedBox(height: 10.0),
@@ -246,27 +314,24 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: buildRadioOptionsList(question.options),
             ),
-            SizedBox(height: 10.0),
-            AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _animation.value * 2 * 3.1416,
-                  child: Icon(Icons.access_time,
-                      size: 60.0, color: Color(0xFFcccbff)),
-                );
-              },
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              "Time left: $_timerSeconds seconds",
-              style: TextStyle(fontSize: 24.0, color: Color(0xFFcccbff)),
-            ),
+            if (question.showCorrectAnswer)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  "Correct Answer: ${question.correctAnswer}",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
             SizedBox(height: 10.0),
             ElevatedButton(
-              onPressed: _isNextButtonEnabled ? nextQuestion : null,
-              child: Text("Next"),
-              style: ElevatedButton.styleFrom(primary: Color(0xFFcccbff)),
+              onPressed:
+                  _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
+              child: Text("Submit"),
+              style: ElevatedButton.styleFrom(primary: theme.lightPurple),
             ),
           ],
         ),
@@ -275,25 +340,26 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   }
 
   List<Widget> buildRadioOptionsList(List<String> options) {
-    return options
-        .map(
-          (option) => RadioListTile<String>(
-            title: Text(
-              option,
-              style: TextStyle(fontSize: 18.0, color: Colors.black),
-            ),
-            value: option,
-            groupValue: questions[_currentIndex].selectedAnswer,
-            onChanged: (value) {
-              setState(() {
-                questions[_currentIndex].selectedAnswer = value!;
-                _isNextButtonEnabled = true;
-              });
-            },
-            activeColor: Color(0xFFcccbff), // Change radio button color
-          ),
-        )
-        .toList();
+    final theme = ref.watch(themeProvider);
+    return options.map((option) {
+      return RadioListTile<String>(
+        title: Text(
+          option,
+          style: TextStyle(fontSize: 18.0, color: Colors.black),
+        ),
+        value: option,
+        groupValue: questions[_currentIndex].selectedAnswer,
+        onChanged: (value) {
+          setState(() {
+            if (!questions[_currentIndex].showCorrectAnswer) {
+              questions[_currentIndex].selectedAnswer = value!;
+              _isSubmitButtonEnabled = true;
+            }
+          });
+        },
+        activeColor: theme.lightPurple,
+      );
+    }).toList();
   }
 }
 
@@ -302,87 +368,8 @@ class Question {
   String correctAnswer;
   List<String> options;
   String? selectedAnswer;
+  bool showCorrectAnswer;
 
-  Question(this.questionText, this.correctAnswer, this.options);
-}
-
-class QuizResultScreen extends StatelessWidget {
-  final int correctAnswers;
-  final int totalQuestions;
-  final List<Question> questions;
-
-  const QuizResultScreen({
-    Key? key,
-    required this.correctAnswers,
-    required this.totalQuestions,
-    required this.questions,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quiz Result'),
-        backgroundColor: Color(0xFFcccbff),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Quiz Completed!',
-              style: TextStyle(
-                fontSize: 30.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Icon(
-              Icons.done_all,
-              size: 60.0,
-              color: Color(0xFFcccbff),
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'You answered $correctAnswers out of $totalQuestions questions correctly.',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              'Correct Answers:',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFcccbff),
-              ),
-            ),
-            SizedBox(height: 10.0),
-            // Display correct answers here
-            ...questions
-                .asMap()
-                .entries
-                .map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      'Q${entry.key + 1}: ${entry.value.correctAnswer}',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        color: Color(0xFFcccbff),
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ],
-        ),
-      ),
-    );
-  }
+  Question(this.questionText, this.correctAnswer, this.options)
+      : showCorrectAnswer = false;
 }

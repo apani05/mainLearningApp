@@ -42,26 +42,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 imageUrl: UserCredential.user!.photoURL ?? '',
                 score: 0,
                 rank: 0,
+                heart: 0,
                 savedWords: [],
             badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+              joinedDate: DateTime.now().toString(),
             ),UserCredential.user!.uid
         );
         print("user is created with uid ${UserCredential.user!.uid}");
       }
-
      }
-
-
-
-
-
-
-
-
-
-
-
-      if (context.mounted) Navigator.pop(context);
+     if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       if (e.code == 'user-not-found') {
@@ -93,14 +83,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 25),
               MyTextField(
-                  hintText: "Email",
                   obscureText: false,
-                  controller: emailController),
+                  controller: emailController, labelText: '', textColor:Colors.white ,),
               const SizedBox(height: 10),
               MyTextField(
-                  hintText: "Password",
+                  labelText: "Password",
                   obscureText: true,
-                  controller: passwordController),
+                  controller: passwordController, textColor: Colors.white,),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

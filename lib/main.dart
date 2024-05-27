@@ -1,4 +1,5 @@
-import 'package:bfootlearn/auth/auth.dart';
+
+import 'package:bfootlearn/login/authentication/auth.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:bfootlearn/route/routes.dart';
 import 'package:firebase_core/firebase_core.dart';

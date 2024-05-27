@@ -1,10 +1,18 @@
+import 'package:bfootlearn/User/user_p_details.dart';
+import 'package:bfootlearn/User/widgets/custom_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import '../Home/views/ack_page.dart';
 import '../User/user_provider.dart';
+import '../leaderboard/widgets/leadercard.dart';
 import '../riverpod/river_pod.dart';
+import 'dart:math' as math;
 
 class UserProfileScreen extends ConsumerStatefulWidget {
-  const UserProfileScreen({super.key});
+  final String? uid;
+  final bool isFromLeaderboard;
+  const UserProfileScreen(  {super.key,this.uid, this.isFromLeaderboard = false}) ;
 
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
@@ -18,211 +26,488 @@ String score = "0";
     super.initState();
   }
 
+
+double progress = 0.5;
+double progress2 = 0.2;
+String dropDownValue = "All";
   @override
   Widget build(BuildContext context) {
     final UserProvide = ref.read(userProvider);
     final leaderBoardRepo = ref.read(leaderboardProvider);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[400],
         body: FutureBuilder(
-          future: UserProvide.getUserFromDb(UserProvide.uid),
+          future: UserProvide.getUserFromDb(widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid),
           builder: (context,snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting){
-             return  Center(
+             return  const Center(
                 child: CircularProgressIndicator(),
               );
             }else{
-              return Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    child: Container(
-                      height: 250,
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Stack(
+                      fit: StackFit.passthrough,
+                      children: [
+                        Container(
+                          height: 600,
+                          width: MediaQuery.of(context).size.width,
+                        ),
+                        Stack(
+                          fit: StackFit.passthrough,
+                          children: [
+                            Container(
+                              height: 450,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(40),
+                                  bottomRight: Radius.circular(40),
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xffbdbcfd),
+                                    Color(0xff6562df),
+                                  ],
+                                ),
+                              ),
+                              child: Column(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 30.0),
+                                      child: Text(
+                                        "My Profile",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),),
+                                    ),
+                                    SizedBox(
+                                      height: MediaQuery.of(context).size.height * 0.05,
+                                    ),
+                                    CircleAvatar(
+                                      backgroundColor: Colors.grey[300],
+                                      radius: 53,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 50,
+                                        child: CircleAvatar(
+                                          radius: 45,
+                                          backgroundImage: Image.asset("assets/person_logo.png").image,
+                                        ),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                        child: Text(
+                                          getNameFromEmail(snapshot.data!.name??""),
+                                          style: const TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Text(
+                                        UserProvide.email??"",
+                                        style:  TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Dtae joined: ",
+                                            style:  TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            snapshot.data!.joinedDate.toString(),
+                                            style:  TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ]
+                              ),
+                            ),
+                            Positioned(
+                              top: 20,
+                              left: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: IconButton(
+                                  onPressed: (){
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 20,
+                              right: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: PopupMenuButton<String>(
+                                  color: Color(0xffbdbcfb).withOpacity(0.9),
+                                  icon: const Icon(
+                                    Icons.settings,
+                                    color: Colors.white,
+                                  ),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 'profile':
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ProfileScoreFeed(),
+                                            ));
+                                        break;
+                                      case 'ack':
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Acknowledegement(),
+                                            ));
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                    const PopupMenuItem<String>(
+                                      value: 'profile',
+                                      child: Text('Profile',
+                                        style:
+                                        TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'ack',
+                                      child: Text('Acknowledgements',
+                                        style:
+                                        TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            ///////////////////////////////////
+
+                          ],
+                        ),
+                        Positioned(
+                          top:400,
+                          left:MediaQuery.of(context).size.width*0.05,
+                          child: Container(
+                            height: 200,
+                            width: MediaQuery.of(context).size.width - 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.grey,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: StaggeredGridView.countBuilder(
+                                crossAxisCount: 4,
+                                itemCount: 4,
+                                itemBuilder: (BuildContext context, int index) => buildContainer(index, setHeader(index), setValues(index, snapshot)),
+                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
+                                mainAxisSpacing: 14.0,
+                                crossAxisSpacing: 14.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top:400,
+                          left:MediaQuery.of(context).size.width*0.05,
+                          child: Container(
+                            height: 200,
+                            width: MediaQuery.of(context).size.width - 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.grey[400],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: StaggeredGridView.countBuilder(
+                                crossAxisCount: 4,
+                                itemCount: 4,
+                                itemBuilder: (BuildContext context, int index) => buildContainer(index, setHeader(index), setValues(index, snapshot)),
+                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
+                                mainAxisSpacing: 14.0,
+                                crossAxisSpacing: 14.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      height: 500,
                       width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          bottomRight: Radius.circular(40),
-                        ),
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xffbdbcfd),
-                            Color(0xff6562df),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 20,
-                    left: 0,
-                    child: IconButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.16,
-                    left: MediaQuery.of(context).size.width / 2 - 90,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.grey[300],
-                      radius: 93,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 90,
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundImage: Image.asset("assets/person_logo.png").image,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.4,
-                    left: MediaQuery.of(context).size.width * 0.15,
-                    child: Container(
-                      height: 80,
-                      width: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Text(
-                          getNameFromEmail(snapshot.data!.name),
-                          style: const TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff6562df),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.48,
-                    left: MediaQuery.of(context).size.width * 0.15,
-                    child: Container(
-                      height: 80,
-                      width: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Text(
-                          UserProvide.email??"",
-                          style:  TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                      top: MediaQuery.of(context).size.height * 0.62,
-                      left: MediaQuery.of(context).size.width * 0.02,
-                      child: SizedBox(
-                        height: 2,
-                        width: 400,
-                        child: Divider(
-                          color: Color(0xffbdbcfd),
-                          thickness: 2,
-                          indent: 15,
-                          endIndent: 15,
-                        ),
-                      )
-                  ),
-                  Positioned(
-                      top: MediaQuery.of(context).size.height * 0.62,
-                      left: MediaQuery.of(context).size.width * 0.5,
-                      child: SizedBox(
-                        height: 200,
-                        width: 2,
-                        child: VerticalDivider(
-                          color: Color(0xffbdbcfd),
-                          thickness: 2,
-                          endIndent: 5,
-                        ),
-                      )
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.7,
-                    left: MediaQuery.of(context).size.width * 0.12,
-                    child: Container(
-                      height: 80,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              snapshot.data!.score.toString(),
-                              style:  TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff6562df),
+                      color: Colors.grey[400],
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 40.0),
+                                    child: const Text(
+                                      "Completion Rate",
+                                      style: TextStyle(
+                                        color: Color(0xff6562df),
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5,),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Color(0xffbdbcfd).withOpacity(0.8)
+                                    ),
+                                    child: DropdownButton<String>(
+                                      value: dropDownValue,
+                                      iconEnabledColor: Colors.white,
+                                      dropdownColor: Color(0xffbdbcfd).withOpacity(0.8),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      items: const [
+                                        DropdownMenuItem(
+                                          child: Text("All",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          value: "All",
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text("Today",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          value: "Today",
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text("This Week",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          value: "This Week",
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text("This Month",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),),
+                                          value: "This Month",
+                                        ),
+                                      ],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value == "All") {
+                                            progress = 0.5;
+                                            progress2 = 0.2;
+                                            dropDownValue = "All";
+                                          } else if (value == "Today") {
+                                            progress = 0.2;
+                                            progress2 = 0.9;
+                                            dropDownValue = "Today";
+                                          } else if (value == "This Week") {
+                                            progress = 0.5;
+                                            progress2 = 0.5;
+                                            dropDownValue = "This Week";
+                                          } else if (value == "This Month") {
+                                            progress = 0.8;
+                                            progress2 = 0.2;
+                                            dropDownValue = "This Month";
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Text(
-                              "Score",
-                              style:  TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                              SizedBox(height: 30,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  CustomPaint(
+                                    size: Size(150, 150),
+                                    painter: CustomCircularProgressPainter(
+                                      progress1: progress,
+                                      progress2: progress2,
+                                      color1: Colors.pinkAccent,
+                                      color2: Colors.green,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20,),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 30,
+                                            width: 30,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.pinkAccent,
+                                            ),
+                                          ),
+                                          const Text("Completed",
+                                            style: TextStyle(
+                                              color: Color(0xff6562df),
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 20,),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 30,
+                                            width: 30,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                          const Text("In Progress",
+                                            style: TextStyle(
+                                              color: Color(0xff6562df),
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.7,
-                    right: MediaQuery.of(context).size.width * 0.12,
-                    child: Container(
-                      height: 80,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              UserProvide.rank.toString(),
-                              style:  TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff6562df),
+                              SizedBox(height: 40,),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                                  child: Text(
+                                    "Feedback",
+                                    style: TextStyle(
+                                      color: Color(0xff6562df),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Rank",
-                              style:  TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                              SizedBox(height: 10,),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    // hintText: "",
+                                    hintStyle: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Colors.black,
+                                      ),
+
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                              SizedBox(height: 30,),
+                              ElevatedButton(onPressed: (){},
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xffbdbcfd),
+                                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Text("Submit",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               );
             }
 
@@ -232,7 +517,82 @@ String score = "0";
     );
   }
 
+  setValues(int index, snapshot){
+    switch(index){
+      case 0:
+        return snapshot.data!.score.toString();
+      case 1:
+        return snapshot.data!.rank.toString();
+      case 2:
+        return setBadgeValue(snapshot).toString();
+      case 3:
+        return snapshot.data!.heart.toString();
+    }
+  }
+
+ int setBadgeValue(snapshot) {
+  int count = 0;
+
+  if (snapshot.data!.badge.kinship == true) {
+    count++;
+  }
+  if (snapshot.data!.badge.dirrection == true) {
+    count++;
+  }
+  if (snapshot.data!.badge.classroom == true) {
+    count++;
+  }
+  if (snapshot.data!.badge.time == true) {
+    count++;
+  }
+
+  return count;
+}
+
+  setHeader(int index){
+    switch(index){
+      case 0:
+        return "XP Points";
+      case 1:
+        return "Leaderboard Rank";
+      case 2:
+        return "Badges Earned";
+      case 3:
+        return "Hearts Earned";
+    }
+
+  }
+Widget buildContainer(int index, String header, String value) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(15),
+      color:  Color(0xffbdbcfd)
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          header,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 10), // Add some spacing between the header and the value
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    ),
+  );
+}
   String getNameFromEmail(String email) {
     return email.split('@')[0];
   }
 }
+

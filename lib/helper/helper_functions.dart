@@ -22,3 +22,24 @@ void displayMessageToUser(String message, BuildContext context) {
     Navigator.of(context).pop();
   });
 }
+  void displaySnackBarMessageToUser(String message, BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor:
+          Color.fromARGB(255, 230, 125, 118), // Adjust the color as needed
+      duration: Duration(seconds: 3),
+    ),
+  );
+}
+
+setTitle(String title){
+  
+}
+

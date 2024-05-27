@@ -29,6 +29,7 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
   FlipperController flipperController = FlipperController(
     dragAxis: DragAxis.horizontal,
   );
+  //TabController tabController = TabController(length: 3, vsync: ScrollableState());
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
@@ -45,7 +46,7 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
       ),
       backgroundColor: theme.lightPurple,
       title: Text(widget.category, style: TextStyle(color: Colors.white),),
-      bottom: TabBar(
+      bottom: const TabBar(
         tabs: [
           Tab( text: 'Flash Card',),
           Tab( text: 'Practice'),
@@ -58,15 +59,13 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
       ),
     ),
     body: TabBarView(
-     // controller: vprovider.tabController,
+      //controller: tabController,
       children: [
         // The widgets that will be shown when the corresponding tab is selected
         // Replace these with your own widgets
               FlashCradPage(category: widget.category,),
-              PracticePage(),
+              PracticePage(category: widget.category),
               SavedPage(),
-
-
       ],
     ),
   ),

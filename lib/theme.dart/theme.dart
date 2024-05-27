@@ -27,6 +27,8 @@ class ThemeNotifier extends ChangeNotifier {
 
   Color lightPurple = const Color(0xffbdbcfd);
   Color darkPurple = const Color(0xff6562df);
+  Color red = const Color.fromARGB(255, 230, 125, 118);
+  Color green = const Color.fromARGB(255, 116, 194, 118);
 
   ThemeData get darkTheme => ThemeData(
     brightness: Brightness.dark,

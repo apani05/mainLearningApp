@@ -1,11 +1,10 @@
 import 'package:bfootlearn/Home/views/home_view.dart';
-import 'package:bfootlearn/User/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../riverpod/river_pod.dart';
+import 'login_or_register.dart';
+import 'verify_email.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../auth/login_or_register.dart';
-import '../pages/sentence_homepage.dart';
-import '../riverpod/river_pod.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -17,32 +16,27 @@ class AuthPage extends ConsumerStatefulWidget {
 class _AuthPageState extends ConsumerState<AuthPage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final UserProvide = ref.read(userProvider);
-             // final leaderBoardRepo = ref.read(leaderboardProvider);
-             // return const SentenceHomePage();
+              // final leaderBoardRepo = ref.read(leaderboardProvider);
+              // return const SentenceHomePage();
               print("building auth page");
-               UserProvide.getUserFromDb(snapshot.data!.uid);
-               print("score is ${UserProvide.score}");
-               print("user is $UserProvide");
-
-              // Update the rank in the database
+              UserProvide.getUserFromDb(snapshot.data!.uid);
+              print("score is ${UserProvide.score}");
+               // Update the rank in the database
               UserProvide.getRank(snapshot.data!.uid).then((rank) {
                 // Update the rank in the database
                 UserProvide.updateRank(snapshot.data!.uid, rank);
               });
-
-              return const HomeView();
+              return const EmailVerifyPage();
             } else {
               return const LoginOrRegister();
             }
           }),
     );
   }
-
 }

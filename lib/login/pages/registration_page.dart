@@ -1,8 +1,8 @@
-import 'package:bfootlearn/login/widget/fadein_animation.dart';
-import 'package:bfootlearn/login/widget/login_theme_page.dart';
 import 'package:flutter/material.dart';
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
+import '../widget/fadein_animation.dart';
+import '../widget/login_theme_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';

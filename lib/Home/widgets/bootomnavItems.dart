@@ -12,7 +12,7 @@ class BottomNavItem {
     final vProvider = ref.watch(vocaProvider);
     final theme = ref.watch(themeProvider);
    return  CurvedNavigationBar(
-     backgroundColor: Colors.white,
+     backgroundColor: vProvider.currentPage == 1 ? Color(0xFFb9bdbe) : Colors.white,
      key:vProvider.bottomNavigationKey,
      color:  theme.lightPurple,
      items: <Widget>[

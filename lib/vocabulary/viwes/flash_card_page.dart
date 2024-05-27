@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:bfootlearn/vocabulary/provider/voca_provider.dart';
+import 'package:bfootlearn/vocabulary/viwes/practice_page.dart';
 import 'package:bfootlearn/vocabulary/viwes/vocabulary_home.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,11 +14,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../Phrases/category_learning_page.dart';
 import '../../User/user_model.dart';
 
 class FlashCradPage extends ConsumerStatefulWidget {
    String category;
-   FlashCradPage({
+   //final TabController tabController ;
+   FlashCradPage(
+      // this.tabController,
+       {
     required this.category,
     super.key,
   });
@@ -36,8 +41,11 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
    CardBadge newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
 
   late ConfettiController _controllerCenter;
+  @override
   void initState() {
     final userRepo = ref.read(userProvider);
+    final vocaProvide = ref.read(vocaProvider);
+    //vocaProvide.titleId = widget.category;
     score = userRepo.score;
     userRepo.getSavedWords(userRepo.uid);
     print("init state categoy is ${widget.category}");
@@ -200,7 +208,15 @@ int scoreIndex = 0;
                                         icon: Icon(Icons.volume_up,color: Colors.black,),
                                         label: Text('')),
                                     Container(
-                                        child: Center(child: Text(e["data"]["blackfoot"],style: TextStyle(fontSize: 30),),
+                                        child: Center(child: Column(
+                                          children: [
+                                            Text(e["data"]["blackfoot"],style: TextStyle(fontSize: 30),),
+                                            Lottie.network(
+                                              e["data"]["Lottie"]??"https://lottie.host/018122ea-52fb-474a-9e47-897379e8e629/foSzXLAMUp.json",
+                                              renderCache: RenderCache.drawingCommands,
+                                            )
+                                          ],
+                                        ),
                                         )),
                                   ],
                                 )),
@@ -209,7 +225,7 @@ int scoreIndex = 0;
                               child: Container(
                                 child: Center(
                                   child: Text(e["data"]["english"],style: TextStyle(fontSize: 30),),
-                                ),
+                                )
                               ),
                             ),
                               onFlip: () {
@@ -218,7 +234,7 @@ int scoreIndex = 0;
                                 scoreIndex = index+1;
                                 score += 3;
                                 userRepo.updateScore(userRepo.uid, score);
-                                leaderboardRepo.addToLeaderBoard(userRepo.name, score);
+                                leaderboardRepo.addToLeaderBoard(userRepo.user.name, score);
                                 print("score is -------------- $score");
                                 double progress = (scoreIndex / snapshot.data!.length) ; // replace totalNumberOfCards with the actual number of cards
                                 print("progress is -------------- $progress");
@@ -293,13 +309,96 @@ int scoreIndex = 0;
                 right: MediaQuery.of(context).size.width * 0.25 ,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => VocabularyHome()));
+                      if(widget.category == 'Directions and Time') {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LearningPage(seriesName: 'Dvc1tl9L0UYgik1X5zOT')),
+                      );
+                      }else if(widget.category == 'Weather'){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LearningPage(seriesName: 'Ge8eXFpeuoMOpt4OJM4l')),
+                        );
+                        }else if(widget.category == 'Kinship Terms'){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LearningPage(seriesName: 'h3QH0rikK63QTZ7Lr8wP')),
+                        );
+                      }else if(widget.category == 'Classroom Commands') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LearningPage(seriesName: 'ueEFv1EI9xm9ciT8u2vt')),
+                        );
+                      }else if(widget.category == 'Time of the day') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LearningPage(seriesName: 'VJsM4pkVy0h9y74To9PG')),
+                        );
+                      }
                     },
-                    child: Text('Explore related phrases?',style: TextStyle(color: Colors.black),),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple
-                    )
+                    ),
+                    child: Text('Explore related phrases?',style: TextStyle(color: Colors.black),)
                 ),
+              ),
+              Positioned(
+                  top: 20,
+                  left: 30,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                          height: 30,
+                          width: 300,
+                          child: ValueListenableBuilder<double>(
+                            valueListenable: progressNotifier,
+                            builder: (context, value, child) {
+                              if(value>=1){
+                                Future.delayed(const Duration(seconds: 30), () {
+                                  _controllerCenter.play();
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    _showMyDialog(DefaultTabController.of(context));
+                                  });
+                                });
+
+                              }
+                              return LinearProgressIndicator(
+                                color: theme.lightPurple,
+                                minHeight: 30,
+                                borderRadius: BorderRadius.circular(20),
+                                value: value,
+                              );
+                            },
+                          )
+                      ),
+                      SizedBox(
+                          height: 70,
+                          width: 70,
+                          child:
+                          ValueListenableBuilder(
+                              valueListenable: isPlaying,
+                              builder: (context, value, child) {
+                                if(value == true) {
+                                  return Lottie.asset(
+                                    'assets/heart.json',
+                                    controller: lottieController,
+                                    height: 50,
+                                    width: 50,
+                                    fit: BoxFit.fill,
+                                  );
+                                }else{
+                                  return Icon(Icons.favorite_border,color: Colors.orangeAccent,size: 40,);
+                                }
+                              }
+                          )
+                      ),
+                    ],
+                  )
               ),
               
               Positioned(
@@ -368,7 +467,7 @@ int scoreIndex = 0;
     return path;
   }
 
-  void _showMyDialog() {
+  void _showMyDialog(TabController tabController) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -403,19 +502,25 @@ int scoreIndex = 0;
                     Navigator.of(context).pop();
                   },
                 ),
-                TextButton(
-                  child: const Text('Practice'),
-                  onPressed: () {
-                   //vocaProvide.tabController.index = 1;
-                    Navigator.of(context).pop();
-                  },
+                Builder(
+                  builder: (BuildContext context) {
+                    return TextButton(
+                      child: const Text('Practice'),
+                      onPressed: () {
+                        if(mounted) {
+                         tabController.animateTo(1);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  }
                 ),
               ],
             ),
             Positioned(
-              top: 220, // Adjust this value as needed
+              top: 270, // Adjust this value as needed
               right: 60, // Adjust this value as needed
-              child: Lottie.asset('assets/badge.json', width: 100, height: 100),
+              child: Lottie.asset('assets/badge.json', width: 50, height: 50),
             ),
 
           ],
