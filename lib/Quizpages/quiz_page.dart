@@ -23,7 +23,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   List<String> selectedSeries = [];
   late Future<String> _imageUrlFuture;
   String _imageUrl = "";
-  late final AudioPlayer player;
+  late AudioPlayer player = ref.watch(audioPlayerProvider);
   bool isPlaying = false;
 
   @override
@@ -349,7 +349,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             if (question.isAudioTypeQuestion)
               ElevatedButton.icon(
                 onPressed: () {
-                  final player = ref.watch(audioPlayerProvider);
                   playAudio(
                       question.questionText.split('|')[1], player, isPlaying);
                   setState(() {
