@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,10 +31,20 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       ),
     );
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: emailController.text.trim());
-      displayMessageToUser("Password Reset link sent!", context);
+      String email = emailController.text.trim();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('email', isEqualTo: email)
+              .get();
+      if (querySnapshot.docs.isEmpty) {
+        Navigator.pop(context);
+        displayMessageToUser("No user found with this email.", context);
+        return;
+      }
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       Navigator.pop(context);
+      displayMessageToUser("Password Reset link sent!", context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       displaySnackBarMessageToUser(e.message.toString(), context);

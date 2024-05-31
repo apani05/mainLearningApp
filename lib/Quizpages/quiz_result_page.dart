@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Phrases/provider/audioPlayerProvider.dart';
@@ -24,14 +25,16 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     final screenWidth = MediaQuery.of(context).size.width;
+    late AudioPlayer player = ref.watch(audioPlayerProvider);
 
     return Material(
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () {
+            onPressed: () async {
               if (mounted) {
+                player.stop();
                 Navigator.pop(context);
               }
             },
@@ -100,7 +103,6 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                             if (entry.value.isAudioTypeQuestion)
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  final player = ref.watch(audioPlayerProvider);
                                   playAudio(
                                       entry.value.questionText.split('|')[1],
                                       player,
