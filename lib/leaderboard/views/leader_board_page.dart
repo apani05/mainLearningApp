@@ -21,7 +21,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
 
   //List<Widget> items = List.generate(100, (index) => LeaderCard("sid",index: index, score: 20,));
   late Iterable<LeaderBoardModel> leader ;
-
+  String _selectedTimeRange = 'All-time';
   @override
   void initState() {
     super.initState();
@@ -54,7 +54,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
     final theme = ref.watch(themeProvider);
     final leaderboardRepo = ref.watch(leaderboardProvider);
     final currentUser = FirebaseAuth.instance.currentUser;
-final String? currentUserName;
+    final String? currentUserName;
     // Get the current user's name
     if(currentUser?.displayName?.isEmpty ?? false){
        currentUserName =  currentUser?.email;
@@ -64,7 +64,7 @@ final String? currentUserName;
 
 
     return  FutureBuilder(
-      future: leaderboardRepo.getTopHighScores(),
+      future: leaderboardRepo.getTopHighScores(_selectedTimeRange),
       builder: (context,snapshot) {
 
         if(snapshot.connectionState == ConnectionState.waiting){
@@ -88,6 +88,38 @@ final String? currentUserName;
                     height: 300,
                     width: 450,
                     child: Lottie.network('https://lottie.host/a59bd46f-ce8c-4fe5-88ea-b13a6fb2fa42/9izka5ILTd.json'),
+                  ),
+                ),
+                Positioned(
+                  top: 20,
+                  right: 10,
+                  child: Container(
+
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: theme.lightPurple,
+                    ),
+                    height: 50,
+                    width: 100,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropdownButton<String>(
+                        dropdownColor:  theme.lightPurple,
+                        style: TextStyle(color: Colors.white),
+                        value: _selectedTimeRange,
+                        items: <String>['Daily', 'Weekly', 'Monthly', 'All-time'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedTimeRange = newValue!;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ],

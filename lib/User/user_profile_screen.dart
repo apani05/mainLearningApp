@@ -26,7 +26,13 @@ String score = "0";
     super.initState();
   }
 
+  @override
+  void dispose() {
+    feedbackController.dispose();
+    super.dispose();
+  }
 
+final feedbackController = TextEditingController();
 double progress = 0.5;
 double progress2 = 0.2;
 String dropDownValue = "All";
@@ -106,7 +112,7 @@ String dropDownValue = "All";
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                                         child: Text(
-                                          getNameFromEmail(snapshot.data!.name??""),
+                                          snapshot.data!.name??"",
                                           style: const TextStyle(
                                             fontSize: 30,
                                             fontWeight: FontWeight.bold,
@@ -118,7 +124,7 @@ String dropDownValue = "All";
                                     Center(
                                       child: Text(
                                         UserProvide.email??"",
-                                        style:  TextStyle(
+                                        style:  const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -129,7 +135,7 @@ String dropDownValue = "All";
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Text(
+                                          const Text(
                                             "Dtae joined: ",
                                             style:  TextStyle(
                                               fontSize: 20,
@@ -139,7 +145,7 @@ String dropDownValue = "All";
                                           ),
                                           Text(
                                             snapshot.data!.joinedDate.toString(),
-                                            style:  TextStyle(
+                                            style:  const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
@@ -173,7 +179,7 @@ String dropDownValue = "All";
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
                                 child: PopupMenuButton<String>(
-                                  color: Color(0xffbdbcfb).withOpacity(0.9),
+                                  color: const Color(0xffbdbcfb).withOpacity(0.9),
                                   icon: const Icon(
                                     Icons.settings,
                                     color: Colors.white,
@@ -183,13 +189,13 @@ String dropDownValue = "All";
                                       case 'profile':
                                         Navigator.push(context,
                                             MaterialPageRoute(
-                                              builder: (context) => ProfileScoreFeed(),
+                                              builder: (context) =>  ProfileScoreFeed(uid: widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid),
                                             ));
                                         break;
                                       case 'ack':
                                         Navigator.push(context,
                                             MaterialPageRoute(
-                                              builder: (context) => Acknowledegement(),
+                                              builder: (context) => const Acknowledegement(),
                                             ));
                                         break;
                                     }
@@ -227,7 +233,7 @@ String dropDownValue = "All";
                           top:400,
                           left:MediaQuery.of(context).size.width*0.05,
                           child: Container(
-                            height: 200,
+                            height: 150,
                             width: MediaQuery.of(context).size.width - 35,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
@@ -239,7 +245,7 @@ String dropDownValue = "All";
                                 crossAxisCount: 4,
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => buildContainer(index, setHeader(index), setValues(index, snapshot)),
-                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
+                                staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 1),
                                 mainAxisSpacing: 14.0,
                                 crossAxisSpacing: 14.0,
                               ),
@@ -250,7 +256,7 @@ String dropDownValue = "All";
                           top:400,
                           left:MediaQuery.of(context).size.width*0.05,
                           child: Container(
-                            height: 200,
+                            height: 150,
                             width: MediaQuery.of(context).size.width - 35,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
@@ -262,7 +268,7 @@ String dropDownValue = "All";
                                 crossAxisCount: 4,
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => buildContainer(index, setHeader(index), setValues(index, snapshot)),
-                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
+                                staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 1),
                                 mainAxisSpacing: 14.0,
                                 crossAxisSpacing: 14.0,
                               ),
@@ -273,174 +279,174 @@ String dropDownValue = "All";
                     ),
                     Container(
                       margin: const EdgeInsets.all(20),
-                      height: 500,
+                      height: 200,
                       width: MediaQuery.of(context).size.width,
                       color: Colors.grey[400],
                       child: StatefulBuilder(
                         builder: (BuildContext context, StateSetter setState) {
                           return Column(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 40.0),
-                                    child: const Text(
-                                      "Completion Rate",
-                                      style: TextStyle(
-                                        color: Color(0xff6562df),
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 5,),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Color(0xffbdbcfd).withOpacity(0.8)
-                                    ),
-                                    child: DropdownButton<String>(
-                                      value: dropDownValue,
-                                      iconEnabledColor: Colors.white,
-                                      dropdownColor: Color(0xffbdbcfd).withOpacity(0.8),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      items: const [
-                                        DropdownMenuItem(
-                                          child: Text("All",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          value: "All",
-                                        ),
-                                        DropdownMenuItem(
-                                          child: Text("Today",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          value: "Today",
-                                        ),
-                                        DropdownMenuItem(
-                                          child: Text("This Week",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          value: "This Week",
-                                        ),
-                                        DropdownMenuItem(
-                                          child: Text("This Month",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),),
-                                          value: "This Month",
-                                        ),
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value == "All") {
-                                            progress = 0.5;
-                                            progress2 = 0.2;
-                                            dropDownValue = "All";
-                                          } else if (value == "Today") {
-                                            progress = 0.2;
-                                            progress2 = 0.9;
-                                            dropDownValue = "Today";
-                                          } else if (value == "This Week") {
-                                            progress = 0.5;
-                                            progress2 = 0.5;
-                                            dropDownValue = "This Week";
-                                          } else if (value == "This Month") {
-                                            progress = 0.8;
-                                            progress2 = 0.2;
-                                            dropDownValue = "This Month";
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 30,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  CustomPaint(
-                                    size: Size(150, 150),
-                                    painter: CustomCircularProgressPainter(
-                                      progress1: progress,
-                                      progress2: progress2,
-                                      color1: Colors.pinkAccent,
-                                      color2: Colors.green,
-                                    ),
-                                  ),
-                                  SizedBox(width: 20,),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            height: 30,
-                                            width: 30,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                          ),
-                                          const Text("Completed",
-                                            style: TextStyle(
-                                              color: Color(0xff6562df),
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            height: 30,
-                                            width: 30,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.green,
-                                            ),
-                                          ),
-                                          const Text("In Progress",
-                                            style: TextStyle(
-                                              color: Color(0xff6562df),
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 40,),
-                              Align(
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              //   children: [
+                              //     const Padding(
+                              //       padding: EdgeInsets.only(right: 40.0),
+                              //       child: Text(
+                              //         "Completion Rate",
+                              //         style: TextStyle(
+                              //           color: Color(0xff6562df),
+                              //           fontSize: 20,
+                              //           fontWeight: FontWeight.bold,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     const SizedBox(width: 5,),
+                              //     Container(
+                              //       padding: const EdgeInsets.symmetric(horizontal: 10),
+                              //       decoration: BoxDecoration(
+                              //         borderRadius: BorderRadius.circular(10),
+                              //         color: const Color(0xffbdbcfd).withOpacity(0.8)
+                              //       ),
+                              //       child: DropdownButton<String>(
+                              //         value: dropDownValue,
+                              //         iconEnabledColor: Colors.white,
+                              //         dropdownColor: const Color(0xffbdbcfd).withOpacity(0.8),
+                              //         style: const TextStyle(
+                              //           color: Colors.white,
+                              //           fontSize: 20,
+                              //           fontWeight: FontWeight.bold,
+                              //         ),
+                              //         items: const [
+                              //           DropdownMenuItem(
+                              //             value: "All",
+                              //             child: Text("All",
+                              //               style: TextStyle(
+                              //                 color: Colors.white,
+                              //                 fontSize: 14,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           ),
+                              //           DropdownMenuItem(
+                              //             value: "Today",
+                              //             child: Text("Today",
+                              //               style: TextStyle(
+                              //                 color: Colors.white,
+                              //                 fontSize: 14,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           ),
+                              //           DropdownMenuItem(
+                              //             value: "This Week",
+                              //             child: Text("This Week",
+                              //               style: TextStyle(
+                              //                 color: Colors.white,
+                              //                 fontSize: 14,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           ),
+                              //           DropdownMenuItem(
+                              //             value: "This Month",
+                              //             child: Text("This Month",
+                              //               style: TextStyle(
+                              //                 color: Colors.white,
+                              //                 fontSize: 14,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),),
+                              //           ),
+                              //         ],
+                              //         onChanged: (value) {
+                              //           setState(() {
+                              //             if (value == "All") {
+                              //               progress = 0.5;
+                              //               progress2 = 0.2;
+                              //               dropDownValue = "All";
+                              //             } else if (value == "Today") {
+                              //               progress = 0.2;
+                              //               progress2 = 0.9;
+                              //               dropDownValue = "Today";
+                              //             } else if (value == "This Week") {
+                              //               progress = 0.5;
+                              //               progress2 = 0.5;
+                              //               dropDownValue = "This Week";
+                              //             } else if (value == "This Month") {
+                              //               progress = 0.8;
+                              //               progress2 = 0.2;
+                              //               dropDownValue = "This Month";
+                              //             }
+                              //           });
+                              //         },
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // const SizedBox(height: 30,),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              //   children: [
+                              //     CustomPaint(
+                              //       size: const Size(150, 150),
+                              //       painter: CustomCircularProgressPainter(
+                              //         progress1: progress,
+                              //         progress2: progress2,
+                              //         color1: Colors.pinkAccent,
+                              //         color2: Colors.green,
+                              //       ),
+                              //     ),
+                              //     const SizedBox(width: 20,),
+                              //     Column(
+                              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //       children: [
+                              //         Row(
+                              //           children: [
+                              //             Container(
+                              //               height: 30,
+                              //               width: 30,
+                              //               decoration: const BoxDecoration(
+                              //                 shape: BoxShape.circle,
+                              //                 color: Colors.pinkAccent,
+                              //               ),
+                              //             ),
+                              //             const Text("Completed",
+                              //               style: TextStyle(
+                              //                 color: Color(0xff6562df),
+                              //                 fontSize: 20,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //         const SizedBox(height: 20,),
+                              //         Row(
+                              //           children: [
+                              //             Container(
+                              //               height: 30,
+                              //               width: 30,
+                              //               decoration: const BoxDecoration(
+                              //                 shape: BoxShape.circle,
+                              //                 color: Colors.green,
+                              //               ),
+                              //             ),
+                              //             const Text("In Progress",
+                              //               style: TextStyle(
+                              //                 color: Color(0xff6562df),
+                              //                 fontSize: 20,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ],
+                              // ),
+                              // const SizedBox(height: 40,),
+                              const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                                  padding: EdgeInsets.symmetric(horizontal: 14.0),
                                   child: Text(
                                     "Feedback",
                                     style: TextStyle(
@@ -451,49 +457,58 @@ String dropDownValue = "All";
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 10,),
+                              const SizedBox(height: 10,),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: TextField(
+                                  controller: feedbackController,
                                   decoration: InputDecoration(
                                     fillColor: Colors.white,
                                     filled: true,
                                     // hintText: "",
-                                    hintStyle: TextStyle(
+                                    hintStyle: const TextStyle(
                                       color: Colors.white,
                                     ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.black,
                                       ),
 
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.black,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.black,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 30,),
-                              ElevatedButton(onPressed: (){},
+                              const SizedBox(height: 30,),
+                              ElevatedButton(onPressed: (){
+                                UserProvide.createFeedback(
+                                  feedback: feedbackController.text,
+                                  id: widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid,
+                                  name: snapshot.data!.name??"",
+
+                                );
+                                feedbackController.clear();
+                              },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Color(0xffbdbcfd),
-                                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                  backgroundColor: const Color(0xffbdbcfd),
+                                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: Text("Submit",
+                                child: const Text("Submit",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -566,23 +581,23 @@ Widget buildContainer(int index, String header, String value) {
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(15),
-      color:  Color(0xffbdbcfd)
+      color:  const Color(0xffbdbcfd)
     ),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           header,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        SizedBox(height: 10), // Add some spacing between the header and the value
+        const SizedBox(height: 10), // Add some spacing between the header and the value
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             color: Colors.white,
           ),

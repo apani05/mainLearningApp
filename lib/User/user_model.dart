@@ -5,6 +5,8 @@ class UserModel {
   final int score;
   final int rank;
   final int heart;
+  final String email;
+  final String userName;
   final CardBadge badge;
   final String joinedDate ;
   final List<SavedWords> savedWords;
@@ -16,9 +18,11 @@ class UserModel {
     required this.score,
     required this.rank,
     required this.heart,
+    required this.email,
     required this.savedWords,
     required this.badge,
-    required this.joinedDate
+    required this.joinedDate,
+    required this.userName
   });
 
   String get getName => name;
@@ -28,15 +32,19 @@ class UserModel {
   int get getRank => rank;
   int get getHeart => heart;
   String get getJoinedDate => joinedDate;
+  String get getUserName => userName;
+  String get getEmail => email;
   List<SavedWords> get getSavedWords => savedWords;
 
   Map<String, dynamic> toJson() => {
         'name': name,
+        'email': email,
         'uid': uid,
         'imageUrl': imageUrl,
         'score': score,
         'rank': rank,
         'heart': heart,
+        'userName': userName,
     "badge": badge.toJson(),
     'joinedDate': joinedDate,
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
@@ -46,12 +54,14 @@ class UserModel {
     return UserModel(
       badge: CardBadge.fromJson(json["badge"]),
       name: json['name'],
+      email: json['email'],
       uid: json['uid'],
       imageUrl: json['imageUrl'],
       score: json['score'],
       rank: json['rank'],
       heart: json['heart'],
       joinedDate: json['joindate'],
+      userName: json['userName'],
       savedWords: (json['savedWords'] as List)
           .map((item) {
             print("item to be added $item");

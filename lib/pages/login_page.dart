@@ -43,6 +43,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 score: 0,
                 rank: 0,
                 heart: 0,
+                userName: emailController.text.split('@').first,
+                email: emailController.text,
                 savedWords: [],
             badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
               joinedDate: DateTime.now().toString(),

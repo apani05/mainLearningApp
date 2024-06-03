@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 // LeaderBoardModel leaderBoardModelFromJson(String str) => LeaderBoardModel.fromJson(json.decode(str));
 //
 // String leaderBoardModelToJson(LeaderBoardModel data) => json.encode(data.toJson());
@@ -21,6 +23,14 @@ class LeaderBoardModel {
     return LeaderBoardModel(
       name: isUser ? 'You' : json['name'],
       score: json['score'],
+
+    );
+  }
+
+  static fromDocument(QueryDocumentSnapshot<Object?> doc,bool isUser) {
+    return LeaderBoardModel(
+      name: isUser ? 'You' : doc['name'],
+      score: doc['score'],
     );
   }
 }

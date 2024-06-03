@@ -20,6 +20,15 @@ class PracticePage extends ConsumerStatefulWidget {
   @override
   PracticePageState createState() => PracticePageState();
 }
+final GlobalKey<PracticePageState> practicePageKey = GlobalKey<PracticePageState>();
+
+void someFunction(BuildContext context) {
+  if (practicePageKey.currentState != null) {
+    // The PracticePage is currently in the widget tree
+  } else {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
+}
 
 class PracticePageState extends ConsumerState<PracticePage> {
 
@@ -36,7 +45,6 @@ class PracticePageState extends ConsumerState<PracticePage> {
   String _selectedAnswer = '';
   @override
   void initState() {
-
     super.initState();
     fetchQuestions();
     print("initState");
@@ -54,11 +62,17 @@ class PracticePageState extends ConsumerState<PracticePage> {
     super.didChangeDependencies();
   }
 
+  @override
+  dispose() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    super.dispose();
+  }
 
   void _nextQuestion() {
     setState(() {
       if (_currentQuestionIndex < _questions.length - 1) {
         _currentQuestionIndex++;
+        ref.read(currentQuestionIndexProvider.notifier).state = _currentQuestionIndex;
         _secondsRemaining = 10;
         _isAnswered = false;
        // _startTimer();
@@ -101,7 +115,7 @@ class PracticePageState extends ConsumerState<PracticePage> {
           content: isCorrect?Text(message):
           Text(message + "\nCorrect Answer is ${_questions[_currentQuestionIndex].correctAnswer}", style: TextStyle(color: Colors.white)),
           backgroundColor: backgroundColor,
-          duration: Duration(days:365),
+          duration: Duration(seconds: 5),
           action: SnackBarAction(
             label: 'Next',
             onPressed: () {
@@ -123,261 +137,310 @@ class PracticePageState extends ConsumerState<PracticePage> {
   @override
   Widget build(BuildContext context) {
    // final vocaProvide = ref.read(vocaProvider);
+    _currentQuestionIndex = ref.watch(currentQuestionIndexProvider.notifier).state;
     FirebaseStorage storage = FirebaseStorage.instance;
     Widget body;
     if (_questions.isEmpty) {
       body = Center(child: CircularProgressIndicator());
     } else {
       if (_questions[_currentQuestionIndex].quizType == '1') {
-        return Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text("Tap the audio. What does the word represent ?",
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),),
-              SizedBox(width: 26.0),
-              GestureDetector(
-                onTap: () async{
-
-                  AudioPlayer audioPlayer = AudioPlayer();
-                  print(_questions[_currentQuestionIndex]);
-                  print("sound to be played ${_questions[_currentQuestionIndex].sound}");
-                  Uri downloadUrl =Uri.parse(await storage.refFromURL(_questions[_currentQuestionIndex].sound).getDownloadURL()) ;
-                  await audioPlayer.play(UrlSource( downloadUrl.toString()));
-                },
-                child: Center(
-                  child: Container(
-                    height: 180,
-                    width: 180,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Center(
-                      // child: vocaProvide.isDownloading?
-                      // Lottie.asset("assets/heart.json"):
-                        child: Lottie.network(_questions[_currentQuestionIndex].audioLottie,
-                          height: 180,
-                          width: 180,
-                          fit: BoxFit.cover,)
-                    ) ,
-                  ),
-                ),
-              ),
-              SizedBox(height: 26.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+        return Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  StatefulBuilder(
-                      builder: (context,StateSetter setState) {
-                        return ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: _isAnswered
-                                ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![0].word!
-                                ? Colors.green
-                                : _selectedAnswer == _questions[_currentQuestionIndex].options![0].word!
-                                ? Colors.red
-                                : null
-                                : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            maximumSize: Size(180, 120),
-                            minimumSize: Size(180, 120),
+                  Text("Tap the audio. What does the word represent ?",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),),
+                  SizedBox(width: 26.0),
+                  GestureDetector(
+                    onTap: () async{
+
+                      AudioPlayer audioPlayer = AudioPlayer();
+                      print(_questions[_currentQuestionIndex]);
+                      print("sound to be played ${_questions[_currentQuestionIndex].sound}");
+                      Uri downloadUrl =Uri.parse(await storage.refFromURL(_questions[_currentQuestionIndex].sound).getDownloadURL()) ;
+                      await audioPlayer.play(UrlSource( downloadUrl.toString()));
+                    },
+                    child: Center(
+                      child: Container(
+                        height: 180,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Center(
+                          // child: vocaProvide.isDownloading?
+                          // Lottie.asset("assets/heart.json"):
+                            child: Lottie.network(_questions[_currentQuestionIndex].audioLottie,
+                              height: 180,
+                              width: 180,
+                              fit: BoxFit.cover,)
+                        ) ,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 26.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      StatefulBuilder(
+                          builder: (context,StateSetter setState) {
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isAnswered
+                                    ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![0].word!
+                                    ? Colors.green
+                                    : _selectedAnswer == _questions[_currentQuestionIndex].options![0].word!
+                                    ? Colors.red
+                                    : null
+                                    : null,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                maximumSize: Size(180, 120),
+                                minimumSize: Size(180, 120),
+                              ),
+                              onPressed: () {
+                                _selectAnswer(_questions[_currentQuestionIndex].options[0].word);
+                              },
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                      height: 100,
+                                      width: 100,
+                                      child: Lottie.network(_questions[_currentQuestionIndex].options[0].lottie)),
+                                  Text(_questions[_currentQuestionIndex].options[0].word),
+                                ],
+                              ),
+                            );
+                          }
+                      ),
+                      SizedBox(height: 16.0),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isAnswered
+                              ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![1].word!
+                              ? Colors.green
+                              : _selectedAnswer == _questions[_currentQuestionIndex].options![1].word!
+                              ? Colors.red
+                              : null
+                              : null,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
                           ),
-                          onPressed: () {
-                            _selectAnswer(_questions[_currentQuestionIndex].options[0].word);
-                          },
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: Lottie.network(_questions[_currentQuestionIndex].options[0].lottie)),
-                              Text(_questions[_currentQuestionIndex].options[0].word),
-                            ],
-                          ),
-                        );
-                      }
+                          maximumSize: Size(180, 120),
+                          minimumSize: Size(180, 120),
+                        ),
+                        onPressed: () {
+                          _selectAnswer(_questions[_currentQuestionIndex].options![1].word!);
+                        },
+                        child: Column(
+                          children: [
+                            SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Lottie.network(_questions[_currentQuestionIndex].options![1].lottie!)),
+                            Text(_questions[_currentQuestionIndex].options[1].word),
+                          ],
+                        ),
+                      ),
+
+                    ],
                   ),
                   SizedBox(height: 16.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: _isAnswered
-                          ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![1].word!
-                          ? Colors.green
-                          : _selectedAnswer == _questions[_currentQuestionIndex].options![1].word!
-                          ? Colors.red
-                          : null
-                          : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isAnswered
+                              ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![2].word
+                              ? Colors.green
+                              : _selectedAnswer == _questions[_currentQuestionIndex].options![2].word
+                              ? Colors.red
+                              : null
+                              : null,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                          maximumSize: Size(180, 120),
+                          minimumSize: Size(180, 120),
+                        ),
+                        onPressed: () {
+                          _selectAnswer(_questions[_currentQuestionIndex].options![2].word!);
+                        },
+                        child: Column(
+                          children: [
+                            SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Lottie.network(_questions[_currentQuestionIndex].options![2].lottie!)),
+                            Text(_questions[_currentQuestionIndex].options![2].word!),
+                          ],
+                        ),
                       ),
-                      maximumSize: Size(180, 120),
-                      minimumSize: Size(180, 120),
-                    ),
-                    onPressed: () {
-                      _selectAnswer(_questions[_currentQuestionIndex].options![1].word!);
-                    },
-                    child: Column(
-                      children: [
-                        SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: Lottie.network(_questions[_currentQuestionIndex].options![1].lottie!)),
-                        Text(_questions[_currentQuestionIndex].options[1].word),
-                      ],
-                    ),
+                      SizedBox(height: 25.0),
+
+                    ],
                   ),
 
                 ],
               ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: _isAnswered
-                          ? _questions[_currentQuestionIndex].correctAnswer == _questions[_currentQuestionIndex].options![2].word
-                          ? Colors.green
-                          : _selectedAnswer == _questions[_currentQuestionIndex].options![2].word
-                          ? Colors.red
-                          : null
-                          : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      maximumSize: Size(180, 120),
-                      minimumSize: Size(180, 120),
-                    ),
-                    onPressed: () {
-                      _selectAnswer(_questions[_currentQuestionIndex].options![2].word!);
-                    },
-                    child: Column(
-                      children: [
-                        SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: Lottie.network(_questions[_currentQuestionIndex].options![2].lottie!)),
-                        Text(_questions[_currentQuestionIndex].options![2].word!),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 25.0),
-
-                ],
-              ),
-            ],
-          ),
-        );
-      } else if (_questions[_currentQuestionIndex].quizType == '2') {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 16.0),
-            Text("${_questions[_currentQuestionIndex].question}",
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),),
-            SizedBox(height: 16.0),
-            StatefulBuilder(
-              builder:(context,StateSetter setState){
-
-              return LWidget(
-                url: _questions[_currentQuestionIndex].options![0].lottie!,
-                text: _questions[_currentQuestionIndex].options![0].word!,
-                isAnswered: _isAnswered,
-                selectedAnswer: _selectedAnswer,
-                correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
-                onTap: _selectAnswer,
-                soundUrl: _questions[_currentQuestionIndex].options![0].sound!,
-              );}
             ),
-            SizedBox(height: 16.0),
-            StatefulBuilder(
-              builder: (context,StateSetter setState) {
-                return LWidget(
-                  url: _questions[_currentQuestionIndex].options![1].lottie!,
-                  text: _questions[_currentQuestionIndex].options![1].word!,
-                  isAnswered: _isAnswered,
-                  selectedAnswer: _selectedAnswer,
-                  correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
-                  onTap: _selectAnswer,
-                  soundUrl: _questions[_currentQuestionIndex].options![1].sound!,
-                );
-              }
-            ),
-            SizedBox(height: 16.0),
-            LWidget(
-              url: _questions[_currentQuestionIndex].options![2].lottie!,
-              text: _questions[_currentQuestionIndex].options![2].word!,
-              isAnswered: _isAnswered,
-              selectedAnswer: _selectedAnswer,
-              correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
-              onTap: _selectAnswer,
-              soundUrl: _questions[_currentQuestionIndex].options![2].sound!,
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: ElevatedButton(
+                onPressed: () {
+                  _nextQuestion();
+                },
+                child: Text("Next"),
+              )
             ),
           ],
         );
-      }else{
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+      }
+      else if (_questions[_currentQuestionIndex].quizType == '2') {
+        return Stack(
           children: [
-            SizedBox(height: 26.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("${_questions[_currentQuestionIndex].question}",
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),),
-            ),
-            SizedBox(height: 36.0),
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 100,
-                      width: 180,
-                      child: normalOption(_questions[_currentQuestionIndex].options![0].word!, _questions[_currentQuestionIndex].correctAnswer),
+                    SizedBox(height: 16.0),
+                    Text("${_questions[_currentQuestionIndex].question}",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                    SizedBox(height: 16.0),
+                    StatefulBuilder(
+                      builder:(context,StateSetter setState){
+
+                      return LWidget(
+                        url: _questions[_currentQuestionIndex].options![0].lottie!,
+                        text: _questions[_currentQuestionIndex].options![0].word!,
+                        isAnswered: _isAnswered,
+                        selectedAnswer: _selectedAnswer,
+                        correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
+                        onTap: _selectAnswer,
+                        soundUrl: _questions[_currentQuestionIndex].options![0].sound!,
+                      );}
                     ),
-                    SizedBox(
-                      height: 100,
-                      width: 180,
-                      child: normalOption(_questions[_currentQuestionIndex].options![1].word!, _questions[_currentQuestionIndex].correctAnswer),
+                    SizedBox(height: 16.0),
+                    StatefulBuilder(
+                      builder: (context,StateSetter setState) {
+                        return LWidget(
+                          url: _questions[_currentQuestionIndex].options![1].lottie!,
+                          text: _questions[_currentQuestionIndex].options![1].word!,
+                          isAnswered: _isAnswered,
+                          selectedAnswer: _selectedAnswer,
+                          correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
+                          onTap: _selectAnswer,
+                          soundUrl: _questions[_currentQuestionIndex].options![1].sound!,
+                        );
+                      }
                     ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                      width: 180,
-                      child: normalOption(_questions[_currentQuestionIndex].options![2].word!, _questions[_currentQuestionIndex].correctAnswer),
-                    ),
-                    SizedBox(
-                      height: 100,
-                      width: 180,
-                      child: normalOption(_questions[_currentQuestionIndex].options![3].word!, _questions[_currentQuestionIndex].correctAnswer),
+                    SizedBox(height: 16.0),
+                    LWidget(
+                      url: _questions[_currentQuestionIndex].options![2].lottie!,
+                      text: _questions[_currentQuestionIndex].options![2].word!,
+                      isAnswered: _isAnswered,
+                      selectedAnswer: _selectedAnswer,
+                      correctAnswer: _questions[_currentQuestionIndex].correctAnswer,
+                      onTap: _selectAnswer,
+                      soundUrl: _questions[_currentQuestionIndex].options![2].sound!,
                     ),
                   ],
                 ),
               ],
             ),
+            Positioned(
+                bottom: 10,
+                right: 10,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _nextQuestion();
+                  },
+                  child: Text("Next"),
+                )
+            ),
+          ],
+        );
+      }else{
+        return Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 26.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("${_questions[_currentQuestionIndex].question}",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),),
+                ),
+                SizedBox(height: 36.0),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          height: 100,
+                          width: 180,
+                          child: normalOption(_questions[_currentQuestionIndex].options![0].word!, _questions[_currentQuestionIndex].correctAnswer),
+                        ),
+                        SizedBox(
+                          height: 100,
+                          width: 180,
+                          child: normalOption(_questions[_currentQuestionIndex].options![1].word!, _questions[_currentQuestionIndex].correctAnswer),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          height: 100,
+                          width: 180,
+                          child: normalOption(_questions[_currentQuestionIndex].options![2].word!, _questions[_currentQuestionIndex].correctAnswer),
+                        ),
+                        SizedBox(
+                          height: 100,
+                          width: 180,
+                          child: normalOption(_questions[_currentQuestionIndex].options![3].word!, _questions[_currentQuestionIndex].correctAnswer),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
+              ],
+            ),
+            Positioned(
+                bottom: 10,
+                right: 10,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _nextQuestion();
+                  },
+                  child: Text("Next"),
+                )
+            ),
           ],
         );
       }
@@ -385,28 +448,16 @@ class PracticePageState extends ConsumerState<PracticePage> {
     }
     return Scaffold(
       body:body,
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()
+      {
+      _nextQuestion();
+    },
+        backgroundColor: Colors.red,
+    ),
     );
   }
 
-  void showCustomLottieSnackbar(BuildContext context) {
-    final snackBar = SnackBar(
-      backgroundColor: Colors.green,
-      content: Row(
-        children: [
-          Lottie.asset('assets/1st-place.json', width: 40), // Path to your Lottie file
-          Expanded(
-            child: Text(
-              'This is a custom snackbar with Lottie!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-      duration: Duration(days: 365),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
   void showAlertDilog() {
     showDialog(
         context: context,
@@ -443,7 +494,7 @@ class PracticePageState extends ConsumerState<PracticePage> {
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: isAnswered
+              backgroundColor: isAnswered
                   ? correctAnswer == text
                   ? Colors.green
                   : selectedAnswer == text
@@ -513,7 +564,7 @@ class PracticePageState extends ConsumerState<PracticePage> {
   normalOption(String s, question) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: _isAnswered
+        backgroundColor: _isAnswered
             ? question == s
             ? Colors.green
             : _selectedAnswer == s

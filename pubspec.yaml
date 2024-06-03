@@ -54,6 +54,7 @@ dependencies:
   confetti: ^0.7.0
   animated_text_kit: ^4.2.2
   random_color:
+  image_picker:
 
 
 

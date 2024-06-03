@@ -33,7 +33,6 @@ class ThemeNotifier extends ChangeNotifier {
         brightness: Brightness.dark,
         primaryColor: Colors.black,
         hintColor: Colors.white,
-        backgroundColor: Colors.black,
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black,
@@ -55,48 +54,22 @@ class ThemeNotifier extends ChangeNotifier {
           color: Colors.white,
         ),
         textTheme: const TextTheme(
-          headline1: TextStyle(
+          headlineLarge: TextStyle(
             color: Colors.white,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
-          headline2: TextStyle(
+          headlineMedium: TextStyle(
             color: Colors.white,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
-          headline3: TextStyle(
+          headlineSmall: TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
-          headline4: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-          headline5: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          headline6: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-          bodyText1: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-          ),
-          bodyText2: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-      );
+      ));
 
   ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
@@ -121,45 +94,20 @@ class ThemeNotifier extends ChangeNotifier {
           color: Colors.black,
         ),
         textTheme: const TextTheme(
-          headline1: TextStyle(
+          headlineLarge: TextStyle(
             color: Colors.black,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
-          headline2: TextStyle(
+          headlineMedium: TextStyle(
             color: Colors.black,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
-          headline3: TextStyle(
+          headlineSmall: TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold,
-          ),
-          headline4: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-          headline5: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          headline6: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-          bodyText1: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-          ),
-          bodyText2: TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
           ),
         ),
       );

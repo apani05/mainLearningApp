@@ -62,6 +62,7 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
     lottieController.dispose();
     super.dispose();
   }
+
   setNewBadge(String category){
     switch(category){
       case 'Weather':
@@ -106,6 +107,7 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
   // }
 ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
+  ValueNotifier<int> lastIndex = ValueNotifier<int>(0);
 int index = 0;
 int scoreIndex = 0;
   setDocRefCat(String s){
@@ -119,7 +121,7 @@ int scoreIndex = 0;
       case 'Days':
         return 'class_d_';
       case 'Kinship Terms':
-        return 'class_e_';
+        return 'Kinship_';
       case 'Directions and Time':
         return 'directions_time_';
       case 'Food':
@@ -168,9 +170,11 @@ int scoreIndex = 0;
                     children: [
                       IconButton(
                         onPressed: () {
-                          buttonCarouselController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.linear);
+                          buttonCarouselController.previousPage(
+                              duration: Duration(milliseconds: 300), curve: Curves.linear);
                           if (index != 0 )index--;
                          // if (scoreIndex != 0 )scoreIndex--;
+                          lastIndex.value = index;
                         },
                         // child: Icon(Icons.arrow_back_ios,color: Colors.black,),
                         style: ElevatedButton.styleFrom(
@@ -262,17 +266,26 @@ int scoreIndex = 0;
                           ),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          buttonCarouselController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.linear);
-                          scoreIndex = index+1;
-                          index++;
+                      ValueListenableBuilder(
+                        builder: (context, value, child) {
+                          return Offstage(
+                            offstage: index == snapshot.data!.length - 1,
+                            child: IconButton(
+                              onPressed: () {
+                                buttonCarouselController.nextPage(
+                                    duration: const Duration(milliseconds: 300), curve: Curves.linear);
+                                scoreIndex = index+1;
+                                index++;
+                                lastIndex.value = index;
 
-                        },
-                        // child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.lightPurple
-                        ), icon: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              },
+                              // child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.lightPurple
+                              ), icon: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                            ),
+                          );
+                        }, valueListenable:lastIndex,
                       ),
                     ],
                   ),
@@ -283,7 +296,7 @@ int scoreIndex = 0;
                 right: MediaQuery.of(context).size.width * 0.25 ,
                 child: ElevatedButton(
                     onPressed: () {
-                      leaderboardRepo.getTopHighScores();
+                     // leaderboardRepo.getTopHighScores("all", false);
                      // leaderboardRepo.saveHighScore("shrek", );
                       userRepo.addWordToUser(userRepo.uid, SavedWords.fromJson(snapshot.data![index]["data"]), );
                     },

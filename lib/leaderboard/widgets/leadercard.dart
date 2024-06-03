@@ -71,7 +71,7 @@ print("querySnapshot ${querySnapshot.docs}");
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text((widget.index+1).toString(),
-                        style: theme.themeData.textTheme.headline3),
+                        style: theme.themeData.textTheme.headlineSmall),
                     const CircleAvatar(
                       radius: 23,
                       backgroundColor: Colors.green,
@@ -82,11 +82,11 @@ print("querySnapshot ${querySnapshot.docs}");
                     ),
                     Text(
                       widget.name==""?"username":widget.name,
-                      style: theme.themeData.textTheme.headline4,
+                      style: theme.themeData.textTheme.headlineSmall,
                     ),
                     Text(
                       widget.score.toString(),
-                      style: theme.themeData.textTheme.headline3,
+                      style: theme.themeData.textTheme.headlineSmall,
                     )
                   ]
               ),

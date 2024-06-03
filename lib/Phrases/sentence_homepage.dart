@@ -127,7 +127,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                 child: Text(
                   'Features',
-                  style: theme.themeData.textTheme.headline6,
+                  style: theme.themeData.textTheme.headlineSmall,
                 ),
               ),
               Container(
@@ -146,7 +146,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                 child: Text(
                   'Categories',
-                  style: theme.themeData.textTheme.headline6,
+                  style: theme.themeData.textTheme.headlineSmall,
                 ),
               ),
               Expanded(

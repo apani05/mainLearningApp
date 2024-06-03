@@ -64,7 +64,7 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
         // The widgets that will be shown when the corresponding tab is selected
         // Replace these with your own widgets
               FlashCradPage(category: widget.category,),
-              PracticePage(category: widget.category),
+              PracticePage(category: widget.category, ),
               SavedPage(),
       ],
     ),
