@@ -65,7 +65,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     Text(
                       'Welcome to ',
-                      style: widget.theme.textTheme.headline1?.copyWith(
+                      style: widget.theme.textTheme.headlineLarge?.copyWith(
                         color: Colors.white,
                         fontSize: 30,
                       ),
@@ -85,7 +85,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               Text(
                 'Start your quest ',
-                style: widget.theme.textTheme.headline1?.copyWith(
+                style: widget.theme.textTheme.headlineLarge?.copyWith(
                   color: theme.lightPurple,
                 ),
               ),
@@ -111,7 +111,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Text(
                             'Vocabulary',
                             textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headline1
+                            style: widget.theme.textTheme.headlineLarge
                                 ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
                           // Text(
@@ -160,7 +160,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Text(
                             'Phrases',
                             textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headline1
+                            style: widget.theme.textTheme.headlineLarge
                                 ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
                           // Text(

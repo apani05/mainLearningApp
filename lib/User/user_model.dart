@@ -9,6 +9,7 @@ class UserModel {
   final int score;
   final int rank;
   final int heart;
+  final String userName;
   final CardBadge badge;
   final String joinedDate;
   final List<SavedWords> savedWords;
@@ -26,8 +27,8 @@ class UserModel {
       required this.savedWords,
       required this.savedPhrases,
       required this.badge,
-      required this.joinedDate});
-
+      required this.joinedDate,
+      required this.userName});
   String get getName => name;
   String get getEmail => email;
   String get getUid => uid;
@@ -37,6 +38,7 @@ class UserModel {
   int get getRank => rank;
   int get getHeart => heart;
   String get getJoinedDate => joinedDate;
+  String get getUserName => userName;
   List<SavedWords> get getSavedWords => savedWords;
   List<CardData> get getSavedPhrases => savedPhrases;
 
@@ -49,7 +51,8 @@ class UserModel {
         'score': score,
         'rank': rank,
         'heart': heart,
-        "badge": badge.toJson(),
+        'userName': userName,
+        'badge': badge.toJson(),
         'joinedDate': joinedDate,
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
         'savedPhrases': savedPhrases.map((phrase) => phrase.toJson()).toList(),
@@ -67,6 +70,7 @@ class UserModel {
       rank: json['rank'],
       heart: json['heart'],
       joinedDate: json['joindate'],
+      userName: json['userName'],
       savedWords: (json['savedWords'] as List).map((item) {
         print("item to be added $item");
         return SavedWords.fromJson(item);

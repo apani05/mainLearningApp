@@ -29,3 +29,5 @@ final notificationProvider = ChangeNotifierProvider((ref) {
 final dissCussionProvider = ChangeNotifierProvider((ref) {
   return FirestoreDiscussProvider();
 });
+
+final currentQuestionIndexProvider = StateProvider<int>((ref) => 0);

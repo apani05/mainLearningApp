@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import '../Phrases/provider/blogProvider.dart';
 
@@ -17,6 +21,8 @@ class UserProvider extends ChangeNotifier {
   UserModel _user;
   int _heart = 0;
 
+  String _username = "";
+
   UserProvider()
       : _user = UserModel(
           badge: CardBadge(
@@ -32,6 +38,7 @@ class UserProvider extends ChangeNotifier {
           joinedDate: '',
           savedWords: [],
           savedPhrases: [],
+          userName: '',
         ); // Initialize _user in the constructor
 
   UserModel get user => _user;
@@ -66,6 +73,8 @@ class UserProvider extends ChangeNotifier {
   int get rank => _rank;
 
   int get heart => _heart;
+
+  String get username => _username;
 
   List<SavedWords> get savedWords => _savedWords;
 
@@ -140,6 +149,11 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  void setUsername(String username) {
+    _username = username;
+    notifyListeners();
+  }
+
   void clear() {
     _name = '';
     _email = '';
@@ -167,6 +181,7 @@ class UserProvider extends ChangeNotifier {
       'badge': user.badge.toJson(),
       'joinedDate': user.joinedDate,
       'heart': user.heart,
+      'userName': user.userName,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
       'savedPhrases':
           user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
@@ -179,13 +194,15 @@ class UserProvider extends ChangeNotifier {
     if (documentSnapshot.exists) {
       final user =
           UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
-      setEmail(user.name);
+      setEmail(user.email);
+      setName(user.name);
       setUid(user.uid);
       setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
       setHeart(user.heart);
+      setUsername(user.userName);
       print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   setWords(element);
@@ -196,6 +213,7 @@ class UserProvider extends ChangeNotifier {
     return documentSnapshot.exists;
   }
 
+  //get user from db while using app
   Future<UserModel> getUserFromDb(String uid) async {
     DocumentSnapshot documentSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -204,13 +222,15 @@ class UserProvider extends ChangeNotifier {
       final user =
           UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
       setUserData(user);
-      setEmail(user.name);
+      setEmail(user.email);
+      setName(user.name);
       setUid(user.uid);
       setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
       setHeart(user.heart);
+      setUsername(user.userName);
       print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   if(!_savedWords.contains(element))
@@ -371,6 +391,124 @@ class UserProvider extends ChangeNotifier {
         .collection('users')
         .doc(uid)
         .update({'joindate': date});
+  }
+
+  Future<void> changePassword(
+      String email, String currentPassword, String newPassword) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Re-authenticate the user
+        AuthCredential credential = EmailAuthProvider.credential(
+            email: email, password: currentPassword);
+        await user.reauthenticateWithCredential(credential);
+
+        // If re-authentication is successful, update the password
+        await user.updatePassword(newPassword);
+        print("Password has been changed successfully");
+      } catch (error) {
+        print("Failed to change password: $error");
+      }
+    }
+  }
+
+  Future<void> changeEmail(
+      String email, String password, String newEmail) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Re-authenticate the user
+        AuthCredential credential =
+            EmailAuthProvider.credential(email: email, password: password);
+        await user.reauthenticateWithCredential(credential);
+
+        // If re-authentication is successful, update the email
+        await user.updateEmail(newEmail);
+        print("Email has been changed successfully");
+      } catch (error) {
+        print("Failed to change email: $error");
+      }
+    }
+  }
+
+  Future<void> changeName(String uid, String name) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'name': name});
+  }
+
+  // Future<void> changePhotoUrl(String uid, String photoUrl) async {
+  //   await FirebaseFirestore.instance.collection('users').doc(uid).update({
+  //     'imageUrl': photoUrl
+  //   });
+  // }
+
+  Future<void> changePhotoUrl(String uid, File imageFile) async {
+    try {
+      // Upload the file to Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('user_images').child('$uid.jpg');
+      UploadTask uploadTask = ref.putFile(imageFile);
+
+      // Get the download URL of the uploaded file
+      String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+
+      // Update the user's photo URL in Firestore with the download URL
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'imageUrl': downloadUrl});
+
+      print("Photo URL has been changed successfully");
+    } catch (error) {
+      print("Failed to change photo URL: $error");
+    }
+  }
+
+  Future<void> deleteAccount(String uid) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Delete the user's document from Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+
+        // Delete the user's account from Firebase Authentication
+        await user.delete();
+        print("Account has been deleted successfully");
+      } catch (error) {
+        print("Failed to delete account: $error");
+      }
+    }
+  }
+
+  void updateProfile(
+      {required String uid,
+      required String name,
+      required String username,
+      required String email,
+      required String currentPassword,
+      required String newPassword}) async {
+    print(
+        "updating profile with $uid $name $username $email $currentPassword $newPassword");
+    FirebaseFirestore.instance.collection('users').doc(uid).update(
+        {'name': name, 'email': email, 'userName': username, 'uid': uid});
+    await changePassword(email, currentPassword, newPassword);
+  }
+
+  Future<void> createFeedback(
+      {required String id,
+      required String name,
+      required String feedback}) async {
+    await FirebaseFirestore.instance.collection('feedbacks').add({
+      'id': id,
+      'name': name,
+      'feedback': feedback,
+      'timestamp': DateTime.now(),
+    });
   }
 
   updateHeart(String uid, int heart) async {

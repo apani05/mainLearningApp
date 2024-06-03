@@ -74,7 +74,9 @@ class VocabularyViewState extends ConsumerState<VocabularyGame> {
             FlashCradPage(
               category: widget.category,
             ),
-            PracticePage(category: widget.category),
+            PracticePage(
+              category: widget.category,
+            ),
             SavedPage(),
           ],
         ),

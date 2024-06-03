@@ -57,14 +57,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               UserModel(
                 name:
                     userCredential.user!.displayName ?? userNameController.text,
-                email: emailController.text,
                 uid: userCredential.user!.uid,
-                role: 'user',
                 imageUrl: userCredential.user!.photoURL ?? '',
+                role: 'user',
                 score: 0,
                 rank: 0,
                 heart: 0,
-                joinedDate: DateTime.now().toString(),
+                userName: userNameController.text.split('@').first,
+                email: emailController.text,
                 savedWords: [],
                 savedPhrases: [],
                 badge: CardBadge(
@@ -72,6 +72,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     dirrection: false,
                     classroom: false,
                     time: false),
+                joinedDate: DateTime.now().toString(),
               ),
               userCredential.user!.uid);
         }

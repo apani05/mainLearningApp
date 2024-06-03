@@ -30,4 +30,8 @@ class FirestoreOperations {
       print('Document data: ${snapshot.data()}');
     });
   }
+
+  streamDocument(String uid) {
+    return _collection.doc(uid).snapshots();
+  }
 }

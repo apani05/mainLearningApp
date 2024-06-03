@@ -124,7 +124,7 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
                         child: Center(
                             child: Text(
                           "Pick a Category",
-                          style: theme.themeData.textTheme.headline2
+                          style: theme.themeData.textTheme.displayMedium
                               ?.copyWith(color: Colors.white),
                         )),
                       ),
@@ -163,7 +163,7 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
                                           snapshot.data![index],
                                           softWrap: true,
                                           style: theme
-                                              .themeData.textTheme.headline3
+                                              .themeData.textTheme.headlineSmall
                                               ?.copyWith(color: Colors.white),
                                         ),
                                       ),

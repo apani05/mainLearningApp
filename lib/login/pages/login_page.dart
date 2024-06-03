@@ -47,21 +47,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           await userProvide.createUserInDb(
               UserModel(
                 name: userCredential.user!.displayName ?? emailController.text,
-                email: emailController.text,
                 uid: userCredential.user!.uid,
-                role: 'user',
                 imageUrl: userCredential.user!.photoURL ?? '',
+                role: 'user',
                 score: 0,
                 rank: 0,
                 heart: 0,
-                joinedDate: DateTime.now().toString(),
-                savedWords: [],
-                savedPhrases: [],
+                userName: emailController.text.split('@').first,
+                email: emailController.text,
                 badge: CardBadge(
                     kinship: false,
                     dirrection: false,
                     classroom: false,
                     time: false),
+                joinedDate: DateTime.now().toString(),
+                savedWords: [],
+                savedPhrases: [],
               ),
               userCredential.user!.uid);
           print("user is created with uid ${userCredential.user!.uid}");
