@@ -1,8 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bfootlearn/Phrases/models/question_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Phrases/provider/audioPlayerProvider.dart';
-import '../Phrases/provider/blogProvider.dart';
+import '../Phrases/provider/mediaProvider.dart';
 import '../riverpod/river_pod.dart';
 import 'widgets/circular_graph.dart';
 

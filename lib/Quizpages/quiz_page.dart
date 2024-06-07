@@ -1,11 +1,11 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bfootlearn/Phrases/models/card_data.dart';
+import 'package:bfootlearn/Phrases/models/question_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Phrases/provider/audioPlayerProvider.dart';
-import '../Phrases/provider/blogProvider.dart';
+import '../Phrases/provider/mediaProvider.dart';
 import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizPage extends ConsumerStatefulWidget {
   const QuizPage({super.key});
@@ -120,6 +120,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             correctAnswer: card.blackfootText,
             options: options,
             isAudioTypeQuestion: cardsForSeries.indexOf(card) % 2 == 0,
+            seriesType: card.seriesName,
           );
 
           if (questionCard.isAudioTypeQuestion) {

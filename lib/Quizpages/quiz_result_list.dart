@@ -1,7 +1,7 @@
+import 'package:bfootlearn/Phrases/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../Phrases/provider/blogProvider.dart';
 import '../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 import 'widgets/bar_graph.dart';
@@ -31,55 +31,71 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
   @override
   Widget build(BuildContext context) {
     final theme = ref.read(themeProvider);
-    // Calculate daily, weekly, and monthly average quiz scores
-    final dailyAverage = QuizBarData.calculateDailyAverage(quizResults);
-    final weeklyAverage = QuizBarData.calculateWeeklyAverage(quizResults);
-    final monthlyAverage = QuizBarData.calculateMonthlyAverage(quizResults);
+    final eachSeriesScore = QuizBarData.calculateSeriesTypeScore(quizResults);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Scores'),
+        title: Text('Quiz Performance'),
         backgroundColor: theme.lightPurple,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: QuizBarData.buildBarGraph(
-                weeklyAverage, dailyAverage, monthlyAverage),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: quizResults.length,
-              itemBuilder: (context, index) {
-                final quizResult = quizResults[index];
-                final quizIndex = index + 1;
-                final quizScore = quizResult.quizScore;
-                final totalPoints = quizResult.totalPoints;
-                final dateSubmitted = (quizResult.dateSubmitted).toDate();
-                final formattedDate =
-                    DateFormat('MM/dd/yy').format(dateSubmitted);
+      body: quizResults.isEmpty
+          ? Center(
+              child: Text(
+                'No quizzes taken yet',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+          : Column(
+              children: [
+                Expanded(
+                  child: QuizBarData.buildBarGraph(eachSeriesScore),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: quizResults.length,
+                    itemBuilder: (context, index) {
+                      final quizResult = quizResults[index];
+                      final quizIndex = index + 1;
+                      final quizScore = quizResult.quizScore;
+                      final totalPoints = quizResult.totalPoints;
+                      final dateSubmitted = quizResult.dateSubmitted.toDate();
+                      final formattedDate =
+                          DateFormat('MM/dd/yy HH:mm').format(dateSubmitted);
 
-                return ListTile(
-                  title: Text('Quiz $quizIndex'),
-                  subtitle: Text('$quizScore / $totalPoints'),
-                  trailing: Text(formattedDate),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizResultScreen(
-                          quizScore: quizScore,
-                          quizQuestions: quizResult.questionSet,
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.lightPurple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: theme.lightPurple,
+                              width: 1,
+                            ),
+                          ),
+                          child: ListTile(
+                            title: Text('Quiz $quizIndex'),
+                            subtitle: Text('Score: $quizScore / $totalPoints'),
+                            trailing: Text(formattedDate),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QuizResultScreen(
+                                    quizScore: quizScore,
+                                    quizQuestions: quizResult.questionSet,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

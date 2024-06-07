@@ -3,7 +3,7 @@ import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/flutter_sound_methods.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
 import 'package:flutter/material.dart';
-
+import '../../components/text_style.dart';
 import '../widgets/recording_audio_container.dart';
 
 final ConversationFucntions conversationFucntions = ConversationFucntions();
@@ -199,21 +199,3 @@ void showDialogAddPhase({
     },
   );
 }
-
-TextStyle actionButtonTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 16,
-  fontWeight: FontWeight.w600,
-);
-
-TextStyle dialogBoxContentTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 18,
-  fontWeight: FontWeight.w600,
-);
-
-TextStyle dialogBoxTitleTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 22,
-  fontWeight: FontWeight.w700,
-);

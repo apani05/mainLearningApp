@@ -1,4 +1,4 @@
-import '../Phrases/provider/blogProvider.dart';
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 
 class UserModel {
   final String name;
