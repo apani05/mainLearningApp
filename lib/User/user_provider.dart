@@ -1,7 +1,7 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import '../Phrases/provider/blogProvider.dart';
 
 class UserProvider extends ChangeNotifier {
   String _name = '';

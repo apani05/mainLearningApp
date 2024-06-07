@@ -1,9 +1,9 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/widgets/card_slider.dart';
-import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:bfootlearn/vocabulary/viwes/v_game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod/river_pod.dart';
+import '../../riverpod/river_pod.dart';
 
 class LearningPage extends ConsumerStatefulWidget {
   final String seriesName;
@@ -55,10 +55,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                         onPlayButtonPressed: (index) {
                           setState(() {
                             if (currentPlayingIndex == index) {
-                              // Stop if the same button is pressed again
                               currentPlayingIndex = null;
                             } else {
-                              // Play the clicked audio
                               currentPlayingIndex = index;
                             }
                           });

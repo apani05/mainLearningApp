@@ -1,5 +1,5 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/widgets/card_widget.dart';
-import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:flutter/material.dart';
 
 class CardSlider extends StatelessWidget {

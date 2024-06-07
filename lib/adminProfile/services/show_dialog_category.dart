@@ -6,6 +6,8 @@ import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../components/text_style.dart';
+
 final CategoryFunctions categoryFunctions = CategoryFunctions();
 
 void showDialogAddCategory(
@@ -244,21 +246,3 @@ void showDialogDeleteCategory({
     },
   );
 }
-
-TextStyle actionButtonTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 16,
-  fontWeight: FontWeight.w600,
-);
-
-TextStyle dialogBoxContentTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 18,
-  fontWeight: FontWeight.w600,
-);
-
-TextStyle dialogBoxTitleTextStyle = const TextStyle(
-  color: Colors.white,
-  fontSize: 22,
-  fontWeight: FontWeight.w700,
-);

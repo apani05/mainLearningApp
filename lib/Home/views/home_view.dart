@@ -10,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flippy/flippy.dart';
-import '../../login/pages/reset_password.dart';
+import '../../login/views/reset_password.dart';
 import '../../notifications/notification_page.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -88,7 +88,6 @@ class HomeViewState extends ConsumerState<HomeView> {
       actions: [
         PopupMenuButton<String>(
           onSelected: handlePopupMenuSelection,
-          color: theme.lightPurple,
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem<String>(
@@ -101,7 +100,7 @@ class HomeViewState extends ConsumerState<HomeView> {
               PopupMenuItem<String>(
                 value: 'localNotifications',
                 child: ListTile(
-                  leading: Icon(Icons.exit_to_app),
+                  leading: Icon(Icons.notifications),
                   title: Text('Notifications'),
                 ),
               ),
