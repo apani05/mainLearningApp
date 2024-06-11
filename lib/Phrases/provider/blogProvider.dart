@@ -23,12 +23,17 @@ class BlogProvider extends ChangeNotifier {
     return _seriesOptions;
   }
 
+  void updateSeriesOptions(List<Map<String, dynamic>> seriesOptions) {
+    _seriesOptions = seriesOptions;
+    notifyListeners();
+  }
+
   void updateCardDataList(List<CardData> newCardDataList) {
     _cardDataList = newCardDataList;
     notifyListeners();
   }
 
-  Future<void> updateSavedPhrases() async {
+  Future<void> getSavedPhrases() async {
     List<CardData> savedPhrases = [];
     String uid = '';
 

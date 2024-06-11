@@ -36,7 +36,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
     final vProvider = ref.read(vocaProvider);
     seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
     allData = await blogProviderObj.fetchAllData();
-    blogProviderObj.updateSavedPhrases();
+    blogProviderObj.getSavedPhrases();
     vocabCategory = await vProvider.getAllCategories();
     setState(() {});
   }
@@ -70,9 +70,11 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                   future: _imageUrlFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
+                      return Center(child: Icon(Icons.image, size: 40));
+                    } else if (snapshot.hasError ||
+                        snapshot.data == null ||
+                        snapshot.data!.isEmpty) {
+                      return Text('Error: Unable to load image');
                     } else {
                       _imageUrl = snapshot.data!;
                       return Image.network(
@@ -151,18 +153,16 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                               future: imageUrl,
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
+                                        ConnectionState.waiting ||
+                                    snapshot.hasError ||
+                                    snapshot.data == null ||
+                                    snapshot.data!.isEmpty) {
+                                  return CategoryItem(vocabCategory,
+                                      seriesData['seriesName'], '');
                                 } else {
                                   final String downloadUrl = snapshot.data!;
-                                  return CategoryItem(
-                                      vocabCategory,
-                                      seriesData['seriesName'],
-                                      Icons.category,
-                                      downloadUrl);
+                                  return CategoryItem(vocabCategory,
+                                      seriesData['seriesName'], downloadUrl);
                                 }
                               },
                             );

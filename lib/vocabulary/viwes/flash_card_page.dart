@@ -14,7 +14,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../Phrases/category_learning_page.dart';
 import '../../User/user_model.dart';
 
 class FlashCradPage extends ConsumerStatefulWidget {

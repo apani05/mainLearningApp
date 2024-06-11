@@ -7,11 +7,9 @@ import '../views/category_learning_page.dart';
 class CategoryItem extends ConsumerWidget {
   final List<String> vocabCategory;
   final String seriesName;
-  final IconData icon;
   final String imageUrl;
 
-  const CategoryItem(
-      this.vocabCategory, this.seriesName, this.icon, this.imageUrl,
+  const CategoryItem(this.vocabCategory, this.seriesName, this.imageUrl,
       {super.key});
 
   @override
@@ -39,12 +37,14 @@ class CategoryItem extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              imageUrl,
-              height: MediaQuery.of(context).size.width * 0.3,
-              width: MediaQuery.of(context).size.width * 0.3,
-              fit: BoxFit.cover,
-            ),
+            imageUrl == ''
+                ? Center(child: Icon(Icons.image, size: 40))
+                : Image.network(
+                    imageUrl,
+                    height: MediaQuery.of(context).size.width * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    fit: BoxFit.cover,
+                  ),
             const SizedBox(height: 5),
             Container(
               width: MediaQuery.of(context).size.width * 0.3,
