@@ -27,7 +27,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final theme = ref.watch(themeProvider);
         return BottomNavigationBar(
-          backgroundColor: theme.themeData.bottomAppBarColor,
+          backgroundColor: theme.themeData.bottomNavigationBarTheme.backgroundColor,
           //selectedItemColor: Colors.green,
           items: const [
             BottomNavigationBarItem(
