@@ -50,59 +50,73 @@ class ExistingConversationsListView extends StatelessWidget {
         }
 
         return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-          title: Text(currentConversation.englishText),
-          titleTextStyle: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-          subtitle: Column(
-            children: [
-              const SizedBox(height: 3),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_month),
-                  const SizedBox(width: 5),
-                  Text(uploadDate),
-                ],
-              ),
-              const SizedBox(height: 5),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // playback audio of conversation
-              IconButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: onPressedAudioButton,
-                icon: const Icon(Icons.volume_up_rounded),
-                iconSize: 25,
-                color: Colors.purpleAccent,
-              ),
-              // edit conversation button
-              IconButton(
-                onPressed: onPressedEditButton,
-                icon: const Icon(
-                  Icons.mode_edit_rounded,
-                  size: 25,
-                  color: Colors.cyan,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            title: Text(currentConversation.englishText),
+            titleTextStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+            subtitle: Column(
+              children: [
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_month),
+                    const SizedBox(width: 5),
+                    Text(uploadDate),
+                  ],
                 ),
-              ),
-              // delete conversation button
-              IconButton(
-                onPressed: onPressedDeleteButton,
-                icon: const Icon(
-                  Icons.delete_rounded,
-                  size: 25,
-                  color: Colors.red,
+                const SizedBox(height: 5),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // playback audio of conversation
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: onPressedAudioButton,
+                  icon: const Icon(Icons.volume_up_rounded),
+                  iconSize: 25,
+                  color: Colors.purpleAccent,
                 ),
-              ),
-            ],
-          ),
-        );
+                // edit and delete conversation buttons
+                PopupMenuButton<int>(
+                  onSelected: (value) {
+                    if (value == 1) {
+                      onPressedEditButton();
+                    } else if (value == 2) {
+                      onPressedDeleteButton();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 1,
+                      child: Row(
+                        children: [
+                          Icon(Icons.mode_edit_rounded, color: Colors.cyan),
+                          SizedBox(width: 5),
+                          Text('Edit', style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 2,
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_rounded, color: Colors.red),
+                          SizedBox(width: 5),
+                          Text('Delete', style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                  ],
+                  child: const Icon(Icons.more_vert),
+                ),
+              ],
+            ));
       },
     );
   }

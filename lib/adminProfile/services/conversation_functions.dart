@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class ConversationFucntions {
   Future<String> uploadAudioFileToFirebaseStorage(String audioFilePath) async {
@@ -15,7 +16,7 @@ class ConversationFucntions {
       // Create a reference to the Firebase Storage location
       Reference storageRef = FirebaseStorage.instance
           .ref()
-          .child('audio_files/${audioFile.uri.pathSegments.last}');
+          .child('audio_files/${const Uuid().v4()}');
 
       // Upload the file
       UploadTask uploadTask = storageRef.putFile(audioFile);

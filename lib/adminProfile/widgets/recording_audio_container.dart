@@ -3,18 +3,6 @@ import 'package:bfootlearn/adminProfile/services/timer_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// class RecordingAudioContainer extends ConsumerStatefulWidget {
-//   const RecordingAudioContainer({super.key});
-//   @override
-//   ConsumerState<ConsumerStatefulWidget> createState() => _RecordingAudioContainerState();
-// }
-// class _RecordingAudioContainerState extends ConsumerState<RecordingAudioContainer> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container();
-//   }
-// }
-
 final timerServiceProvider =
     ChangeNotifierProvider((ref) => TimerServiceProvider());
 
@@ -32,8 +20,6 @@ class _RecordingAudioContainerState
     extends ConsumerState<RecordingAudioContainer> {
   final audioRecorder = FlutterSoundMethods();
 
-  // late bool isPlayingInitiated;
-
   Future onPressedRecordButton() async {
     final timerService = ref.watch(timerServiceProvider);
     if (audioRecorder.isRecorderInitialised) {
@@ -44,7 +30,7 @@ class _RecordingAudioContainerState
         await audioRecorder.stopRecording();
 
         // stops the timer
-        timerService.stopTimer();
+        timerService.stopTimerForRecording();
       } else {
         if (audioRecorder.isPlayerInitialised) {
           if (audioRecorder.isPlaying) {
@@ -54,7 +40,7 @@ class _RecordingAudioContainerState
             await audioRecorder.pausePlaying();
 
             // stops timer
-            timerService.stopTimer();
+            timerService.pauseTimerForPlaying();
           } else {
             debugPrint(
                 "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
@@ -62,7 +48,7 @@ class _RecordingAudioContainerState
             await audioRecorder.resumePlaying();
 
             // restarts countdown timer
-            timerService.startCountDownTimer();
+            timerService.incrementTimer();
           }
         } else {
           debugPrint(
@@ -70,7 +56,7 @@ class _RecordingAudioContainerState
           await audioRecorder.startPlaying();
 
           // starts countdown timer
-          timerService.startCountDownTimer();
+          timerService.incrementTimer();
         }
       }
     } else {
@@ -113,7 +99,7 @@ class _RecordingAudioContainerState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Record Blackfoot audio',
+            'Record Blackfoot Audio',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -146,11 +132,15 @@ class _RecordingAudioContainerState
                     : micIcon(),
               ),
               Text(
-                formatDuration(timerService.duration),
+                (audioRecorder.isRecorderInitialised &&
+                        audioRecorder.isRecordingStopped)
+                    ? '${formatDuration(timerService.duration)}/${formatDuration(timerService.stoppingTime)}'
+                    : formatDuration(timerService.duration),
                 style: timerTextStyle,
               ),
               const Spacer(),
-              if (audioRecorder.isPlayerInitialised)
+              if (audioRecorder.isRecorderInitialised &&
+                  audioRecorder.isRecordingStopped)
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -160,7 +150,7 @@ class _RecordingAudioContainerState
                   },
                   icon: const Icon(
                     Icons.cancel_outlined,
-                    size: 35,
+                    size: 25,
                   ),
                 )
             ],
@@ -190,7 +180,7 @@ class _RecordingAudioContainerState
 
 TextStyle timerTextStyle = const TextStyle(
   color: Colors.black,
-  fontSize: 20,
+  fontSize: 18,
   fontWeight: FontWeight.w600,
 );
 

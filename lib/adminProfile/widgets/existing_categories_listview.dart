@@ -6,11 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExistingCategoriesListview extends StatelessWidget {
   final List<CategoryModel> categoriesToDisplay;
-  final TextEditingController editingController;
   const ExistingCategoriesListview({
     super.key,
     required this.categoriesToDisplay,
-    required this.editingController,
   });
 
   @override
@@ -21,7 +19,6 @@ class ExistingCategoriesListview extends StatelessWidget {
         final category = categoriesToDisplay[index];
 
         return CategoryListTileItem(
-          editingController: editingController,
           category: category,
         );
       },
@@ -31,11 +28,9 @@ class ExistingCategoriesListview extends StatelessWidget {
 
 class CategoryListTileItem extends ConsumerStatefulWidget {
   final CategoryModel category;
-  final TextEditingController editingController;
 
   const CategoryListTileItem({
     super.key,
-    required this.editingController,
     required this.category,
   });
   @override
@@ -47,6 +42,7 @@ class _CategoryListTileItemState extends ConsumerState<CategoryListTileItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
       onTap: () {
         // navigates to List of conversations present in this catergory
         setState(() {
@@ -102,41 +98,6 @@ class _CategoryListTileItemState extends ConsumerState<CategoryListTileItem> {
           ),
         ],
       ),
-
-      // Row(
-      //   mainAxisSize: MainAxisSize.min,
-      //   children: [
-      //     // edit category
-      //     IconButton(
-      //       icon: const Icon(Icons.edit),
-      //       onPressed: () {
-      //         setState(() {
-      //           Navigator.of(context).push(MaterialPageRoute(
-      //               builder: (context) =>
-      //                   EditCategoryPage(category: widget.category)));
-      //           // editingCategoryId = widget.categoryId;
-      //           // widget.editingController.text = widget.categoryName;
-      //         });
-      //       },
-      //     ),
-      //     IconButton(
-      //       icon: const Icon(Icons.delete),
-      //       onPressed: () =>
-      //           categoryFunctions.deleteCategory(widget.categoryId, context),
-      //     ),
-      //     // if (editingCategoryId == widget.categoryId)
-      //     //   IconButton(
-      //     //     icon: const Icon(Icons.check),
-      //     //     onPressed: () {
-      //     //       categoryFunctions.updateCategory(
-      //     //           widget.categoryId, widget.editingController.text, context);
-      //     //       setState(() {
-      //     //         editingCategoryId = null;
-      //     //       });
-      //     //     },
-      //     //   ),
-      //   ],
-      // ),
     );
   }
 }

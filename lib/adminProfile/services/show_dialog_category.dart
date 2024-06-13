@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
 import 'package:bfootlearn/adminProfile/services/category_functions.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
@@ -79,14 +80,30 @@ void showDialogAddCategory(
           ),
           TextButton(
             onPressed: () async {
+              String categoryName = categoryController.text.trim();
+              if (categoryName.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Category name cannot be empty.'),
+                  ),
+                );
+                return; // Return early to prevent further execution
+              }
               // uploads the image to firebase storage and gives the downloadUrl
-              final String iconImagePath = await categoryFunctions
-                  .uploadImageFileToFirebaseStorage(pickedCategoryImage!);
+              String iconImagePath;
+              if (pickedCategoryImage == null) {
+                // if no picked image, then default image is taken
+                iconImagePath =
+                    'gs://blackfootapplication.appspot.com/images/default_icon.png';
+              } else {
+                iconImagePath = await categoryFunctions
+                    .uploadImageFileToFirebaseStorage(pickedCategoryImage!);
+              }
               // add category with iconImageDownloadUrls
               categoryFunctions.addCategory(
                 context: context,
                 iconImagePath: iconImagePath,
-                categoryName: categoryController.text,
+                categoryName: categoryName,
               );
               Navigator.of(context).pop();
               categoryController.clear();
@@ -105,10 +122,14 @@ void showDialogAddCategory(
 void showDialogUpdateCategory({
   required BuildContext context,
   required CategoryModel oldCategory,
-}) {
+}) async {
   final TextEditingController categoryController = TextEditingController();
   categoryController.text = oldCategory.categoryName;
-  File? pickedCategoryImage;
+  debugPrint('iconImage : ${oldCategory.iconImage}');
+
+  String? oldCategoryImageDownloadUrl =
+      await getImageUrl(oldCategory.iconImage);
+  String? pickedCategoryImagePath = oldCategoryImageDownloadUrl;
 
   final ImagePicker picker = ImagePicker();
   Future<File?> pickPhoto() async {
@@ -121,10 +142,19 @@ void showDialogUpdateCategory({
     return null;
   }
 
-  showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(builder: (context, setState) {
+        Future<void> updateIconImage() async {
+          final image = await pickPhoto();
+          if (image != null) {
+            setState(() {
+              pickedCategoryImagePath = image.path;
+            });
+          }
+        }
+
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           backgroundColor: Colors.purple.shade300,
@@ -137,13 +167,13 @@ void showDialogUpdateCategory({
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               const SizedBox(height: 10),
-              pickedCategoryImage == null
+              pickedCategoryImagePath == null
                   ? ElevatedButton.icon(
                       onPressed: () async {
                         final image = await pickPhoto();
                         if (image != null) {
                           setState(() {
-                            pickedCategoryImage = image;
+                            pickedCategoryImagePath = image.path;
                           });
                         }
                       },
@@ -159,9 +189,35 @@ void showDialogUpdateCategory({
                         ),
                       ),
                     )
-                  : Image.file(
-                      pickedCategoryImage!,
-                      fit: BoxFit.cover,
+                  : GestureDetector(
+                      onTap: updateIconImage,
+                      child: Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: pickedCategoryImagePath!.startsWith('http')
+                              ? Image.network(
+                                  pickedCategoryImagePath!,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return const Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Text('Error loading image');
+                                  },
+                                )
+                              : Image.file(
+                                  File(pickedCategoryImagePath!),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
                     ),
               const SizedBox(height: 10),
               DialogBoxTextField(
@@ -181,21 +237,40 @@ void showDialogUpdateCategory({
             ),
             TextButton(
               onPressed: () async {
+                String newName = categoryController.text.trim();
+                if (newName.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Category name cannot be empty.'),
+                    ),
+                  );
+                  return; // Return early to prevent further execution
+                }
+
                 // uploads the image to firebase storage and gives the downloadUrl
-                final String iconImagePath = await categoryFunctions
-                    .uploadImageFileToFirebaseStorage(pickedCategoryImage!);
-                // add category with iconImageDownloadUrls
+                String iconImagePath;
+                // Check if the image path has changed
+                if (pickedCategoryImagePath != oldCategoryImageDownloadUrl) {
+                  // Upload the new image to Firebase Storage
+                  iconImagePath =
+                      await categoryFunctions.uploadImageFileToFirebaseStorage(
+                          File(pickedCategoryImagePath!));
+                } else {
+                  // Use the existing image path
+                  iconImagePath = oldCategory.iconImage;
+                }
                 categoryFunctions.updateCategory(
                   context: context,
                   categoryId: oldCategory.categoryId,
                   iconImagePath: iconImagePath,
-                  newName: categoryController.text,
+                  newName: newName,
                 );
+
                 Navigator.of(context).pop();
                 categoryController.clear();
               },
               child: Text(
-                'Add',
+                'Update',
                 style: actionButtonTextStyle,
               ),
             ),

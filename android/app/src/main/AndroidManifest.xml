@@ -7,14 +7,14 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<uses-permission android:name="android.permission.VIBRATE"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
 
 
 <!-- Specify either SCHEDULE_EXACT_ALARM or USE_EXACT_ALARM based on your requirements -->
 
 <!-- Required permission for using full-screen intent notifications -->
-<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-
-<uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="l'poyit"
         android:name="${applicationName}"

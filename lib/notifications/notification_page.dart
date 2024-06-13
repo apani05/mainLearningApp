@@ -1,9 +1,11 @@
+import 'package:bfootlearn/notifications/notification_provider.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'local_notification.dart';
 
@@ -24,7 +26,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   void _scheduleNotification() {
     final notificationProvide = ref.watch(notificationProvider);
-    // double commitedTime = notificationProvide.commitedTime;
     int remindTimeHr = notificationProvide.remindTimeHr;
     int remindTimeMin = notificationProvide.remindTimeMin;
     debugPrint("$remindTimeHr : $remindTimeMin");
@@ -63,7 +64,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     _buildReminderRow0(isReminderOn),
                     _buildReminderRow1(isReminderOn),
                     const SizedBox(height: 8),
-                    // _buildReminderRow2(isReminderOn),
                   ],
                 ),
               )
@@ -72,33 +72,50 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  Future<void> requestNotificationPermission(
+      {required NotificationProvider notificationProvide}) async {
+    // Request permission for notifications
+    var status = await Permission.notification.request();
+    if (status.isGranted) {
+      setState(() {
+        notificationProvide.toggleReminderMode();
+        _scheduleNotification();
+      });
+    } else {
+      // Permission is denied, handle this case accordingly
+      // You can inform the user or provide guidance on how to enable the permission
+    }
+  }
+
   Widget _buildReminderRow0(bool isReminderOn) {
     final notificationProvide = ref.watch(notificationProvider);
-    return Row(
-      children: [
-        const Text(
-          "Study Reminder",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 25,
-          ),
+    return Row(children: [
+      const Text(
+        "Study Reminder",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 25,
         ),
-        const Spacer(),
-        Switch(
-            value: isReminderOn,
-            activeColor: const Color(0xFFcccbff),
-            onChanged: ((bool value) {
+      ),
+      const Spacer(),
+      Switch(
+          value: isReminderOn,
+          activeColor: const Color(0xFFcccbff),
+          onChanged: (bool value) async {
+            if (value) {
+              // Request permission when enabling the reminder
+              await requestNotificationPermission(
+                  notificationProvide: notificationProvide);
+            } else {
               setState(() {
                 notificationProvide.toggleReminderMode();
-                _scheduleNotification();
               });
-            })),
-      ],
-    );
+            }
+          }),
+    ]);
   }
 
   // Schedule Learning Row
-
   Widget _buildReminderRow1(bool isReminderOn) {
     return Row(
       children: [
@@ -121,9 +138,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
     int remindTimeHr = notificationProvide.remindTimeHr;
     int remindTimeMin = notificationProvide.remindTimeMin;
-    int selectedHour = remindTimeHr;
-    String selectedMinute =
-        remindTimeMin > 9 ? "$remindTimeMin" : "0$remindTimeMin";
+    String formatTime(int hour, int minute) {
+      // Create a DateTime object with the provided hour and minute
+      DateTime dateTime = DateTime(0, 1, 1, hour, minute);
+
+      // Format the DateTime object to the desired format
+      DateFormat timeFormat =
+          DateFormat.jm(); // 'jm' stands for hour:minute a.m./p.m.
+
+      return timeFormat.format(dateTime);
+    }
+
     return IgnorePointer(
       ignoring: !isReminderOn,
       child: GestureDetector(
@@ -141,9 +166,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             borderRadius: BorderRadius.circular(5),
           ),
           child: Text(
-            selectedHour >= 0 && selectedHour <= 12
-                ? "$selectedHour:$selectedMinute AM"
-                : "${selectedHour - 12}:$selectedMinute PM",
+            formatTime(remindTimeHr, remindTimeMin),
             style: const TextStyle(color: Colors.white),
           ),
         ),
@@ -179,71 +202,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       maxHour: 23,
       is24HrFormat: false,
       okText: 'Done',
-    );
-  }
-
-  Widget _buildReminderRow2(bool isReminderOn) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            const Text(
-              "Select your commitment time",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-              ),
-            ),
-            const Spacer(),
-            selectCommitTime(isReminderOn),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget selectCommitTime(bool isReminderOn) {
-    final notificationProvide = ref.watch(notificationProvider);
-    double commitedTime = notificationProvide.commitedTime;
-    return IgnorePointer(
-      ignoring: !isReminderOn,
-      child: GestureDetector(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                content: SpinBox(
-                  min: 0,
-                  max: 60,
-                  step: 1,
-                  readOnly: true,
-                  direction: Axis.vertical,
-                  incrementIcon: const Icon(Icons.arrow_drop_up_rounded),
-                  decrementIcon: const Icon(Icons.arrow_drop_down_rounded),
-                  value: commitedTime,
-                  onChanged: (value) {
-                    setState(() {
-                      notificationProvide.setCommitedTime(value);
-                      _scheduleNotification();
-                    });
-                  },
-                ),
-              );
-            },
-          );
-        },
-        child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFFcccbff),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Text(
-              '${commitedTime.toInt()} min',
-              style: const TextStyle(color: Colors.white),
-            )),
-      ),
     );
   }
 }

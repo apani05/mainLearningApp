@@ -1,6 +1,7 @@
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
+import 'package:bfootlearn/adminProfile/pages/admin_access.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
-import 'package:bfootlearn/adminProfile/widgets/category_searchbar.dart';
+import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_categories_listview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,18 +16,36 @@ class AdminPage extends ConsumerStatefulWidget {
 }
 
 class _AdminPageState extends ConsumerState<AdminPage> {
-  final TextEditingController _editCategoryController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  String? editingCategoryId;
+  List<CategoryModel> _categories = [];
+  List<CategoryModel> _filteredCategories = [];
+
   String? _selectedItem;
-  List<String> _dropdownItems = ['Sign Out'];
-  List<DocumentSnapshot> categories = [];
-  List<DocumentSnapshot> filteredCategories = [];
+  final List<String> _dropdownItems = ['Sign Out'];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController.addListener(_filterCategories);
+  }
+
   @override
   void dispose() {
-    _editCategoryController.dispose();
+    _searchController.removeListener(_filterCategories);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _filterCategories() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredCategories = _categories.where((category) {
+        return category.categoryName.toLowerCase().contains(query) ||
+            category.categoryId.toLowerCase().contains(query) ||
+            category.timestamp.toLowerCase().contains(query);
+      }).toList();
+    });
   }
 
   @override
@@ -35,31 +54,43 @@ class _AdminPageState extends ConsumerState<AdminPage> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Manage Categories'),
+        titleTextStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          color: Colors.black,
+        ),
         actions: [
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: DropdownButton<String>(
-                value: _selectedItem,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedItem = newValue;
-                  });
-                },
-                items: _dropdownItems.map((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                    onTap: () => FirebaseAuth.instance.signOut(),
-                  );
-                }).toList(),
-                icon: const Icon(Icons.more_vert_rounded),
-                iconSize: 30,
-              ))
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: PopupMenuButton<int>(
+              onSelected: (value) {
+                if (value == 1) {
+                  FirebaseAuth.instance.signOut();
+                } else if (value == 2) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AdminAccessPage(),
+                  ));
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 1,
+                  child: Text('Sign out', style: TextStyle(fontSize: 16)),
+                ),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text('Admin access', style: TextStyle(fontSize: 16)),
+                ),
+              ],
+              child: const Icon(Icons.more_vert),
+            ),
+          ),
         ],
       ),
       // floatingbutton for adding new category
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialogAddCategory(context),
+        backgroundColor: Colors.purple.shade300,
         child: const Icon(
           Icons.add_rounded,
           size: 30,
@@ -71,13 +102,14 @@ class _AdminPageState extends ConsumerState<AdminPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            AdminSearchBar(
+                hintText: 'Search category', controller: _searchController),
+            const SizedBox(height: 20),
             const Text(
               'Existing Categories:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-            CategorySearchBar(controller: _searchController),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -89,7 +121,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                   }
 
                   // populate categories in CategoryModel
-                  List<CategoryModel> categories = List.from(
+                  _categories = List.from(
                     snapshot.data!.docs.map(
                       (doc) => CategoryModel(
                         categoryId: doc.id,
@@ -100,27 +132,22 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                     ),
                   );
 
-                  // categories = snapshot.data!.docs; // Populate categories list
-
-                  // List<Widget> categoryWidgets = [];
-                  // var categoriesToDisplay = filteredCategories.isNotEmpty
-                  //     ? filteredCategories
-                  //     : categories;
+                  _filteredCategories = _categories.where((conversation) {
+                    String query = _searchController.text.toLowerCase();
+                    return conversation.categoryName
+                            .toLowerCase()
+                            .contains(query) ||
+                        conversation.categoryName
+                            .toLowerCase()
+                            .contains(query) ||
+                        conversation.timestamp.toLowerCase().contains(query);
+                  }).toList();
 
                   return ExistingCategoriesListview(
-                    categoriesToDisplay: categories,
-                    editingController: _editCategoryController,
-                  );
+                      categoriesToDisplay: _filteredCategories);
                 },
               ),
             ),
-            const SizedBox(height: 16),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     FirebaseAuth.instance.signOut();
-            //   },
-            //   child: const Center(child: Text("Sign out")),
-            // ),
           ],
         ),
       ),

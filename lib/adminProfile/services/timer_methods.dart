@@ -6,22 +6,11 @@ import 'package:flutter/material.dart';
 class TimerServiceProvider extends ChangeNotifier {
   Duration duration = const Duration();
   Duration countDownDuration = const Duration();
+  Duration stoppingTime = const Duration();
   Timer? timer;
   FlutterSoundMethods soundMethods = FlutterSoundMethods();
 
   Duration get getDuration => duration;
-
-  void minusTimer() {
-    const minusSeconds = 1;
-    if (duration.inSeconds != 0) {
-      final seconds = duration.inSeconds - minusSeconds;
-      duration = Duration(seconds: seconds);
-    } else {
-      duration = countDownDuration;
-      stopTimer();
-    }
-    notifyListeners();
-  }
 
   void resetTimerForRecorder() {
     duration = Duration.zero;
@@ -36,21 +25,32 @@ class TimerServiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void stopTimer() {
-    if (soundMethods.isRecordingStopped) {
-      countDownDuration = duration;
-      timer!.cancel();
-    } else {
-      timer!.cancel();
-    }
+  // New method to add seconds to the timer until it reaches the maximum time
+  void incrementTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (duration < stoppingTime) {
+        addTime();
+      } else {
+        timer!.cancel();
+        duration = Duration.zero;
+        notifyListeners();
+      }
+    });
+  }
+
+  void stopTimerForRecording() {
+    timer!.cancel();
+    stoppingTime = duration;
+    duration = Duration.zero;
+    notifyListeners();
+  }
+
+  void pauseTimerForPlaying() {
+    timer!.cancel();
     notifyListeners();
   }
 
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (_) => addTime());
-  }
-
-  void startCountDownTimer() {
-    timer = Timer.periodic(const Duration(seconds: 1), (_) => minusTimer());
   }
 }

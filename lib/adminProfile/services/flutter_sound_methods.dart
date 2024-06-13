@@ -6,10 +6,9 @@ import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const pathToSaveAudio =
-    '/storage/emulated/0/Download/picked_audio_recording.aac';
-
 class FlutterSoundMethods {
+  String pathToSaveAudio =
+      '/storage/emulated/0/Download/picked_audio_recording.aac';
   final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
   final FlutterSoundPlayer _audioPlayer = FlutterSoundPlayer();
   bool _isRecorderInitialised = false;

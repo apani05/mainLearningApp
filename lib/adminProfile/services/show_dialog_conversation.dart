@@ -1,8 +1,11 @@
 import 'package:bfootlearn/adminProfile/models/conversation_model.dart';
 import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/flutter_sound_methods.dart';
+import 'package:bfootlearn/adminProfile/services/timer_methods.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
+import 'package:bfootlearn/adminProfile/widgets/old_audio_player.dart';
 import 'package:flutter/material.dart';
+
 import '../../components/text_style.dart';
 import '../widgets/recording_audio_container.dart';
 
@@ -60,6 +63,7 @@ void showDialogUpdatePhase({
 
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -85,6 +89,9 @@ void showDialogUpdatePhase({
               hintText: 'Enter Blackfoot text',
             ),
             const SizedBox(height: 15),
+            OldAudioPlayer(
+                oldBlackfootAudioPath: oldConversation.blackfootAudio),
+            const SizedBox(height: 15),
             // blackfoot audio
             const RecordingAudioContainer(),
             const SizedBox(height: 15),
@@ -96,26 +103,57 @@ void showDialogUpdatePhase({
               'Cancel',
               style: actionButtonTextStyle,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              FlutterSoundMethods().dispose();
+              Navigator.of(context).pop();
+            },
           ),
           TextButton(
             onPressed: () async {
-              final newBlackfootAudioPath = await ConversationFucntions()
-                  .uploadAudioFileToFirebaseStorage(pathToSaveAudio);
+              // Trim the text fields to remove leading and trailing spaces
+              final blackfootText = blackfootTextController.text.trim();
+              final englishText = englishTextController.text.trim();
+              String blackfootAudioPath;
+
+              // Validate the fields
+              if (blackfootText.isEmpty || englishText.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Blackfoot text and English text cannot be empty.'),
+                  ),
+                );
+                return;
+              }
+
+              try {
+                blackfootAudioPath = await ConversationFucntions()
+                    .uploadAudioFileToFirebaseStorage(
+                        FlutterSoundMethods().pathToSaveAudio);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Failed to upload audio file. Please try again.'),
+                  ),
+                );
+                return;
+              }
 
               ConversationFucntions().updateConversation(
                 context: context,
                 oldConversationId: oldConversation.conversationId,
-                newEnglishText: englishTextController.text,
-                newBlackfootText: blackfootTextController.text,
-                newBlackfootAudio: newBlackfootAudioPath,
+                newEnglishText: englishText,
+                newBlackfootText: blackfootText,
+                newBlackfootAudio: blackfootAudioPath,
               );
               Navigator.of(context).pop();
+              FlutterSoundMethods().dispose();
               englishTextController.clear();
               blackfootTextController.clear();
             },
             child: Text(
-              'Add',
+              'Update',
               style: actionButtonTextStyle,
             ),
           ),
@@ -128,12 +166,14 @@ void showDialogUpdatePhase({
 void showDialogAddPhase({
   required BuildContext context,
   required String categoryName,
+  required TimerServiceProvider timerService,
 }) {
   final TextEditingController englishTextController = TextEditingController();
   final TextEditingController blackfootTextController = TextEditingController();
 
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -170,12 +210,43 @@ void showDialogAddPhase({
               'Discard',
               style: actionButtonTextStyle,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+              timerService.resetTimerForRecorder();
+              FlutterSoundMethods().dispose();
+            },
           ),
           TextButton(
             onPressed: () async {
-              final blackfootAudioPath = await ConversationFucntions()
-                  .uploadAudioFileToFirebaseStorage(pathToSaveAudio);
+              // Trim the text fields to remove leading and trailing spaces
+              final blackfootText = blackfootTextController.text.trim();
+              final englishText = englishTextController.text.trim();
+              String blackfootAudioPath;
+
+              // Validate the fields
+              if (blackfootText.isEmpty || englishText.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Blackfoot text and English text cannot be empty.'),
+                  ),
+                );
+                return;
+              }
+
+              try {
+                blackfootAudioPath = await ConversationFucntions()
+                    .uploadAudioFileToFirebaseStorage(
+                        FlutterSoundMethods().pathToSaveAudio);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Failed to upload audio file. Please try again.'),
+                  ),
+                );
+                return;
+              }
 
               ConversationFucntions().addConversation(
                 context: context,
@@ -186,6 +257,7 @@ void showDialogAddPhase({
               );
 
               Navigator.of(context).pop();
+              FlutterSoundMethods().dispose();
               englishTextController.clear();
               blackfootTextController.clear();
             },
