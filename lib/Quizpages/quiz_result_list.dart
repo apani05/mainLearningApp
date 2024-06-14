@@ -24,7 +24,7 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
 
   Future<void> fetchData() async {
     final blogProviderObj = ref.read(blogProvider);
-    quizResults = await blogProviderObj.getUserQuizResults();
+    quizResults = await blogProviderObj.getQuizResults();
     setState(() {});
   }
 

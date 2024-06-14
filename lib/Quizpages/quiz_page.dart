@@ -189,6 +189,12 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       }
     }
     ref.read(blogProvider).saveQuizResults(quizScore, quizQuestions);
+    int leaderboardScore =
+        (quizScore - (quizQuestions.length - quizScore) * 0.5).floor();
+    final leaderboardRepo = ref.watch(leaderboardProvider);
+    final userRepo = ref.watch(userProvider);
+    userRepo.updateScore(userRepo.uid, leaderboardScore);
+    leaderboardRepo.addToLeaderBoard(userRepo.user.name, leaderboardScore);
 
     Navigator.pushReplacement(
       context,

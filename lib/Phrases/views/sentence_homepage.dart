@@ -37,6 +37,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
     seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
     allData = await blogProviderObj.fetchAllData();
     blogProviderObj.getSavedPhrases();
+    blogProviderObj.fetchQuizResultsFromFirebase();
     vocabCategory = await vProvider.getAllCategories();
     setState(() {});
   }
