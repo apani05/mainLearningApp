@@ -30,19 +30,26 @@ class _LearningPageState extends ConsumerState<LearningPage> {
     final blogProviderObj = ref.watch(blogProvider);
 
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: Text(widget.seriesName),
-            backgroundColor: theme.lightPurple,
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-          body: widget.data.isNotEmpty
+          title: Text(widget.seriesName),
+          backgroundColor: theme.lightPurple,
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Background2.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: widget.data.isNotEmpty
               ? Column(
                   children: [
                     Expanded(
@@ -92,6 +99,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                   ],
                 )
               : const Center(child: CircularProgressIndicator()),
-        ));
+        ),
+      ),
+    );
   }
 }

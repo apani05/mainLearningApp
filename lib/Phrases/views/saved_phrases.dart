@@ -29,28 +29,36 @@ class _SavedPageState extends ConsumerState<SavedPage> {
         title: const Text("Saved Blogs"),
         backgroundColor: theme.lightPurple,
       ),
-      body: savedBlogs.isEmpty
-          ? const Center(
-              child: Text('No Saved Blogs'),
-            )
-          : CardSlider(
-              cardDataList: savedBlogs,
-              currentPlayingIndex: currentPlayingIndex,
-              onSavedButtonPressed: (index) {
-                blogProviderObj.toggleSavedPhrase(savedBlogs[index]);
-              },
-              onPlayButtonPressed: (index) {
-                setState(() {
-                  if (currentPlayingIndex == index) {
-                    // Stop if the same button is pressed again
-                    currentPlayingIndex = null;
-                  } else {
-                    // Play the clicked audio
-                    currentPlayingIndex = index;
-                  }
-                });
-              },
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Background2.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: savedBlogs.isEmpty
+            ? const Center(
+                child: Text('No Saved Blogs'),
+              )
+            : CardSlider(
+                cardDataList: savedBlogs,
+                currentPlayingIndex: currentPlayingIndex,
+                onSavedButtonPressed: (index) {
+                  blogProviderObj.toggleSavedPhrase(savedBlogs[index]);
+                },
+                onPlayButtonPressed: (index) {
+                  setState(() {
+                    if (currentPlayingIndex == index) {
+                      // Stop if the same button is pressed again
+                      currentPlayingIndex = null;
+                    } else {
+                      // Play the clicked audio
+                      currentPlayingIndex = index;
+                    }
+                  });
+                },
+              ),
+      ),
     );
   }
 }

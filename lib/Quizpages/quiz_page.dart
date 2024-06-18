@@ -21,8 +21,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   bool _isNextButtonEnabled = false;
   bool _isSubmitButtonEnabled = false;
   List<String> selectedSeries = [];
-  late Future<String> _imageUrlFuture;
-  String _imageUrl = "";
   late AudioPlayer player = ref.watch(audioPlayerProvider);
   bool isPlaying = false;
 
@@ -31,8 +29,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     super.initState();
     _isQuestionAnswered = [];
     _showSeriesSelectionDialog();
-    _imageUrlFuture = getImageUrl(
-        'gs://blackfootapplication.appspot.com/images/quiz_image.jpg');
   }
 
   Future<void> _showSeriesSelectionDialog() async {
@@ -279,23 +275,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  FutureBuilder<String>(
-                    future: _imageUrlFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        _imageUrl = snapshot.data!;
-                        return Image.network(
-                          _imageUrl,
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          width: MediaQuery.of(context).size.width,
-                          fit: BoxFit.cover,
-                        );
-                      }
-                    },
+                  Image.asset(
+                    'assets/quiz_image.jpg',
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
                   ),
                   _currentIndex < quizQuestions.length
                       ? buildQuestionCard(quizQuestions[_currentIndex])

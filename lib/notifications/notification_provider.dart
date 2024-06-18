@@ -41,12 +41,6 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCommitedTime(double commitedTime) {
-    _commitedTime = commitedTime;
-    saveSettings();
-    notifyListeners();
-  }
-
   void setRemindTime(int hr, int min, int sec) {
     _remindTimeHr = hr;
     _remindTimeMin = min;

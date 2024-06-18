@@ -54,7 +54,7 @@ class QuizBarData {
 
     return SfCartesianChart(
       primaryXAxis: CategoryAxis(
-        labelRotation: 45,
+        labelRotation: 70,
         labelStyle: TextStyle(
           fontSize: 12,
         ),
@@ -66,7 +66,7 @@ class QuizBarData {
           yValueMapper: (ChartData data, _) => data.y,
           borderRadius: BorderRadius.all(Radius.circular(15)),
           dataLabelSettings: DataLabelSettings(isVisible: true),
-          color: Color.fromARGB(255, 223, 169, 8),
+          color: Color(0xff6562df),
         ),
       ],
       tooltipBehavior: TooltipBehavior(enable: true),

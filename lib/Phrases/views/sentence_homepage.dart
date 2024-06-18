@@ -20,15 +20,11 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   List<Map<String, dynamic>> seriesOptions = [];
   List<CardData> allData = [];
   List<String> vocabCategory = [];
-  late Future<String> _imageUrlFuture;
-  String _imageUrl = "";
 
   @override
   void initState() {
     super.initState();
     _fetchPhrasesData();
-    _imageUrlFuture = getImageUrl(
-        'gs://blackfootapplication.appspot.com/images/phrase_image.jpg');
   }
 
   Future<void> _fetchPhrasesData() async {
@@ -37,7 +33,6 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
     seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
     allData = await blogProviderObj.fetchAllData();
     blogProviderObj.getSavedPhrases();
-    blogProviderObj.fetchQuizResultsFromFirebase();
     vocabCategory = await vProvider.getAllCategories();
     setState(() {});
   }
@@ -67,32 +62,24 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FutureBuilder<String>(
-                  future: _imageUrlFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: Icon(Icons.image, size: 40));
-                    } else if (snapshot.hasError ||
-                        snapshot.data == null ||
-                        snapshot.data!.isEmpty) {
-                      return Text('Error: Unable to load image');
-                    } else {
-                      _imageUrl = snapshot.data!;
-                      return Image.network(
-                        _imageUrl,
-                        height: screenSize.height * 0.35,
-                        width: screenSize.width,
-                        fit: BoxFit.cover,
-                      );
-                    }
-                  },
+                Image.asset(
+                  'assets/phrase_image.jpg',
+                  height: screenSize.height * 0.35,
+                  width: screenSize.width,
+                  fit: BoxFit.cover,
                 ),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                   child: Text(
                     'Features',
-                    style: theme.themeData.textTheme.headline6,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFcccbff),
+                      fontFamily: 'Chewy',
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
                 Container(
@@ -139,7 +126,13 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                   child: Text(
                     'Categories',
-                    style: theme.themeData.textTheme.headline6,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFcccbff),
+                      fontFamily: 'Chewy',
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
                 SizedBox(

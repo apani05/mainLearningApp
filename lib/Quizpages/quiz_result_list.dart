@@ -24,7 +24,7 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
 
   Future<void> fetchData() async {
     final blogProviderObj = ref.read(blogProvider);
-    quizResults = await blogProviderObj.getQuizResults();
+    quizResults = await blogProviderObj.fetchQuizResultsFromFirebase();
     setState(() {});
   }
 
@@ -38,64 +38,76 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
         title: Text('Quiz Performance'),
         backgroundColor: theme.lightPurple,
       ),
-      body: quizResults.isEmpty
-          ? Center(
-              child: Text(
-                'No quizzes taken yet',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: QuizBarData.buildBarGraph(eachSeriesScore),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: quizResults.length,
-                    itemBuilder: (context, index) {
-                      final quizResult = quizResults[index];
-                      final quizIndex = index + 1;
-                      final quizScore = quizResult.quizScore;
-                      final totalPoints = quizResult.totalPoints;
-                      final dateSubmitted = quizResult.dateSubmitted.toDate();
-                      final formattedDate =
-                          DateFormat('MM/dd/yy HH:mm').format(dateSubmitted);
-
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: theme.lightPurple.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: theme.lightPurple,
-                              width: 1,
-                            ),
-                          ),
-                          child: ListTile(
-                            title: Text('Quiz $quizIndex'),
-                            subtitle: Text('Score: $quizScore / $totalPoints'),
-                            trailing: Text(formattedDate),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => QuizResultScreen(
-                                    quizScore: quizScore,
-                                    quizQuestions: quizResult.questionSet,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/Background.jpg',
+              fit: BoxFit.cover,
             ),
+          ),
+          quizResults.isEmpty
+              ? Center(
+                  child: Text(
+                    'No quizzes taken yet',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: QuizBarData.buildBarGraph(eachSeriesScore),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: quizResults.length,
+                        itemBuilder: (context, index) {
+                          final quizResult = quizResults[index];
+                          final quizIndex = index + 1;
+                          final quizScore = quizResult.quizScore;
+                          final totalPoints = quizResult.totalPoints;
+                          final dateSubmitted =
+                              quizResult.dateSubmitted.toDate();
+                          final formattedDate = DateFormat('MM/dd/yy HH:mm')
+                              .format(dateSubmitted);
+
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: theme.lightPurple.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: theme.lightPurple,
+                                  width: 1,
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text('Quiz $quizIndex'),
+                                subtitle:
+                                    Text('Score: $quizScore / $totalPoints'),
+                                trailing: Text(formattedDate),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizResultScreen(
+                                        quizScore: quizScore,
+                                        quizQuestions: quizResult.questionSet,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 }

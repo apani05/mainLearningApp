@@ -20,7 +20,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   void initState() {
     super.initState();
-
     LocalNotifications.init(initScheduled: true);
   }
 
@@ -46,28 +45,39 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Settings",
+          "Notifications",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFFcccbff),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Opacity(
-                opacity: isReminderOn ? 1.0 : 0.5,
-                child: Column(
-                  children: [
-                    _buildReminderRow0(isReminderOn),
-                    _buildReminderRow1(isReminderOn),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              )
-            ]),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/Background2.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Opacity(
+                  opacity: isReminderOn ? 1.0 : 0.5,
+                  child: Column(
+                    children: [
+                      _buildReminderRow0(isReminderOn),
+                      _buildReminderRow1(isReminderOn),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -81,9 +91,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         notificationProvide.toggleReminderMode();
         _scheduleNotification();
       });
-    } else {
-      // Permission is denied, handle this case accordingly
-      // You can inform the user or provide guidance on how to enable the permission
     }
   }
 
@@ -143,8 +150,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       DateTime dateTime = DateTime(0, 1, 1, hour, minute);
 
       // Format the DateTime object to the desired format
-      DateFormat timeFormat =
-          DateFormat.jm(); // 'jm' stands for hour:minute a.m./p.m.
+      DateFormat timeFormat = DateFormat.jm();
 
       return timeFormat.format(dateTime);
     }

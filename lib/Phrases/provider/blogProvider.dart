@@ -10,7 +10,6 @@ class BlogProvider extends ChangeNotifier {
   List<CardData> _cardDataList = [];
   List<Map<String, dynamic>> _seriesOptions = [];
   SavedData _userPhraseProgress = SavedData(uid: '', savedPhrases: []);
-  List<Quiz> _quizResults = [];
 
   List<CardData> getCardDataList() {
     return _cardDataList;
@@ -22,10 +21,6 @@ class BlogProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> getSeriesOptions() {
     return _seriesOptions;
-  }
-
-  List<Quiz> getQuizResults() {
-    return _quizResults;
   }
 
   void updateSeriesOptions(List<Map<String, dynamic>> seriesOptions) {
@@ -248,7 +243,6 @@ class BlogProvider extends ChangeNotifier {
     } catch (error) {
       print('Error fetching quiz results: $error');
     }
-    _quizResults = quizResults;
     return quizResults;
   }
 
@@ -284,12 +278,6 @@ class BlogProvider extends ChangeNotifier {
             }
           ]),
         });
-        _quizResults.add(Quiz(
-          dateSubmitted: now,
-          quizScore: quizScore,
-          totalPoints: questions.length,
-          questionSet: questions,
-        ));
 
         print('Quiz Results saved successfully.');
         notifyListeners();

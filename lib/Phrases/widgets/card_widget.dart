@@ -43,7 +43,7 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
         .savedPhrases
         .any((phrase) => phrase.documentId == widget.documentId);
     return Card(
-      color: theme.lightPurple,
+      color: theme.lightPurple.withOpacity(0.9),
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,14 +63,13 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
                   ),
                 ),
                 const SizedBox(width: 20),
-                // THE HEART ICON // SAVE BUTTON FOR BLOG
                 IconButton(
                   onPressed: widget.onSavedButtonPressed,
                   icon: Icon(
                     isPhraseSaved ? Icons.favorite : Icons.favorite_border,
                     color: Colors.white,
                   ),
-                ), // Heart icon
+                ),
               ],
             ),
             const Divider(

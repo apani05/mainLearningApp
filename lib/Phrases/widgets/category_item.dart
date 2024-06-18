@@ -53,6 +53,7 @@ class CategoryItem extends ConsumerWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFFcccbff),
                 ),
                 textAlign: TextAlign.center,
               ),

@@ -54,12 +54,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: 20,
               ),
               Center(
-                // child: Text(
-                //   'Welcome to I\'poyít ',
-                //   style: widget.theme.textTheme.headline1?.copyWith(
-                //     color: Colors.white,
-                //   ),
-                // ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -114,17 +108,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                             style: widget.theme.textTheme.headlineLarge
                                 ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
-                          // Text(
-                          //   'Broaden you word bank',
-                          //   textAlign: TextAlign.center,
-                          //   style: widget.theme.textTheme.headline1?.copyWith(
-                          //     color: Colors.white,
-                          //     fontSize: 20
-                          //   ),
-                          // ),
                           AnimatedTextKit(animatedTexts: [
                             ColorizeAnimatedText(
-                              'Broaden you word bank',
+                              'Broaden your word bank',
                               textStyle: colorizeTextStyle,
                               colors: colorizeColors,
                             ),
@@ -136,7 +122,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               GestureDetector(
                 onTap: () {
@@ -163,14 +149,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                             style: widget.theme.textTheme.headlineLarge
                                 ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
-                          // Text(
-                          //   'Master everyday phrases',
-                          //   textAlign: TextAlign.center,
-                          //   style: widget.theme.textTheme.headline1?.copyWith(
-                          //     color: Colors.white,
-                          //     fontSize: 20
-                          //   ),
-                          // ),
                           AnimatedTextKit(
                             animatedTexts: [
                               ColorizeAnimatedText(
