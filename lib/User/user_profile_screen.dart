@@ -205,14 +205,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                                             : UserProvide.uid),
                                               ));
                                           break;
-                                        case 'ack':
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Acknowledegement(),
-                                              ));
-                                          break;
                                       }
                                     },
                                     itemBuilder: (BuildContext context) =>
@@ -221,16 +213,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                         value: 'profile',
                                         child: Text(
                                           'Profile',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem<String>(
-                                        value: 'ack',
-                                        child: Text(
-                                          'Acknowledgements',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,

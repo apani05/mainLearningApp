@@ -1,110 +1,31 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
+import 'package:bfootlearn/Phrases/models/question_model.dart';
+import 'package:bfootlearn/Phrases/models/quiz_model.dart';
+import 'package:bfootlearn/Phrases/models/saved_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../riverpod/river_pod.dart';
-
-class Question {
-  String questionText;
-  String correctAnswer;
-  List<String> options;
-  String? selectedAnswer;
-  bool showCorrectAnswer;
-
-  Question(
-      {required this.questionText,
-      required this.correctAnswer,
-      required this.options})
-      : showCorrectAnswer = false;
-}
-
-class Quiz {
-  final Timestamp dateSubmitted;
-  final int quizScore;
-  final int totalPoints;
-  final List<Question> questionSet;
-  Quiz({
-    required this.dateSubmitted,
-    required this.quizScore,
-    required this.totalPoints,
-    required this.questionSet,
-  });
-}
-
-class CardData {
-  final String documentId;
-  final String englishText;
-  final String blackfootText;
-  final String blackfootAudio;
-  final String seriesName;
-  CardData({
-    required this.documentId,
-    required this.englishText,
-    required this.blackfootText,
-    required this.blackfootAudio,
-    required this.seriesName,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'documentId': documentId,
-      'englishText': englishText,
-      'blackfootText': blackfootText,
-      'blackfootAudio': blackfootAudio,
-      'seriesName': seriesName,
-    };
-  }
-
-  factory CardData.fromJson(Map<String, dynamic> json) {
-    return CardData(
-      documentId: json['documentId'],
-      englishText: json['englishText'],
-      blackfootText: json['blackfootText'],
-      blackfootAudio: json['blackfootAudio'],
-      seriesName: json['seriesName'],
-    );
-  }
-}
-
-class PhraseData {
-  final String uid;
-  final List<CardData> savedPhrases;
-  PhraseData({
-    required this.uid,
-    required this.savedPhrases,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'uid': uid,
-      'savedPhrases': savedPhrases,
-    };
-  }
-
-  factory PhraseData.fromJson(Map<String, dynamic> json) {
-    return PhraseData(
-      uid: json['uid'],
-      savedPhrases: json['savedPhrases'],
-    );
-  }
-}
 
 class BlogProvider extends ChangeNotifier {
   List<CardData> _cardDataList = [];
-  List<String> _seriesOptions = [];
-  PhraseData _userPhraseProgress = PhraseData(uid: '', savedPhrases: []);
+  List<Map<String, dynamic>> _seriesOptions = [];
+  SavedData _userPhraseProgress = SavedData(uid: '', savedPhrases: []);
 
   List<CardData> getCardDataList() {
     return _cardDataList;
   }
 
-  PhraseData getUserPhraseProgress() {
+  SavedData getUserPhraseProgress() {
     return _userPhraseProgress;
   }
 
-  List<String> getSeriesOptions() {
+  List<Map<String, dynamic>> getSeriesOptions() {
     return _seriesOptions;
+  }
+
+  void updateSeriesOptions(List<Map<String, dynamic>> seriesOptions) {
+    _seriesOptions = seriesOptions;
+    notifyListeners();
   }
 
   void updateCardDataList(List<CardData> newCardDataList) {
@@ -112,7 +33,7 @@ class BlogProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePhraseData() async {
+  Future<void> getSavedPhrases() async {
     List<CardData> savedPhrases = [];
     String uid = '';
 
@@ -141,7 +62,7 @@ class BlogProvider extends ChangeNotifier {
         });
       });
 
-      PhraseData data = PhraseData(
+      SavedData data = SavedData(
         uid: uid,
         savedPhrases: savedPhrases,
       );
@@ -155,26 +76,26 @@ class BlogProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<String>> getSeriesNamesFromFirestore() async {
-    List<String> seriesNames = [];
+  Future<dynamic> getSeriesNamesFromFirestore() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('ConversationTypes')
           .orderBy('seriesName')
           .get();
 
-      seriesNames = querySnapshot.docs.map((doc) {
-        String seriesName = doc['seriesName'];
-        return seriesName;
+      List<Map<String, dynamic>> seriesOptions = querySnapshot.docs.map((doc) {
+        return {
+          'seriesName': doc['seriesName'],
+          'iconImage': doc['iconImage'],
+        };
       }).toList();
-      _seriesOptions = seriesNames;
+      _seriesOptions = seriesOptions;
       notifyListeners();
-      return seriesNames;
+      return seriesOptions;
     } catch (error) {
       print("Error fetching series names: $error");
     }
-
-    return seriesNames;
+    return;
   }
 
 //
@@ -284,7 +205,7 @@ class BlogProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Quiz>> getUserQuizResults() async {
+  Future<List<Quiz>> fetchQuizResultsFromFirebase() async {
     List<Quiz> quizResults = [];
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -303,6 +224,8 @@ class BlogProvider extends ChangeNotifier {
               questionText: questionData['questionText'],
               correctAnswer: questionData['correctAnswer'],
               options: [],
+              isAudioTypeQuestion: questionData['isAudioTypeQuestion'],
+              seriesType: questionData['seriesType'],
             );
             question.selectedAnswer = questionData['selectedAnswer'];
             questionSet.add(question);
@@ -340,6 +263,8 @@ class BlogProvider extends ChangeNotifier {
             'questionText': question.questionText,
             'correctAnswer': question.correctAnswer,
             'selectedAnswer': question.selectedAnswer,
+            'isAudioTypeQuestion': question.isAudioTypeQuestion,
+            'seriesType': question.seriesType,
           };
         }).toList();
 

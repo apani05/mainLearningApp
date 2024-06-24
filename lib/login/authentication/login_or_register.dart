@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../pages/login_page.dart';
-import '../pages/registration_page.dart';
+import '../views/login_page.dart';
+import '../views/registration_page.dart';
 
 class LoginOrRegister extends ConsumerStatefulWidget {
   const LoginOrRegister({super.key});

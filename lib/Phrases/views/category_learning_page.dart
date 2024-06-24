@@ -1,9 +1,9 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/widgets/card_slider.dart';
-import 'package:bfootlearn/Phrases/provider/blogProvider.dart';
 import 'package:bfootlearn/vocabulary/viwes/v_game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod/river_pod.dart';
+import '../../riverpod/river_pod.dart';
 
 class LearningPage extends ConsumerStatefulWidget {
   final String seriesName;
@@ -30,19 +30,26 @@ class _LearningPageState extends ConsumerState<LearningPage> {
     final blogProviderObj = ref.watch(blogProvider);
 
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: Text(widget.seriesName),
-            backgroundColor: theme.lightPurple,
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-          body: widget.data.isNotEmpty
+          title: Text(widget.seriesName),
+          backgroundColor: theme.lightPurple,
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Background2.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: widget.data.isNotEmpty
               ? Column(
                   children: [
                     Expanded(
@@ -55,10 +62,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                         onPlayButtonPressed: (index) {
                           setState(() {
                             if (currentPlayingIndex == index) {
-                              // Stop if the same button is pressed again
                               currentPlayingIndex = null;
                             } else {
-                              // Play the clicked audio
                               currentPlayingIndex = index;
                             }
                           });
@@ -94,6 +99,8 @@ class _LearningPageState extends ConsumerState<LearningPage> {
                   ],
                 )
               : const Center(child: CircularProgressIndicator()),
-        ));
+        ),
+      ),
+    );
   }
 }

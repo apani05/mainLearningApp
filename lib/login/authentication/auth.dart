@@ -1,4 +1,4 @@
-import 'package:bfootlearn/login/pages/admin_page.dart';
+import 'package:bfootlearn/adminProfile/pages/admin_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

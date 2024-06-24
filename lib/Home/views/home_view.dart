@@ -1,18 +1,11 @@
-import 'package:bfootlearn/Home/views/ack_page.dart';
 import 'package:bfootlearn/Home/widgets/bootomnavItems.dart';
-import 'package:bfootlearn/Home/widgets/crad_option.dart';
-import 'package:bfootlearn/Home/widgets/home_page.dart';
+import 'package:bfootlearn/Home/widgets/popup_menu.dart';
 import 'package:bfootlearn/User/user_profile_screen.dart';
-import 'package:bfootlearn/common/bottomnav.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flippy/flippy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flippy/flippy.dart';
-import '../../login/pages/reset_password.dart';
-import '../../notifications/notification_page.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -24,38 +17,23 @@ class HomeView extends ConsumerStatefulWidget {
 class HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
+    super.initState();
     final leaderBoardRepo = ref.read(leaderboardProvider);
     final UserProvide = ref.read(userProvider);
     //leaderBoardRepo.addToLeaderBoard(UserProvide.name??"", UserProvide.score);
     //UserProvide.getScore(UserProvide.uid);
     //UserProvide.setScore(UserProvide.score);
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   FlipperController flipperController = FlipperController(
     dragAxis: DragAxis.horizontal,
   );
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void handlePopupMenuSelection(String value) {
-    switch (value) {
-      case 'signOut':
-        FirebaseAuth.instance.signOut();
-        break;
-      case 'changePassword':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PasswordChangePage()),
-        );
-        break;
-      case 'localNotifications':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SettingsPage()),
-        );
-        break;
-    }
-  }
 
   AppBar buildAppBar(BuildContext context) {
     final theme = ref.watch(themeProvider);
@@ -64,7 +42,7 @@ class HomeViewState extends ConsumerState<HomeView> {
       backgroundColor: theme.lightPurple,
       centerTitle: true,
       shape: vProvider.currentPage != 0
-          ? RoundedRectangleBorder(
+          ? const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
                 bottom: Radius.circular(30),
               ),
@@ -96,71 +74,38 @@ class HomeViewState extends ConsumerState<HomeView> {
             ),
           ),
           Visibility(
+            visible: vProvider.currentPage == 1,
             child: Center(
-                child: Padding(
-              padding: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width / 4.5),
-              child: const Text(
-                "Leaderboard",
-                style: TextStyle(color: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width / 4.5),
+                child: const Text(
+                  "Leaderboard",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            )),
-            visible: vProvider.currentPage == 1 ? true : false,
+            ),
           ),
           Visibility(
+            visible: vProvider.currentPage == 2,
             child: Center(
-                child: Padding(
-              padding: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width / 5.5),
-              child: const Text(
-                "Discusion Forum",
-                style: TextStyle(color: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width / 5.5),
+                child: const Text(
+                  "Discussion Forum",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            )),
-            visible: vProvider.currentPage == 2 ? true : false,
+            ),
           ),
         ],
       ),
       actions: [
-        // IconButton(onPressed: (){
-        //   Navigator.push(context,
-        //       MaterialPageRoute(
-        //           builder: (context) => Acknowledegement(),
-        //       ),
-        //   );
-        // },
-        //   icon: Icon(Icons.info_outlined),
-        //   color: Colors.black,  ),
         Visibility(
           visible: true,
-          child: PopupMenuButton<String>(
-            onSelected: handlePopupMenuSelection,
-            color: theme.lightPurple,
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: 'localNotifications',
-                  child: ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text('Notifications'),
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'changePassword',
-                  child: ListTile(
-                    leading: Icon(Icons.lock),
-                    title: Text('Change Password'),
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'signOut',
-                  child: ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text('Sign Out'),
-                  ),
-                ),
-              ];
-            },
+          child: CustomPopupMenu(
+            onSelected: (value) {},
           ),
         ),
       ],

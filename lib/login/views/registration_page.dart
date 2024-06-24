@@ -130,10 +130,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   const SizedBox(height: 8),
                   FadeIn(
                     child: MyTextField(
-                        controller: passwordController,
-                        textColor: theme.lightPurple,
-                        labelText: 'Password',
-                        obscureText: true),
+                      controller: passwordController,
+                      textColor: theme.lightPurple,
+                      labelText: 'Password',
+                      obscureText: true,
+                      suffix: true,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   FadeIn(

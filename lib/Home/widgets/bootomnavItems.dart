@@ -39,9 +39,9 @@ class BottomNavItem {
         theme: theme,
       );
     } else if (index == 1) {
-      return LeaderBoardPage();
+      return const LeaderBoardPage();
     } else if (index == 2) {
-      return DisscussionPage();
+      return const DisscussionPage();
     }
   }
 }
