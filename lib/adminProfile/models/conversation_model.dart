@@ -5,6 +5,7 @@ class ConversationModel {
   final String seriesName;
   final String conversationId;
   final String timestamp;
+  bool selected;
 
   ConversationModel({
     required this.timestamp,
@@ -13,5 +14,6 @@ class ConversationModel {
     required this.blackfootAudio,
     required this.seriesName,
     required this.conversationId,
+    this.selected = false,
   });
 }
