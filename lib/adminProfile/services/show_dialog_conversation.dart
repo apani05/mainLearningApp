@@ -1,7 +1,6 @@
 import 'package:bfootlearn/adminProfile/models/conversation_model.dart';
 import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/flutter_sound_methods.dart';
-import 'package:bfootlearn/adminProfile/services/timer_methods.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
 import 'package:bfootlearn/adminProfile/widgets/old_audio_player.dart';
 import 'package:flutter/material.dart';
@@ -166,7 +165,6 @@ void showDialogUpdatePhase({
 void showDialogAddPhase({
   required BuildContext context,
   required String categoryName,
-  required TimerServiceProvider timerService,
 }) {
   final TextEditingController englishTextController = TextEditingController();
   final TextEditingController blackfootTextController = TextEditingController();
@@ -212,7 +210,7 @@ void showDialogAddPhase({
             ),
             onPressed: () {
               Navigator.of(context).pop();
-              timerService.resetTimerForRecorder();
+
               FlutterSoundMethods().dispose();
             },
           ),

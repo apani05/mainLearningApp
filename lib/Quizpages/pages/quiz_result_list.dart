@@ -2,9 +2,9 @@ import 'package:bfootlearn/Phrases/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../riverpod/river_pod.dart';
+import '../../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
-import 'widgets/bar_graph.dart';
+import '../widgets/bar_graph.dart';
 
 class QuizResultList extends ConsumerStatefulWidget {
   const QuizResultList({super.key});

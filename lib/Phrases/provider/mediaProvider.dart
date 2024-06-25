@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
 
@@ -20,9 +19,9 @@ Future<void> playAudio(
   }
 }
 
-Future<String> getImageUrl(String imageUrl) async {
+Future<String> getDownloadUrl(String url) async {
   String downloadUrl =
-      await FirebaseStorage.instance.refFromURL(imageUrl).getDownloadURL();
+      await FirebaseStorage.instance.refFromURL(url).getDownloadURL();
   print('downloadUrl: $downloadUrl');
   return downloadUrl;
 }

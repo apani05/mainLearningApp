@@ -3,8 +3,8 @@ import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/models/question_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Phrases/provider/mediaProvider.dart';
-import '../riverpod/river_pod.dart';
+import '../../Phrases/provider/mediaProvider.dart';
+import '../../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
 
 class QuizPage extends ConsumerStatefulWidget {

@@ -73,7 +73,7 @@ class _CategoryListTileItemState extends ConsumerState<CategoryListTileItem> {
               // Handle delete action
               showDialogDeleteCategory(
                 context: context,
-                categoryId: widget.category.categoryId,
+                categoryData: widget.category,
               );
               break;
           }

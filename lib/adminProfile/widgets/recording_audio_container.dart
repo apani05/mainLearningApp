@@ -1,10 +1,6 @@
 import 'package:bfootlearn/adminProfile/services/flutter_sound_methods.dart';
-import 'package:bfootlearn/adminProfile/services/timer_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final timerServiceProvider =
-    ChangeNotifierProvider((ref) => TimerServiceProvider());
 
 class RecordingAudioContainer extends ConsumerStatefulWidget {
   const RecordingAudioContainer({
@@ -21,16 +17,12 @@ class _RecordingAudioContainerState
   final audioRecorder = FlutterSoundMethods();
 
   Future onPressedRecordButton() async {
-    final timerService = ref.watch(timerServiceProvider);
     if (audioRecorder.isRecorderInitialised) {
       if (audioRecorder.isRecording) {
         // initial state
         debugPrint(
             "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
         await audioRecorder.stopRecording();
-
-        // stops the timer
-        timerService.stopTimerForRecording();
       } else {
         if (audioRecorder.isPlayerInitialised) {
           if (audioRecorder.isPlaying) {
@@ -38,25 +30,16 @@ class _RecordingAudioContainerState
                 "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
             // playing state
             await audioRecorder.pausePlaying();
-
-            // stops timer
-            timerService.pauseTimerForPlaying();
           } else {
             debugPrint(
                 "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
             // paused state
             await audioRecorder.resumePlaying();
-
-            // restarts countdown timer
-            timerService.incrementTimer();
           }
         } else {
           debugPrint(
               "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
           await audioRecorder.startPlaying();
-
-          // starts countdown timer
-          timerService.incrementTimer();
         }
       }
     } else {
@@ -64,8 +47,6 @@ class _RecordingAudioContainerState
           "isRecording : ${audioRecorder.isRecording}, isRecordingStopped: ${audioRecorder.isRecordingStopped}, isPlaying: ${audioRecorder.isPlaying}, isPlayerIni: ${audioRecorder.isPlayerInitialised}");
       // recording state
       await audioRecorder.startRecording();
-      // starts the timer
-      timerService.startTimer();
     }
     setState(() {});
   }
@@ -85,7 +66,6 @@ class _RecordingAudioContainerState
 
   @override
   Widget build(BuildContext context) {
-    final timerService = ref.watch(timerServiceProvider);
     bool isRecording = audioRecorder.isRecording;
     bool isPlaying = audioRecorder.isPlaying;
 
@@ -131,13 +111,6 @@ class _RecordingAudioContainerState
                               )
                     : micIcon(),
               ),
-              Text(
-                (audioRecorder.isRecorderInitialised &&
-                        audioRecorder.isRecordingStopped)
-                    ? '${formatDuration(timerService.duration)}/${formatDuration(timerService.stoppingTime)}'
-                    : formatDuration(timerService.duration),
-                style: timerTextStyle,
-              ),
               const Spacer(),
               if (audioRecorder.isRecorderInitialised &&
                   audioRecorder.isRecordingStopped)
@@ -145,7 +118,6 @@ class _RecordingAudioContainerState
                   onPressed: () {
                     setState(() {
                       audioRecorder.dispose();
-                      timerService.resetTimerForRecorder();
                     });
                   },
                   icon: const Icon(
@@ -183,10 +155,3 @@ TextStyle timerTextStyle = const TextStyle(
   fontSize: 18,
   fontWeight: FontWeight.w600,
 );
-
-String formatDuration(Duration d) {
-  String twoDigits(int n) => n.toString().padLeft(2, '0');
-  String twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
-  String twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
-  return "$twoDigitMinutes:$twoDigitSeconds";
-}
