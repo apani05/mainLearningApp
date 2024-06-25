@@ -12,15 +12,11 @@ class StoriesPage extends StatefulWidget {
 }
 
 class _StoriesPageState extends State<StoriesPage> {
-  late Future<String> _imageUrlFuture;
   late Future<List<String>> _audioUrlsFuture;
-  String _imageUrl = "";
 
   @override
   void initState() {
     super.initState();
-    _imageUrlFuture = getDownloadUrl(
-        'gs://blackfootapplication.appspot.com/images/phrase_image.jpg');
     _audioUrlsFuture = getAudioUrls();
   }
 
@@ -47,25 +43,11 @@ class _StoriesPageState extends State<StoriesPage> {
         child: Center(
           child: Column(
             children: [
-              FutureBuilder<String>(
-                future: _imageUrlFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: Icon(Icons.image, size: 40));
-                  } else if (snapshot.hasError ||
-                      snapshot.data == null ||
-                      snapshot.data!.isEmpty) {
-                    return const Text('Error: Unable to load image');
-                  } else {
-                    _imageUrl = snapshot.data!;
-                    return Image.network(
-                      _imageUrl,
-                      height: screenSize.height * 0.35,
-                      width: screenSize.width,
-                      fit: BoxFit.cover,
-                    );
-                  }
-                },
+              Image.asset(
+                'assets/phrase_image.jpg',
+                height: screenSize.height * 0.35,
+                width: screenSize.width,
+                fit: BoxFit.cover,
               ),
               const SizedBox(height: 10),
               FutureBuilder<List<String>>(
