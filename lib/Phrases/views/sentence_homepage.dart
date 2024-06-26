@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
 import 'package:bfootlearn/Phrases/views/saved_phrases.dart';
-import 'package:bfootlearn/Quizpages/quiz_page.dart';
-import 'package:bfootlearn/Quizpages/quiz_result_list.dart';
+import 'package:bfootlearn/Phrases/views/stories_page.dart';
+import 'package:bfootlearn/Quizpages/pages/quiz_page.dart';
+import 'package:bfootlearn/Quizpages/pages/quiz_result_list.dart';
 import '../../riverpod/river_pod.dart';
 import '../widgets/category_item.dart';
 import '../widgets/feature_item.dart';
@@ -68,9 +69,8 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                   width: screenSize.width,
                   fit: BoxFit.cover,
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                   child: Text(
                     'Features',
                     style: TextStyle(
@@ -118,12 +118,21 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                           );
                         },
                       ),
+                      FeatureItem(
+                        title: 'Stories',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const StoriesPage()),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                   child: Text(
                     'Categories',
                     style: TextStyle(
@@ -142,7 +151,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                           scrollDirection: Axis.horizontal,
                           children: seriesOptions.map((seriesData) {
                             final imageUrl =
-                                getImageUrl(seriesData['iconImage']);
+                                getDownloadUrl(seriesData['iconImage']);
                             return FutureBuilder<String>(
                               future: imageUrl,
                               builder: (context, snapshot) {

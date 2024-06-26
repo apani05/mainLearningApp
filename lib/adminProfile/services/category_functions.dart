@@ -7,21 +7,6 @@ import 'package:flutter/material.dart';
 class CategoryFunctions {
   List<DocumentSnapshot> categories = [];
   List<DocumentSnapshot> filteredCategories = [];
-  // Function to filter categories based on the search query
-  // void filterCategories(String query) {
-  //   if (query.isEmpty) {
-  //     filteredCategories
-  //         .clear(); // Clearing the filtered list if the query is empty
-  //   } else {
-  //     // Use where to filter categories based on the search query
-  //     filteredCategories = categories
-  //         .where((category) => category['seriesName']
-  //             .toLowerCase()
-  //             .contains(query.toLowerCase()))
-  //         .toList();
-  //   }
-  //   notifyListeners();
-  // }
 
   Future<String> uploadImageFileToFirebaseStorage(File pickedImage) async {
     // Create a reference to the Firebase Storage location
@@ -118,5 +103,68 @@ class CategoryFunctions {
         ),
       );
     });
+  }
+
+  // update all conversations which have the given seriesName
+  Future<void> updateConversationsSeriesName({
+    required BuildContext context,
+    required String oldSeriesName,
+    required String newSeriesName,
+  }) async {
+    final conversationsCollection =
+        FirebaseFirestore.instance.collection('Conversations');
+
+    try {
+      final snapshot = await conversationsCollection
+          .where('seriesName', isEqualTo: oldSeriesName)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        await doc.reference.update({'seriesName': newSeriesName});
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conversations updated successfully.'),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update conversations. $error'),
+        ),
+      );
+    }
+  }
+
+  // delete all conversations which have the given seriesName
+  Future<void> deleteConversationsBySeriesName({
+    required BuildContext context,
+    required String seriesName,
+  }) async {
+    final conversationsCollection =
+        FirebaseFirestore.instance.collection('Conversations');
+
+    try {
+      final snapshot = await conversationsCollection
+          .where('seriesName', isEqualTo: seriesName)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conversations deleted successfully.'),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete conversations. $error'),
+        ),
+      );
+    }
   }
 }

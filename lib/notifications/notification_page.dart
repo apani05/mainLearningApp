@@ -1,4 +1,5 @@
 import 'package:bfootlearn/notifications/notification_provider.dart';
+import 'package:bfootlearn/notifications/showPermissionDeniedDialog.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:day_night_time_picker/lib/state/time.dart';
@@ -91,6 +92,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         notificationProvide.toggleReminderMode();
         _scheduleNotification();
       });
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      // Permission is denied, handle this case accordingly
+      showPermissionDeniedDialog(context: context);
     }
   }
 

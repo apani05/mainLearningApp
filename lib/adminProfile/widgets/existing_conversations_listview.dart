@@ -12,17 +12,29 @@ String convertGsUrlToHttp(String gsUrl) {
   return '$baseUrl$bucketName/o/$filePath?alt=media';
 }
 
-class ExistingConversationsListView extends StatelessWidget {
+class ExistingConversationsListView extends StatefulWidget {
   final List<ConversationModel> conversations;
-  const ExistingConversationsListView({super.key, required this.conversations});
+  final bool isMultiSelectMode;
+  const ExistingConversationsListView({
+    super.key,
+    required this.conversations,
+    required this.isMultiSelectMode,
+  });
 
+  @override
+  State<ExistingConversationsListView> createState() =>
+      _ExistingConversationsListViewState();
+}
+
+class _ExistingConversationsListViewState
+    extends State<ExistingConversationsListView> {
   @override
   Widget build(BuildContext context) {
     final AudioPlayer audioPlayer = AudioPlayer();
     return ListView.builder(
-      itemCount: conversations.length,
+      itemCount: widget.conversations.length,
       itemBuilder: (context, index) {
-        final currentConversation = conversations[index];
+        final currentConversation = widget.conversations[index];
         final uploadDate = DateFormat("dd MMMM, yyyy")
             .format(DateTime.parse(currentConversation.timestamp));
 
@@ -49,74 +61,91 @@ class ExistingConversationsListView extends StatelessWidget {
           );
         }
 
+        void selectConversation(ConversationModel conversation) {
+          setState(() {
+            conversation.selected = !conversation.selected;
+          });
+        }
+
         return ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-            title: Text(currentConversation.englishText),
-            titleTextStyle: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-            subtitle: Column(
-              children: [
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_month),
-                    const SizedBox(width: 5),
-                    Text(uploadDate),
-                  ],
-                ),
-                const SizedBox(height: 5),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // playback audio of conversation
-                IconButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: onPressedAudioButton,
-                  icon: const Icon(Icons.volume_up_rounded),
-                  iconSize: 25,
-                  color: Colors.purpleAccent,
-                ),
-                // edit and delete conversation buttons
-                PopupMenuButton<int>(
-                  onSelected: (value) {
-                    if (value == 1) {
-                      onPressedEditButton();
-                    } else if (value == 2) {
-                      onPressedDeleteButton();
-                    }
+          leading: widget.isMultiSelectMode
+              ? Checkbox(
+                  value: currentConversation.selected,
+                  onChanged: (value) {
+                    selectConversation(currentConversation);
                   },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: [
-                          Icon(Icons.mode_edit_rounded, color: Colors.cyan),
-                          SizedBox(width: 5),
-                          Text('Edit', style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+          title: Text(currentConversation.englishText),
+          titleTextStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+          subtitle: Column(
+            children: [
+              const SizedBox(height: 3),
+              Row(
+                children: [
+                  const Icon(Icons.calendar_month),
+                  const SizedBox(width: 5),
+                  Text(uploadDate),
+                ],
+              ),
+              const SizedBox(height: 5),
+            ],
+          ),
+          trailing: !widget.isMultiSelectMode
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // playback audio of conversation
+                    IconButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: onPressedAudioButton,
+                      icon: const Icon(Icons.volume_up_rounded),
+                      iconSize: 25,
+                      color: Colors.purpleAccent,
                     ),
-                    const PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_rounded, color: Colors.red),
-                          SizedBox(width: 5),
-                          Text('Delete', style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
+                    // edit and delete conversation buttons
+                    PopupMenuButton<int>(
+                      onSelected: (value) {
+                        if (value == 1) {
+                          onPressedEditButton();
+                        } else if (value == 2) {
+                          onPressedDeleteButton();
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 1,
+                          child: Row(
+                            children: [
+                              Icon(Icons.mode_edit_rounded, color: Colors.cyan),
+                              SizedBox(width: 5),
+                              Text('Edit', style: TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 2,
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_rounded, color: Colors.red),
+                              SizedBox(width: 5),
+                              Text('Delete', style: TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                        ),
+                      ],
+                      child: const Icon(Icons.more_vert),
                     ),
                   ],
-                  child: const Icon(Icons.more_vert),
-                ),
-              ],
-            ));
+                )
+              : null,
+        );
       },
     );
   }
