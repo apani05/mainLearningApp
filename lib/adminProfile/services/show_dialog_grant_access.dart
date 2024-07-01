@@ -32,97 +32,139 @@ void showGrantAccessDialog(BuildContext context) {
               'Grant Admin Access',
               style: dialogBoxTitleTextStyle.copyWith(color: Colors.black),
             ),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 5),
-                  AdminSearchBar(
-                    hintText: 'Search user...',
-                    controller: searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        query = value.toLowerCase();
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .where('role', isEqualTo: 'user')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            content: SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 5),
+                    AdminSearchBar(
+                      hintText: 'Search user...',
+                      controller: searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          query = value.toLowerCase();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .where('role', isEqualTo: 'user')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-                      final users = snapshot.data!.docs.where((user) {
-                        final userName = user['name'].toString().toLowerCase();
-                        final userEmail =
-                            user['email'].toString().toLowerCase();
-                        return userName.contains(query) ||
-                            userEmail.contains(query);
-                      }).toList();
+                        final users = snapshot.data!.docs.where((user) {
+                          final userName =
+                              user['name'].toString().toLowerCase();
+                          final userEmail =
+                              user['email'].toString().toLowerCase();
+                          return userName.contains(query) ||
+                              userEmail.contains(query);
+                        }).toList();
 
-                      return Expanded(
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: users.length,
-                          itemBuilder: (context, index) {
-                            final user = users[index];
-                            final userId = user.id;
-                            return ListTile(
-                              contentPadding: const EdgeInsets.all(0),
-                              leading: const Icon(
-                                Icons.person_2_rounded,
-                                color: Colors.amber,
-                                size: 30,
-                              ),
-                              title: Text(
-                                user['name'],
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                        return Expanded(
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              final user = users[index];
+                              final userId = user.id;
+                              return ListTile(
+                                contentPadding: const EdgeInsets.all(0),
+                                leading: const Icon(
+                                  Icons.person_2_rounded,
+                                  color: Colors.amber,
+                                  size: 30,
                                 ),
-                              ),
-                              subtitle: Text(
-                                user['email'],
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
+                                title: Text(
+                                  user['name'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  grantAdminAccess(userId);
-                                  Navigator.of(context).pop();
-                                },
-                                icon: const Icon(
-                                  Icons.add_circle_outline_rounded,
-                                  color: Colors.green,
-                                  size: 25,
+                                subtitle: Text(
+                                  user['email'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    grantAdminAccess(userId);
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: const Icon(
+                                    Icons.add_circle_outline_rounded,
+                                    color: Colors.green,
+                                    size: 25,
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         },
+      );
+    },
+  );
+}
+
+void showDialogRemoveAdminAccess({
+  required BuildContext context,
+  required VoidCallback onPressedDelete,
+}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.purple.shade50,
+        content: Text(
+          'Do you want to remove admin access for this account?',
+          style: dialogBoxContentTextStyle,
+        ),
+        actions: [
+          TextButton(
+            child: Text(
+              'No',
+              style: actionButtonTextStyle,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: Text(
+              'Remove',
+              style: actionButtonTextStyle.copyWith(color: Colors.red),
+            ),
+            onPressed: () {
+              // deletes the category
+              onPressedDelete();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
       );
     },
   );

@@ -30,8 +30,6 @@ class FlutterSoundMethods {
   }
 
   void dispose() {
-    _audioRecorder.closeRecorder();
-    _audioPlayer.closePlayer();
     _isRecorderInitialised = false;
     _isPlayerInitialised = false;
     _audioRecorder.deleteRecord(fileName: pathToSaveAudio);

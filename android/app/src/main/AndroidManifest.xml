@@ -18,6 +18,7 @@
 
 <!-- Required permission for using full-screen intent notifications -->
     <application
+        android:requestLegacyExternalStorage="true"
         android:label="l'poyit"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
