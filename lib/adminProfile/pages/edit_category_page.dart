@@ -8,6 +8,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class EditCategoryPage extends ConsumerStatefulWidget {
   final CategoryModel category;
@@ -78,49 +79,30 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     });
   }
 
-  Future<void> importExcel(
-      {required BuildContext context, required String seriesName}) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+  pickFile() async {
+    /// Use FilePicker to pick files in Flutter Web
+
+    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xlsx', 'xls'],
+      allowedExtensions: ['xlsx'],
+      allowMultiple: false,
     );
 
-    if (result != null && result.files.isNotEmpty) {
-      var bytes = result.files.single.bytes;
-      debugPrint('bytes: $bytes');
-      if (bytes != null) {
-        var excel = Excel.decodeBytes(bytes);
+    /// file might be picked
+    debugPrint('pickedFile : ${pickedFile!.files.single.bytes}');
 
-        for (var table in excel.tables.keys) {
-          var sheet = excel.tables[table];
-          if (sheet != null) {
-            for (var row in sheet.rows.skip(1)) {
-              // Assuming the first row is the header
-              var englishText = row[0]?.value?.toString() ?? '';
-              var blackfootText = row[1]?.value?.toString() ?? '';
-              var blackfootAudio =
-                  ''; // Assuming audio will be handled separately
-
-              debugPrint('english: $englishText and blackfoot: $blackfootText');
-              if (englishText.isNotEmpty && blackfootText.isNotEmpty) {
-                conversationFucntions.addConversation(
-                  blackfootText: blackfootText,
-                  englishText: englishText,
-                  seriesName: seriesName,
-                  blackfootAudio: blackfootAudio,
-                  context: context,
-                );
-              }
-            }
-          }
+    if (pickedFile != null) {
+      var bytes = pickedFile.files.single.bytes;
+      debugPrint('file bytes : $bytes');
+      var excel = Excel.decodeBytes(bytes!);
+      for (var table in excel.tables.keys) {
+        print(table); //sheet Name
+        print(excel.tables[table]!.maxColumns);
+        print(excel.tables[table]!.maxRows);
+        for (var row in excel.tables[table]!.rows) {
+          print('$row');
         }
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No file selected or file is empty.'),
-        ),
-      );
     }
   }
 
@@ -129,6 +111,8 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     final categoryName = widget.category.categoryName;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       appBar: AppBar(
         titleSpacing: 0,
         title: Text(
@@ -136,50 +120,66 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
           textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
         ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await importExcel(
-                context: context,
-                seriesName: categoryName,
-              );
-            },
-            icon: const Icon(
-              Icons.import_export_rounded,
-              size: 30,
-            ),
-          ),
-          if (_isMultiSelectMode)
-            IconButton(
-              onPressed: _deleteSelectedConversations,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            )
-          else
-            IconButton(
-              onPressed: _toggleMultiSelectMode,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            ),
-        ],
       ),
 
       // add new phase to particular category
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showDialogAddPhase(
-          context: context,
-          categoryName: categoryName,
-        ),
-        child: const Icon(
-          Icons.add_rounded,
-          size: 30,
-          color: Colors.white,
-        ),
-      ),
+      floatingActionButton: !_isMultiSelectMode
+          ? SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              children: [
+                SpeedDialChild(
+                  child: const Icon(Icons.add_rounded),
+                  label: 'Add',
+                  onTap: () => showDialogAddPhase(
+                    context: context,
+                    categoryName: categoryName,
+                  ),
+                ),
+                SpeedDialChild(
+                  child: const Icon(Icons.delete_rounded),
+                  label: 'Delete',
+                  onTap: _toggleMultiSelectMode,
+                ),
+                SpeedDialChild(
+                    child: const Icon(Icons.import_export_rounded),
+                    label: 'Export',
+                    onTap: () => pickFile()
+
+                    // () async {
+                    //   await importExcel(
+                    //     context: context,
+                    //     seriesName: categoryName,
+                    //   );
+                    // },
+                    ),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () => showDialogDeleteConversations(
+                    context: context,
+                    onPressedDelete: _deleteSelectedConversations,
+                  ),
+                  child: const Icon(
+                    Icons.delete_rounded,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                FloatingActionButton(
+                  onPressed: _toggleMultiSelectMode,
+                  child: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(

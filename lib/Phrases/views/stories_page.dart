@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class StoriesPage extends StatefulWidget {
@@ -12,30 +12,29 @@ class StoriesPage extends StatefulWidget {
 }
 
 class _StoriesPageState extends State<StoriesPage> {
-  late Future<List<String>> _audioUrlsFuture;
-
   @override
   void initState() {
     super.initState();
-    _audioUrlsFuture = getAudioUrls();
   }
 
-  Future<List<String>> getAudioUrls() async {
-    final storageRef = FirebaseStorage.instance.ref().child('story_lessons');
-    final ListResult result = await storageRef.listAll();
-    final List<String> urls = [];
-
-    for (var item in result.items) {
-      final url = await item.getDownloadURL();
-      urls.add(url);
-    }
-
-    return urls;
+  Future<List<Map<String, String>>> fetchStories() async {
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('stories').get();
+    List<Map<String, String>> storiesData = await Future.wait(
+      snapshot.docs.map(
+        (doc) async => {
+          'topic': doc['topic'] as String,
+          'link': await getDownloadUrl(doc['link']) as String,
+        },
+      ),
+    );
+    return storiesData;
   }
 
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Stories'),
       body: Padding(
@@ -50,32 +49,32 @@ class _StoriesPageState extends State<StoriesPage> {
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: 10),
-              FutureBuilder<List<String>>(
-                future: _audioUrlsFuture,
+              FutureBuilder<List<Map<String, String>>>(
+                future: fetchStories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError || !snapshot.hasData) {
-                    return const Text('Error: Unable to load audio files');
-                  } else {
-                    final audioUrls = snapshot.data!;
-                    return Expanded(
-                      child: ListView.separated(
-                        itemCount: audioUrls.length,
-                        itemBuilder: (context, index) {
-                          return FutureBuilder<String>(
-                              future: getDownloadUrl(audioUrls[index]),
-                              builder: (context, snapshot) {
-                                final audioUrl = snapshot.data!;
-                                return StoryAudioPlayer(
-                                    index: index, audioUrl: audioUrl);
-                              });
-                        },
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 15),
-                      ),
-                    );
+                  } else if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading stories'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No stories available'));
                   }
+
+                  List<Map<String, String>> storiesData = snapshot.data!;
+
+                  return Expanded(
+                    child: ListView.separated(
+                      itemCount: storiesData.length,
+                      itemBuilder: (context, index) {
+                        return StoryAudioPlayer(
+                          topic: storiesData[index]['topic']!,
+                          audioUrl: storiesData[index]['link']!,
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 15),
+                    ),
+                  );
                 },
               ),
             ],
@@ -87,11 +86,11 @@ class _StoriesPageState extends State<StoriesPage> {
 }
 
 class StoryAudioPlayer extends StatefulWidget {
-  final int index;
+  final String topic;
   final String audioUrl;
   const StoryAudioPlayer({
     super.key,
-    required this.index,
+    required this.topic,
     required this.audioUrl,
   });
 
@@ -144,15 +143,17 @@ class _StoryAudioPlayerState extends State<StoryAudioPlayer> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.purple.shade300,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Text(
-            'Story ${widget.index}',
+            widget.topic,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -174,40 +175,35 @@ class _StoryAudioPlayerState extends State<StoryAudioPlayer> {
                       ? Icons.pause_circle_filled_outlined
                       : Icons.play_circle_filled_rounded,
                   color: Colors.white,
-                  size: 30,
+                  size: 50,
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Slider(
-                    min: 0,
-                    max: duration.inSeconds.toDouble(),
-                    value: position.inSeconds.toDouble(),
-                    onChanged: (value) async {
-                      final position = Duration(seconds: value.toInt());
-                      await audioPlayer.seek(position);
+              Slider(
+                min: 0,
+                max: duration.inSeconds.toDouble(),
+                value: position.inSeconds.toDouble(),
+                onChanged: (value) async {
+                  final position = Duration(seconds: value.toInt());
+                  await audioPlayer.seek(position);
 
-                      await audioPlayer.resume();
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        formatDuration(position),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        formatDuration(duration - position),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  )
-                ],
-              )
+                  await audioPlayer.resume();
+                },
+              ),
             ],
-          )
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                formatDuration(position),
+                style: const TextStyle(color: Colors.white),
+              ),
+              Text(
+                formatDuration(duration - position),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
         ],
       ),
     );

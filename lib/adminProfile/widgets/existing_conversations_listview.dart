@@ -53,14 +53,6 @@ class _ExistingConversationsListViewState
           );
         }
 
-        // deletes the conversation
-        void onPressedDeleteButton() {
-          showDialogDeletePhase(
-            context: context,
-            conversation: currentConversation,
-          );
-        }
-
         void selectConversation(ConversationModel conversation) {
           setState(() {
             conversation.selected = !conversation.selected;
@@ -110,37 +102,12 @@ class _ExistingConversationsListViewState
                       color: Colors.purpleAccent,
                     ),
                     // edit and delete conversation buttons
-                    PopupMenuButton<int>(
-                      onSelected: (value) {
-                        if (value == 1) {
-                          onPressedEditButton();
-                        } else if (value == 2) {
-                          onPressedDeleteButton();
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 1,
-                          child: Row(
-                            children: [
-                              Icon(Icons.mode_edit_rounded, color: Colors.cyan),
-                              SizedBox(width: 5),
-                              Text('Edit', style: TextStyle(fontSize: 16)),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 2,
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_rounded, color: Colors.red),
-                              SizedBox(width: 5),
-                              Text('Delete', style: TextStyle(fontSize: 16)),
-                            ],
-                          ),
-                        ),
-                      ],
-                      child: const Icon(Icons.more_vert),
+                    IconButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: onPressedEditButton,
+                      icon: const Icon(Icons.mode_edit_rounded),
+                      iconSize: 25,
+                      color: Colors.cyan,
                     ),
                   ],
                 )

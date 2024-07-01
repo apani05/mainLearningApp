@@ -10,46 +10,90 @@ import '../widgets/recording_audio_container.dart';
 
 final ConversationFucntions conversationFucntions = ConversationFucntions();
 
-void showDialogDeletePhase({
+void showDialogDeleteConversations({
   required BuildContext context,
-  required ConversationModel conversation,
+  required VoidCallback onPressedDelete,
 }) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        title: Text(
+          "Delete Conversations",
+          style: dialogBoxTitleTextStyle,
+        ),
         backgroundColor: Colors.purple.shade300,
         content: Text(
-          'Do you want to delete this conversation?',
+          "Are you sure you want to delete the selected conversations?",
           style: dialogBoxContentTextStyle,
         ),
         actions: [
           TextButton(
-            child: Text(
-              'No',
-              style: actionButtonTextStyle,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          TextButton(
-            child: Text(
-              'Delete',
-              style: actionButtonTextStyle.copyWith(color: Colors.red),
-            ),
             onPressed: () {
-              // deletes the category
-              conversationFucntions.deleteConversation(
-                conversationId: conversation.conversationId,
-                context: context,
-              );
               Navigator.of(context).pop();
             },
+            child: Text(
+              "Cancel",
+              style: actionButtonTextStyle,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              // Perform the delete operation
+              onPressedDelete();
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              "Delete",
+              style: actionButtonTextStyle,
+            ),
           ),
         ],
       );
     },
   );
 }
+
+// void showDialogDeletePhase({
+//   required BuildContext context,
+//   required ConversationModel conversation,
+// }) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         backgroundColor: Colors.purple.shade300,
+//         content: Text(
+//           'Do you want to delete this conversation?',
+//           style: dialogBoxContentTextStyle,
+//         ),
+//         actions: [
+//           TextButton(
+//             child: Text(
+//               'No',
+//               style: actionButtonTextStyle,
+//             ),
+//             onPressed: () => Navigator.of(context).pop(),
+//           ),
+//           TextButton(
+//             child: Text(
+//               'Delete',
+//               style: actionButtonTextStyle.copyWith(color: Colors.red),
+//             ),
+//             onPressed: () {
+//               // deletes the category
+//               conversationFucntions.deleteConversation(
+//                 conversationId: conversation.conversationId,
+//                 context: context,
+//               );
+//               Navigator.of(context).pop();
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
 
 void showDialogUpdatePhase({
   required BuildContext context,
@@ -71,30 +115,32 @@ void showDialogUpdatePhase({
           'Update Phase',
           style: dialogBoxTitleTextStyle,
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const SizedBox(height: 15),
-            // english text
-            DialogBoxTextField(
-              controller: englishTextController,
-              hintText: 'Enter English text',
-            ),
-            const SizedBox(height: 15),
-            // blackfoot text
-            DialogBoxTextField(
-              controller: blackfootTextController,
-              hintText: 'Enter Blackfoot text',
-            ),
-            const SizedBox(height: 15),
-            OldAudioPlayer(
-                oldBlackfootAudioPath: oldConversation.blackfootAudio),
-            const SizedBox(height: 15),
-            // blackfoot audio
-            const RecordingAudioContainer(),
-            const SizedBox(height: 15),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const SizedBox(height: 15),
+              // english text
+              DialogBoxTextField(
+                controller: englishTextController,
+                hintText: 'Enter English text',
+              ),
+              const SizedBox(height: 15),
+              // blackfoot text
+              DialogBoxTextField(
+                controller: blackfootTextController,
+                hintText: 'Enter Blackfoot text',
+              ),
+              const SizedBox(height: 15),
+              OldAudioPlayer(
+                  oldBlackfootAudioPath: oldConversation.blackfootAudio),
+              const SizedBox(height: 15),
+              // blackfoot audio
+              const RecordingAudioContainer(),
+              const SizedBox(height: 15),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -180,27 +226,29 @@ void showDialogAddPhase({
           'Add Phase',
           style: dialogBoxTitleTextStyle,
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const SizedBox(height: 15),
-            // english text
-            DialogBoxTextField(
-              controller: englishTextController,
-              hintText: 'Enter English text',
-            ),
-            const SizedBox(height: 15),
-            // blackfoot text
-            DialogBoxTextField(
-              controller: blackfootTextController,
-              hintText: 'Enter Blackfoot text',
-            ),
-            const SizedBox(height: 15),
-            // blackfoot audio
-            const RecordingAudioContainer(),
-            const SizedBox(height: 15),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const SizedBox(height: 15),
+              // english text
+              DialogBoxTextField(
+                controller: englishTextController,
+                hintText: 'Enter English text',
+              ),
+              const SizedBox(height: 15),
+              // blackfoot text
+              DialogBoxTextField(
+                controller: blackfootTextController,
+                hintText: 'Enter Blackfoot text',
+              ),
+              const SizedBox(height: 15),
+              // blackfoot audio
+              const RecordingAudioContainer(),
+              const SizedBox(height: 15),
+            ],
+          ),
         ),
         actions: [
           TextButton(
