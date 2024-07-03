@@ -18,9 +18,7 @@ void main() async {
   var initialNotification =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
+    const ProviderScope(child: MyApp()),
   );
 }
 

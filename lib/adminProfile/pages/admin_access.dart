@@ -18,7 +18,7 @@ class AdminAccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         title: const Text('Admin Access Settings'),
@@ -90,9 +90,10 @@ class AdminAccessPage extends StatelessWidget {
                   ),
                 ),
                 trailing: IconButton(
-                  onPressed: () {
-                    _removeAdmin(admin.id);
-                  },
+                  onPressed: () => showDialogRemoveAdminAccess(
+                    context: context,
+                    onPressedDelete: () => _removeAdmin(admin.id),
+                  ),
                   icon: const Icon(
                     Icons.remove_circle_outline_rounded,
                     color: Colors.red,

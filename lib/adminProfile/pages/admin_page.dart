@@ -3,6 +3,7 @@ import 'package:bfootlearn/adminProfile/pages/admin_access.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_categories_listview.dart';
+import 'package:bfootlearn/login/views/reset_password.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+
       appBar: AppBar(
         title: const Text('Manage Categories'),
         titleTextStyle: const TextStyle(
@@ -68,18 +70,42 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                   FirebaseAuth.instance.signOut();
                 } else if (value == 2) {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const AdminAccessPage(),
-                  ));
+                      builder: (context) => const AdminAccessPage()));
+                } else if (value == 3) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const PasswordChangePage()));
                 }
               },
               itemBuilder: (context) => [
                 const PopupMenuItem(
                   value: 1,
-                  child: Text('Sign out', style: TextStyle(fontSize: 16)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_rounded),
+                      SizedBox(width: 10),
+                      Text('Sign Out', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem(
                   value: 2,
-                  child: Text('Admin access', style: TextStyle(fontSize: 16)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.admin_panel_settings_rounded),
+                      SizedBox(width: 10),
+                      Text('Admin Access', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Row(
+                    children: [
+                      Icon(Icons.password_rounded),
+                      SizedBox(width: 10),
+                      Text('Change Password', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
                 ),
               ],
               child: const Icon(Icons.more_vert),

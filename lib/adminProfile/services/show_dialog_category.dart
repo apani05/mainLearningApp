@@ -39,44 +39,46 @@ void showDialogAddCategory(
             'Add category',
             style: dialogBoxTitleTextStyle,
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const SizedBox(height: 10),
-              pickedCategoryImage == null
-                  ? ElevatedButton.icon(
-                      onPressed: () async {
-                        pickedCategoryImage = await pickPhoto();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.purple.shade300,
-                      ),
-                      icon: const Icon(Icons.image),
-                      label: Text(
-                        'Pick icon for category',
-                        style: actionButtonTextStyle.copyWith(
-                          color: Colors.purple.shade300,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const SizedBox(height: 10),
+                pickedCategoryImage == null
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          pickedCategoryImage = await pickPhoto();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.purple.shade300,
+                        ),
+                        icon: const Icon(Icons.image),
+                        label: Text(
+                          'Pick icon for category',
+                          style: actionButtonTextStyle.copyWith(
+                            color: Colors.purple.shade300,
+                          ),
+                        ),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          pickedCategoryImage!,
+                          fit: BoxFit.contain,
+                          height: 250,
+                          width: 250,
                         ),
                       ),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        pickedCategoryImage!,
-                        fit: BoxFit.contain,
-                        height: 250,
-                        width: 250,
-                      ),
-                    ),
-              const SizedBox(height: 10),
-              DialogBoxTextField(
-                controller: categoryController,
-                hintText: 'Enter name of category',
-              ),
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+                DialogBoxTextField(
+                  controller: categoryController,
+                  hintText: 'Enter name of category',
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -171,73 +173,75 @@ void showDialogUpdateCategory({
             'Update category',
             style: dialogBoxTitleTextStyle,
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const SizedBox(height: 10),
-              pickedCategoryImagePath == null
-                  ? ElevatedButton.icon(
-                      onPressed: () async {
-                        final image = await pickPhoto();
-                        if (image != null) {
-                          setState(() {
-                            pickedCategoryImagePath = image.path;
-                          });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.purple.shade300,
-                      ),
-                      icon: const Icon(Icons.image),
-                      label: Text(
-                        'Pick icon for category',
-                        style: actionButtonTextStyle.copyWith(
-                          color: Colors.purple.shade300,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const SizedBox(height: 10),
+                pickedCategoryImagePath == null
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          final image = await pickPhoto();
+                          if (image != null) {
+                            setState(() {
+                              pickedCategoryImagePath = image.path;
+                            });
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.purple.shade300,
+                        ),
+                        icon: const Icon(Icons.image),
+                        label: Text(
+                          'Pick icon for category',
+                          style: actionButtonTextStyle.copyWith(
+                            color: Colors.purple.shade300,
+                          ),
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: updateIconImage,
+                        child: Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: pickedCategoryImagePath!.startsWith('http')
+                                ? Image.network(
+                                    pickedCategoryImagePath!,
+                                    fit: BoxFit.contain,
+                                    height: 250,
+                                    width: 250,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return const Padding(
+                                        padding: EdgeInsets.all(5),
+                                        child: CircularProgressIndicator(
+                                            color: Colors.white),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Text('Error loading image');
+                                    },
+                                  )
+                                : Image.file(
+                                    File(pickedCategoryImagePath!),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
                         ),
                       ),
-                    )
-                  : GestureDetector(
-                      onTap: updateIconImage,
-                      child: Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: pickedCategoryImagePath!.startsWith('http')
-                              ? Image.network(
-                                  pickedCategoryImagePath!,
-                                  fit: BoxFit.contain,
-                                  height: 250,
-                                  width: 250,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    }
-                                    return const Padding(
-                                      padding: EdgeInsets.all(5),
-                                      child: CircularProgressIndicator(
-                                          color: Colors.white),
-                                    );
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Text('Error loading image');
-                                  },
-                                )
-                              : Image.file(
-                                  File(pickedCategoryImagePath!),
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                    ),
-              const SizedBox(height: 10),
-              DialogBoxTextField(
-                controller: categoryController,
-                hintText: 'Enter name of category',
-              ),
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+                DialogBoxTextField(
+                  controller: categoryController,
+                  hintText: 'Enter name of category',
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
           actions: [
             TextButton(

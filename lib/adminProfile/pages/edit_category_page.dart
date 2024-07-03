@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
 import 'package:bfootlearn/adminProfile/models/conversation_model.dart';
+import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_conversation.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_conversations_listview.dart';
@@ -8,6 +11,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class EditCategoryPage extends ConsumerStatefulWidget {
   final CategoryModel category;
@@ -19,6 +23,7 @@ class EditCategoryPage extends ConsumerStatefulWidget {
 }
 
 class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
+  final ConversationFucntions conversationFucntions = ConversationFucntions();
   final TextEditingController _searchController = TextEditingController();
   List<ConversationModel> _conversations = [];
   List<ConversationModel> _filteredConversations = [];
@@ -78,49 +83,53 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     });
   }
 
-  Future<void> importExcel(
-      {required BuildContext context, required String seriesName}) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+  pickFile() async {
+    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xlsx', 'xls'],
+      allowedExtensions: ['xlsx'],
+      allowMultiple: false,
     );
 
-    if (result != null && result.files.isNotEmpty) {
-      var bytes = result.files.single.bytes;
-      debugPrint('bytes: $bytes');
-      if (bytes != null) {
-        var excel = Excel.decodeBytes(bytes);
+    if (pickedFile != null) {
+      String? filePath = pickedFile.files.first.path;
+      var bytes = File(filePath!).readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
 
-        for (var table in excel.tables.keys) {
-          var sheet = excel.tables[table];
-          if (sheet != null) {
-            for (var row in sheet.rows.skip(1)) {
-              // Assuming the first row is the header
-              var englishText = row[0]?.value?.toString() ?? '';
-              var blackfootText = row[1]?.value?.toString() ?? '';
-              var blackfootAudio =
-                  ''; // Assuming audio will be handled separately
+      var sheet = excel['Sheet1'];
 
-              debugPrint('english: $englishText and blackfoot: $blackfootText');
-              if (englishText.isNotEmpty && blackfootText.isNotEmpty) {
-                conversationFucntions.addConversation(
-                  blackfootText: blackfootText,
-                  englishText: englishText,
-                  seriesName: seriesName,
-                  blackfootAudio: blackfootAudio,
-                  context: context,
-                );
-              }
-            }
-          }
+      List<Map<String, String>> data = [];
+
+      for (int row = 1; row < sheet.maxRows; row++) {
+        var englishText = sheet
+            .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
+            .value;
+        var blackfootText = sheet
+            .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row))
+            .value;
+
+        if (englishText != null && blackfootText != null) {
+          conversationFucntions.addConversation(
+            blackfootText: blackfootText.toString(),
+            englishText: englishText.toString(),
+            seriesName: widget.category.categoryName,
+            blackfootAudio: 'noAudio',
+            context: context,
+          );
+          data.add({
+            'englishText': englishText.toString(),
+            'blackfootText': blackfootText.toString(),
+          });
         }
       }
+
+      // Now you have your data in the 'data' list
+      for (var item in data) {
+        print(
+            'English: ${item['englishText']}, Blackfoot: ${item['blackfootText']}');
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No file selected or file is empty.'),
-        ),
-      );
+      // User canceled the picker
+      print('No file selected');
     }
   }
 
@@ -129,6 +138,8 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     final categoryName = widget.category.categoryName;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       appBar: AppBar(
         titleSpacing: 0,
         title: Text(
@@ -136,50 +147,66 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
           textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
         ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await importExcel(
-                context: context,
-                seriesName: categoryName,
-              );
-            },
-            icon: const Icon(
-              Icons.import_export_rounded,
-              size: 30,
-            ),
-          ),
-          if (_isMultiSelectMode)
-            IconButton(
-              onPressed: _deleteSelectedConversations,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            )
-          else
-            IconButton(
-              onPressed: _toggleMultiSelectMode,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            ),
-        ],
       ),
 
       // add new phase to particular category
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showDialogAddPhase(
-          context: context,
-          categoryName: categoryName,
-        ),
-        child: const Icon(
-          Icons.add_rounded,
-          size: 30,
-          color: Colors.white,
-        ),
-      ),
+      floatingActionButton: !_isMultiSelectMode
+          ? SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              children: [
+                SpeedDialChild(
+                  child: const Icon(Icons.add_rounded),
+                  label: 'Add',
+                  onTap: () => showDialogAddPhase(
+                    context: context,
+                    categoryName: categoryName,
+                  ),
+                ),
+                SpeedDialChild(
+                  child: const Icon(Icons.delete_rounded),
+                  label: 'Delete',
+                  onTap: _toggleMultiSelectMode,
+                ),
+                SpeedDialChild(
+                    child: const Icon(Icons.import_export_rounded),
+                    label: 'Export',
+                    onTap: () => pickFile()
+
+                    // () async {
+                    //   await importExcel(
+                    //     context: context,
+                    //     seriesName: categoryName,
+                    //   );
+                    // },
+                    ),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () => showDialogDeleteConversations(
+                    context: context,
+                    onPressedDelete: _deleteSelectedConversations,
+                  ),
+                  child: const Icon(
+                    Icons.delete_rounded,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                FloatingActionButton(
+                  onPressed: _toggleMultiSelectMode,
+                  child: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
