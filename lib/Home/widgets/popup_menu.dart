@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:bfootlearn/login/views/reset_password.dart';
+import 'package:bfootlearn/login/views/change_password.dart';
 import 'package:bfootlearn/notifications/notification_page.dart';
 import 'package:bfootlearn/Home/views/ack_page.dart';
 
