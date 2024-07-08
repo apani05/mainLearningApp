@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:bfootlearn/notifications/notification_provider.dart';
 import 'package:bfootlearn/notifications/showPermissionDeniedDialog.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
@@ -44,13 +45,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     bool isReminderOn = notificationProvide.isReminderOn;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Notifications",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFFcccbff),
-      ),
+      appBar: customAppBar(context: context, title: 'Notifications'),
       body: Stack(
         children: [
           Positioned.fill(

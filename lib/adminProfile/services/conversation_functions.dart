@@ -46,13 +46,13 @@ class ConversationFucntions {
         .then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Conversation deleted successfully.'),
+          content: Text('Phrases deleted successfully.'),
         ),
       );
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete conversation. $error'),
+          content: Text('Failed to delete Phrases. $error'),
         ),
       );
     });
@@ -111,13 +111,13 @@ class ConversationFucntions {
       }).then((value) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Conversation added successfully.'),
+            content: Text('Phrases added successfully.'),
           ),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to add conversation. $error'),
+            content: Text('Failed to add phrases. $error'),
           ),
         );
       });

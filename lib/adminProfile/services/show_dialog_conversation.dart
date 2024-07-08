@@ -19,12 +19,12 @@ void showDialogDeleteConversations({
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
-          "Delete Conversations",
+          "Delete Phrases",
           style: dialogBoxTitleTextStyle,
         ),
         backgroundColor: Colors.purple.shade300,
         content: Text(
-          "Are you sure you want to delete the selected conversations?",
+          "Are you sure you want to delete the selected phrases?",
           style: dialogBoxContentTextStyle,
         ),
         actions: [
