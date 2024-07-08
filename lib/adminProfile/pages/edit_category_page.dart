@@ -1,14 +1,10 @@
-import 'dart:io';
-
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
 import 'package:bfootlearn/adminProfile/models/conversation_model.dart';
-import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_conversation.dart';
+import 'package:bfootlearn/adminProfile/services/show_dialog_export_batch.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_conversations_listview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -23,7 +19,6 @@ class EditCategoryPage extends ConsumerStatefulWidget {
 }
 
 class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
-  final ConversationFucntions conversationFucntions = ConversationFucntions();
   final TextEditingController _searchController = TextEditingController();
   List<ConversationModel> _conversations = [];
   List<ConversationModel> _filteredConversations = [];
@@ -83,56 +78,6 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     });
   }
 
-  pickFile() async {
-    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['xlsx'],
-      allowMultiple: false,
-    );
-
-    if (pickedFile != null) {
-      String? filePath = pickedFile.files.first.path;
-      var bytes = File(filePath!).readAsBytesSync();
-      var excel = Excel.decodeBytes(bytes);
-
-      var sheet = excel['Sheet1'];
-
-      List<Map<String, String>> data = [];
-
-      for (int row = 1; row < sheet.maxRows; row++) {
-        var englishText = sheet
-            .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
-            .value;
-        var blackfootText = sheet
-            .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row))
-            .value;
-
-        if (englishText != null && blackfootText != null) {
-          conversationFucntions.addConversation(
-            blackfootText: blackfootText.toString(),
-            englishText: englishText.toString(),
-            seriesName: widget.category.categoryName,
-            blackfootAudio: 'noAudio',
-            context: context,
-          );
-          data.add({
-            'englishText': englishText.toString(),
-            'blackfootText': blackfootText.toString(),
-          });
-        }
-      }
-
-      // Now you have your data in the 'data' list
-      for (var item in data) {
-        print(
-            'English: ${item['englishText']}, Blackfoot: ${item['blackfootText']}');
-      }
-    } else {
-      // User canceled the picker
-      print('No file selected');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final categoryName = widget.category.categoryName;
@@ -168,17 +113,13 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
                   onTap: _toggleMultiSelectMode,
                 ),
                 SpeedDialChild(
-                    child: const Icon(Icons.import_export_rounded),
-                    label: 'Export',
-                    onTap: () => pickFile()
-
-                    // () async {
-                    //   await importExcel(
-                    //     context: context,
-                    //     seriesName: categoryName,
-                    //   );
-                    // },
-                    ),
+                  child: const Icon(Icons.import_export_rounded),
+                  label: 'Export',
+                  onTap: () => showDialogExportBatch(
+                    context: context,
+                    categoryName: categoryName,
+                  ),
+                ),
               ],
             )
           : Column(
