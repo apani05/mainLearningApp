@@ -29,7 +29,10 @@ class _SavedPageState extends ConsumerState<SavedPage> {
         ),
         child: savedBlogs.isEmpty
             ? const Center(
-                child: Text('No Saved Blogs'),
+                child: Text(
+                  'No Saved Blogs',
+                  style: TextStyle(fontSize: 20),
+                ),
               )
             : CardSlider(
                 cardDataList: savedBlogs,

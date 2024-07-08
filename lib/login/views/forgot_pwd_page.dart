@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +59,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              if (mounted) {
-                Navigator.pop(context);
-              }
-            },
-          ),
-          title: Text('Forgot Password'),
-          backgroundColor: theme.lightPurple,
-        ),
+        appBar: customAppBar(context: context, title: 'Forgot Password'),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Column(

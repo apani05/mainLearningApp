@@ -20,6 +20,6 @@ PreferredSizeWidget customAppBar({
         color: Colors.white,
       ),
     ),
-    backgroundColor: Colors.purple,
+    backgroundColor: Color(0xFFcccbff),
   );
 }

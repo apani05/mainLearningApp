@@ -214,8 +214,7 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AdminSearchBar(
-                hintText: 'Search conversation...',
-                controller: _searchController),
+                hintText: 'Search phrases...', controller: _searchController),
             const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(

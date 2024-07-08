@@ -3,7 +3,7 @@ import 'package:bfootlearn/adminProfile/pages/admin_access.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_categories_listview.dart';
-import 'package:bfootlearn/login/views/reset_password.dart';
+import 'package:bfootlearn/login/views/change_password.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
