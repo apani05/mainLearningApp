@@ -46,7 +46,6 @@ void showDialogExportBatch({
               style: actionButtonTextStyle.copyWith(color: Colors.white),
             ),
             onPressed: () {
-              // pick a file
               pickFile(context: context, categoryName: categoryName);
               Navigator.of(context).pop();
             },

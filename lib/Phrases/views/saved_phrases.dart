@@ -19,7 +19,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
     final savedBlogs = blogProviderObj.getUserPhraseProgress().savedPhrases;
 
     return Scaffold(
-      appBar: customAppBar(context: context, title: 'Saved Blogs'),
+      appBar: customAppBar(context: context, title: 'Saved Phrases'),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -30,7 +30,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
         child: savedBlogs.isEmpty
             ? const Center(
                 child: Text(
-                  'No Saved Blogs',
+                  'No Saved Phrases',
                   style: TextStyle(fontSize: 20),
                 ),
               )

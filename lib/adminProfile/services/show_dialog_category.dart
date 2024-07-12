@@ -97,7 +97,7 @@ void showDialogAddCategory(
                       content: Text('Category name cannot be empty.'),
                     ),
                   );
-                  return; // Return early to prevent further execution
+                  return;
                 }
                 // uploads the image to firebase storage and gives the downloadUrl
                 String iconImagePath;
@@ -260,7 +260,7 @@ void showDialogUpdateCategory({
                       content: Text('Category name cannot be empty.'),
                     ),
                   );
-                  return; // Return early to prevent further execution
+                  return;
                 }
 
                 // uploads the image to firebase storage and gives the downloadUrl

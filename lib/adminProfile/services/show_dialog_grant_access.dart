@@ -159,7 +159,6 @@ void showDialogRemoveAdminAccess({
               style: actionButtonTextStyle.copyWith(color: Colors.red),
             ),
             onPressed: () {
-              // deletes the category
               onPressedDelete();
               Navigator.of(context).pop();
             },

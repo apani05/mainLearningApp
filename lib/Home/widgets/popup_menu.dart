@@ -65,7 +65,7 @@ class CustomPopupMenu extends StatelessWidget {
           const PopupMenuItem<String>(
             value: 'changePassword',
             child: ListTile(
-              leading: Icon(Icons.lock, color: Color(0xff6562df)),
+              leading: Icon(Icons.password_rounded, color: Color(0xff6562df)),
               title: Text(
                 'Change Password',
                 style: TextStyle(color: Color(0xff6562df)),
