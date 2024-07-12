@@ -18,8 +18,10 @@ class _StoriesPageState extends State<StoriesPage> {
   }
 
   Future<List<Map<String, String>>> fetchStories() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('stories').get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('stories')
+        .orderBy('topic')
+        .get();
     List<Map<String, String>> storiesData = await Future.wait(
       snapshot.docs.map(
         (doc) async => {
@@ -141,11 +143,17 @@ class _StoryAudioPlayerState extends State<StoryAudioPlayer> {
   }
 
   @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.purple.shade300,
+        color: Color(0xFFcccbff),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(

@@ -156,7 +156,7 @@ class BlogProvider extends ChangeNotifier {
         updateCardDataList(allData);
         return allData;
       } else {
-        print("Conversations collection is empty.");
+        print("Pharses collection is empty.");
         return [];
       }
     } catch (error) {

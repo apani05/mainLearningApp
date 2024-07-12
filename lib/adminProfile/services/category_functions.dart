@@ -15,8 +15,6 @@ class CategoryFunctions {
         .child('images/${pickedImage.uri.pathSegments.last}');
     // Upload the file
     UploadTask uploadTask = storageRef.putFile(pickedImage);
-
-    // Wait for the upload to complete
     TaskSnapshot taskSnapshot = await uploadTask;
 
     String bucketUrl = taskSnapshot.ref.bucket;
@@ -122,16 +120,10 @@ class CategoryFunctions {
       for (final doc in snapshot.docs) {
         await doc.reference.update({'seriesName': newSeriesName});
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conversations updated successfully.'),
-        ),
-      );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update conversations. $error'),
+          content: Text('Failed to update phrases. $error'),
         ),
       );
     }
@@ -156,13 +148,13 @@ class CategoryFunctions {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Conversations deleted successfully.'),
+          content: Text('Phrases deleted successfully.'),
         ),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete conversations. $error'),
+          content: Text('Failed to delete Phrases. $error'),
         ),
       );
     }

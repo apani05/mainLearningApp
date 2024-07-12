@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FlutterSoundMethods {
-  String pathToSaveAudio =
-      '/storage/emulated/0/Download/picked_audio_recording.aac';
+  String pathToSaveAudio = '';
   final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
   final FlutterSoundPlayer _audioPlayer = FlutterSoundPlayer();
   bool _isRecorderInitialised = false;
@@ -22,10 +22,20 @@ class FlutterSoundMethods {
   bool get isPlayingPaused => _audioPlayer.isPaused;
 
   Future init() async {
-    final permissionStatus = await Permission.microphone.request();
-    if (permissionStatus != PermissionStatus.granted) {
+    final microphonePermissionStatus = await Permission.microphone.request();
+    final storagePermissionStatus = await Permission.storage.request();
+
+    if (microphonePermissionStatus != PermissionStatus.granted ||
+        storagePermissionStatus != PermissionStatus.granted) {
       throw RecordingPermissionException(
-          'Microphone permission is not allowed.');
+          'Microphone or Storage permission is not allowed.');
+    }
+    final directory = await getExternalStorageDirectory();
+    if (directory != null) {
+      pathToSaveAudio = '${directory.path}/picked_audio_recording.aac';
+      print('pathToSave $pathToSaveAudio');
+    } else {
+      throw Exception('Failed to get external storage directory');
     }
   }
 
@@ -33,6 +43,13 @@ class FlutterSoundMethods {
     _isRecorderInitialised = false;
     _isPlayerInitialised = false;
     _audioRecorder.deleteRecord(fileName: pathToSaveAudio);
+  }
+
+  Future<String> getPathToSave() async {
+    if (pathToSaveAudio == '') {
+      await init();
+    }
+    return pathToSaveAudio;
   }
 
   Future startRecording() async {

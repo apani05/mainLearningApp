@@ -1,4 +1,5 @@
 import 'package:bfootlearn/Phrases/models/card_data.dart';
+import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
@@ -47,16 +48,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: const Text("Phrases Learning"),
-          backgroundColor: theme.lightPurple,
-        ),
+        appBar: customAppBar(context: context, title: 'Phrases Learning'),
         body: SingleChildScrollView(
           child: Container(
             color: Colors.white,

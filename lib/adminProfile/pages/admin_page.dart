@@ -3,7 +3,7 @@ import 'package:bfootlearn/adminProfile/pages/admin_access.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_categories_listview.dart';
-import 'package:bfootlearn/login/views/reset_password.dart';
+import 'package:bfootlearn/login/views/change_password.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -78,16 +78,6 @@ class _AdminPageState extends ConsumerState<AdminPage> {
               },
               itemBuilder: (context) => [
                 const PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout_rounded),
-                      SizedBox(width: 10),
-                      Text('Sign Out', style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
                   value: 2,
                   child: Row(
                     children: [
@@ -104,6 +94,16 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                       Icon(Icons.password_rounded),
                       SizedBox(width: 10),
                       Text('Change Password', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_rounded),
+                      SizedBox(width: 10),
+                      Text('Sign Out', style: TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

@@ -20,8 +20,6 @@ class ConversationFucntions {
 
       // Upload the file
       UploadTask uploadTask = storageRef.putFile(audioFile);
-
-      // Wait for the upload to complete
       TaskSnapshot taskSnapshot = await uploadTask;
 
       // Get the download URL
@@ -46,13 +44,13 @@ class ConversationFucntions {
         .then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Conversation deleted successfully.'),
+          content: Text('Phrases deleted successfully.'),
         ),
       );
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete conversation. $error'),
+          content: Text('Failed to delete Phrases. $error'),
         ),
       );
     });
@@ -75,7 +73,7 @@ class ConversationFucntions {
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Category updated successfully.'),
+          content: Text('Phrase updated successfully.'),
         ),
       );
     }).catchError((error) {
@@ -111,13 +109,13 @@ class ConversationFucntions {
       }).then((value) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Conversation added successfully.'),
+            content: Text('Phrase added successfully.'),
           ),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to add conversation. $error'),
+            content: Text('Failed to add phrases. $error'),
           ),
         );
       });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:bfootlearn/login/views/reset_password.dart';
+import 'package:bfootlearn/login/views/change_password.dart';
 import 'package:bfootlearn/notifications/notification_page.dart';
 import 'package:bfootlearn/Home/views/ack_page.dart';
 
@@ -65,7 +65,7 @@ class CustomPopupMenu extends StatelessWidget {
           const PopupMenuItem<String>(
             value: 'changePassword',
             child: ListTile(
-              leading: Icon(Icons.lock, color: Color(0xff6562df)),
+              leading: Icon(Icons.password_rounded, color: Color(0xff6562df)),
               title: Text(
                 'Change Password',
                 style: TextStyle(color: Color(0xff6562df)),
