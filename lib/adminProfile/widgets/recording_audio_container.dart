@@ -54,7 +54,6 @@ class _RecordingAudioContainerState
   @override
   void initState() {
     super.initState();
-    // isPlayingInitiated = false;
     audioRecorder.init();
   }
 

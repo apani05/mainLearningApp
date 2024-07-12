@@ -15,8 +15,6 @@ class CategoryFunctions {
         .child('images/${pickedImage.uri.pathSegments.last}');
     // Upload the file
     UploadTask uploadTask = storageRef.putFile(pickedImage);
-
-    // Wait for the upload to complete
     TaskSnapshot taskSnapshot = await uploadTask;
 
     String bucketUrl = taskSnapshot.ref.bucket;
@@ -122,12 +120,6 @@ class CategoryFunctions {
       for (final doc in snapshot.docs) {
         await doc.reference.update({'seriesName': newSeriesName});
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Phrases updated successfully.'),
-        ),
-      );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

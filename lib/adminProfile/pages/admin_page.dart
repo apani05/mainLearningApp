@@ -78,16 +78,6 @@ class _AdminPageState extends ConsumerState<AdminPage> {
               },
               itemBuilder: (context) => [
                 const PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout_rounded),
-                      SizedBox(width: 10),
-                      Text('Sign Out', style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
                   value: 2,
                   child: Row(
                     children: [
@@ -104,6 +94,16 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                       Icon(Icons.password_rounded),
                       SizedBox(width: 10),
                       Text('Change Password', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_rounded),
+                      SizedBox(width: 10),
+                      Text('Sign Out', style: TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),

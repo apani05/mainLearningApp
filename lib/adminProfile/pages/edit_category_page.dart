@@ -151,7 +151,6 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AdminSearchBar(

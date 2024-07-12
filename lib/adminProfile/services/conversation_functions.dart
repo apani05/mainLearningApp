@@ -20,8 +20,6 @@ class ConversationFucntions {
 
       // Upload the file
       UploadTask uploadTask = storageRef.putFile(audioFile);
-
-      // Wait for the upload to complete
       TaskSnapshot taskSnapshot = await uploadTask;
 
       // Get the download URL
@@ -75,7 +73,7 @@ class ConversationFucntions {
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Category updated successfully.'),
+          content: Text('Phrase updated successfully.'),
         ),
       );
     }).catchError((error) {
@@ -111,7 +109,7 @@ class ConversationFucntions {
       }).then((value) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Phrases added successfully.'),
+            content: Text('Phrase added successfully.'),
           ),
         );
       }).catchError((error) {

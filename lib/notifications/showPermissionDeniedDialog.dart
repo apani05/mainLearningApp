@@ -16,18 +16,6 @@ void showPermissionDeniedDialog({required BuildContext context}) {
             },
             child: const Text('OK'),
           ),
-          TextButton(
-            onPressed: () {
-              AndroidIntent intent = const AndroidIntent(
-                action: "android.settings.APPLICATION_DETAILS_SETTINGS",
-                package: "bfootlearn",
-                data: "package:bfootlearn",
-              );
-              intent.launch();
-              Navigator.of(context).pop();
-            },
-            child: const Text('Open Settings'),
-          ),
         ],
       );
     },
