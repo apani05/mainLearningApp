@@ -212,8 +212,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     });
   }
 
-  Future<bool> _onBackPressed() async {
-    if (_currentIndex < quizQuestions.length) {
+  Future<void> _onBackPressed(bool didPop) async {
+    if (!didPop && _currentIndex < quizQuestions.length) {
       bool shouldExit = await showDialog(
         context: context,
         barrierDismissible: false,
@@ -241,9 +241,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         ),
       );
 
-      return shouldExit ?? false;
-    } else {
-      return true;
+      if (shouldExit) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -252,43 +252,42 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final theme = ref.watch(themeProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WillPopScope(
-        onWillPop: _onBackPressed,
+      home: PopScope(
+        canPop: true,
+        onPopInvoked: _onBackPressed,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 if (mounted) {
-                  _onBackPressed().then(
-                    (shouldPop) {
-                      if (shouldPop) {
-                        Navigator.pop(context);
-                      }
-                    },
-                  );
+                  _onBackPressed(false);
                 }
               },
             ),
             title: const Text('Quiz'),
             backgroundColor: theme.lightPurple,
           ),
-          body: Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/quiz_image.jpg',
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                  ),
-                  _currentIndex < quizQuestions.length
-                      ? buildQuestionCard(quizQuestions[_currentIndex])
-                      : Container(),
-                ],
+          body: Column(
+            children: [
+              Image.asset(
+                'assets/quiz_image.jpg',
+                height: MediaQuery.of(context).size.height * 0.35,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
               ),
-            ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _currentIndex < quizQuestions.length
+                          ? buildQuestionCard(quizQuestions[_currentIndex])
+                          : Container(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           bottomNavigationBar: BottomAppBar(
             color: theme.lightPurple,
