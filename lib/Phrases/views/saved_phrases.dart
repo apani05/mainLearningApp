@@ -21,7 +21,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Saved Phrases'),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Background2.jpg'),
             fit: BoxFit.cover,

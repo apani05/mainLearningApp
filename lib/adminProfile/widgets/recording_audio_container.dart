@@ -54,7 +54,15 @@ class _RecordingAudioContainerState
   @override
   void initState() {
     super.initState();
-    audioRecorder.init();
+    _initializeRecorder();
+  }
+
+  Future<void> _initializeRecorder() async {
+    try {
+      await audioRecorder.init(context: context);
+    } catch (e) {
+      debugPrint('Failed to initialize the audio recorder: $e');
+    }
   }
 
   @override

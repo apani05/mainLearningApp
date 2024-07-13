@@ -127,7 +127,7 @@ void showDialogUpdatePhase({
 
               try {
                 final pathToSaveAudio =
-                    await flutterSoundMethods.getPathToSave();
+                    await flutterSoundMethods.getPathToSave(context: context);
                 debugPrint('Uploading audio file from path: $pathToSaveAudio');
                 blackfootAudioPath = await conversationFucntions
                     .uploadAudioFileToFirebaseStorage(pathToSaveAudio);
@@ -233,7 +233,7 @@ void showDialogAddPhase({
 
               try {
                 final pathToSaveAudio =
-                    await flutterSoundMethods.getPathToSave();
+                    await flutterSoundMethods.getPathToSave(context: context);
                 debugPrint('Uploading audio file from path: $pathToSaveAudio');
                 blackfootAudioPath = await conversationFucntions
                     .uploadAudioFileToFirebaseStorage(pathToSaveAudio);

@@ -4,6 +4,7 @@ import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:bfootlearn/vocabulary/viwes/v_game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../riverpod/river_pod.dart';
 
 class LearningPage extends ConsumerStatefulWidget {
@@ -35,7 +36,7 @@ class _LearningPageState extends ConsumerState<LearningPage> {
       home: Scaffold(
         appBar: customAppBar(context: context, title: widget.seriesName),
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/Background2.jpg'),
               fit: BoxFit.cover,

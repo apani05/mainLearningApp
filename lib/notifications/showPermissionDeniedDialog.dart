@@ -1,14 +1,13 @@
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 
-void showPermissionDeniedDialog({required BuildContext context}) {
+void showPermissionDeniedDialog(
+    {required BuildContext context, required String content}) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
         title: const Text('Permission Denied'),
-        content: const Text(
-            'Notification permission is required to enable study reminders. Please enable it in the app settings.'),
+        content: Text(content),
         actions: [
           TextButton(
             onPressed: () {

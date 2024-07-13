@@ -1,8 +1,5 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:bfootlearn/Phrases/views/category_learning_page.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
