@@ -27,7 +27,8 @@ class RouteGenerator {
         case vocabularyRoute:
         return MaterialPageRoute(builder: (context) => VocabularyHome());
         case vGame:
-        return MaterialPageRoute(builder: (context) => VocabularyGame( category: settings.arguments as String,));
+        final args = settings.arguments as Map<String, String>;
+        return MaterialPageRoute(builder: (context) => VocabularyGame( category: args['category']!, uid: args['uid']! ,));
       default:
         return MaterialPageRoute(builder: (context) => HomeView());
     }

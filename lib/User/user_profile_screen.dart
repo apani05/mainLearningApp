@@ -3,6 +3,8 @@ import 'package:bfootlearn/User/widgets/custom_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../Home/views/ack_page.dart';
 import '../User/user_provider.dart';
 import '../leaderboard/widgets/leadercard.dart';
@@ -22,7 +24,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 String score = "0";
   @override
   void initState() {
-    final UserProvide = ref.read(userProvider);
     super.initState();
   }
 
@@ -44,13 +45,18 @@ String dropDownValue = "All";
       child: Scaffold(
         backgroundColor: Colors.grey[400],
         body: FutureBuilder(
-          future: UserProvide.getUserFromDb(widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid),
+          future: UserProvide.getUserProfile(widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid),
           builder: (context,snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting){
              return  const Center(
                 child: CircularProgressIndicator(),
               );
-            }else{
+            }else if(snapshot.hasError){
+              return const Center(
+                child: Text("An error occurred"),
+              );
+            }
+            else{
               return SingleChildScrollView(
                 child: Column(
                   children: [
@@ -83,9 +89,10 @@ String dropDownValue = "All";
                               ),
                               child: Column(
                                   children: [
-                                    const Padding(
+                                     Padding(
                                       padding: EdgeInsets.only(top: 30.0),
                                       child: Text(
+                                        widget.isFromLeaderboard ?"User Profile":
                                         "My Profile",
                                         style: TextStyle(
                                           fontSize: 20,
@@ -104,20 +111,42 @@ String dropDownValue = "All";
                                         radius: 50,
                                         child: CircleAvatar(
                                           radius: 45,
-                                          backgroundImage: Image.asset("assets/person_logo.png").image,
+                                          backgroundImage: NetworkImage(snapshot.data!.imageUrl),
                                         ),
                                       ),
                                     ),
                                     Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Text(
-                                          snapshot.data!.name??"",
-                                          style: const TextStyle(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              snapshot.data!.name??"",
+                                              style: const TextStyle(
+                                                fontSize: 30,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10,),
+                                               IconButton(
+                                                onPressed: ()async{
+                                                  final score = snapshot.data!.score.toString();
+                                                  final rank = snapshot.data!.rank.toString();
+                                                  final text = 'I just scored $score XP and ranked $rank on I\'poyít. Can you beat me?'
+                                                      ' Come join me and let\'s see! https://play.google.com/store/apps/details?id=com.bfootlearn.bfootlearn';
+                                                  final result = await Share.share(text);
+                                                 // if (result.status == ShareResultStatus.success) {
+                                                //    print('score shared');
+                                                //  }
+                                                },
+                                                icon: const Icon(
+                                                  Icons.share,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -136,7 +165,7 @@ String dropDownValue = "All";
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           const Text(
-                                            "Dtae joined: ",
+                                            "Date joined: ",
                                             style:  TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
@@ -144,7 +173,7 @@ String dropDownValue = "All";
                                             ),
                                           ),
                                           Text(
-                                            snapshot.data!.joinedDate.toString(),
+                                            DateFormat('yyyy-MM-dd').format(DateTime.parse(snapshot.data!.joinedDate)),
                                             style:  const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
@@ -184,7 +213,7 @@ String dropDownValue = "All";
                                     Icons.settings,
                                     color: Colors.white,
                                   ),
-                                  onSelected: (value) {
+                                  onSelected: (value) async {
                                     switch (value) {
                                       case 'profile':
                                         Navigator.push(context,
@@ -286,163 +315,6 @@ String dropDownValue = "All";
                         builder: (BuildContext context, StateSetter setState) {
                           return Column(
                             children: [
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              //   children: [
-                              //     const Padding(
-                              //       padding: EdgeInsets.only(right: 40.0),
-                              //       child: Text(
-                              //         "Completion Rate",
-                              //         style: TextStyle(
-                              //           color: Color(0xff6562df),
-                              //           fontSize: 20,
-                              //           fontWeight: FontWeight.bold,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //     const SizedBox(width: 5,),
-                              //     Container(
-                              //       padding: const EdgeInsets.symmetric(horizontal: 10),
-                              //       decoration: BoxDecoration(
-                              //         borderRadius: BorderRadius.circular(10),
-                              //         color: const Color(0xffbdbcfd).withOpacity(0.8)
-                              //       ),
-                              //       child: DropdownButton<String>(
-                              //         value: dropDownValue,
-                              //         iconEnabledColor: Colors.white,
-                              //         dropdownColor: const Color(0xffbdbcfd).withOpacity(0.8),
-                              //         style: const TextStyle(
-                              //           color: Colors.white,
-                              //           fontSize: 20,
-                              //           fontWeight: FontWeight.bold,
-                              //         ),
-                              //         items: const [
-                              //           DropdownMenuItem(
-                              //             value: "All",
-                              //             child: Text("All",
-                              //               style: TextStyle(
-                              //                 color: Colors.white,
-                              //                 fontSize: 14,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //           ),
-                              //           DropdownMenuItem(
-                              //             value: "Today",
-                              //             child: Text("Today",
-                              //               style: TextStyle(
-                              //                 color: Colors.white,
-                              //                 fontSize: 14,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //           ),
-                              //           DropdownMenuItem(
-                              //             value: "This Week",
-                              //             child: Text("This Week",
-                              //               style: TextStyle(
-                              //                 color: Colors.white,
-                              //                 fontSize: 14,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //           ),
-                              //           DropdownMenuItem(
-                              //             value: "This Month",
-                              //             child: Text("This Month",
-                              //               style: TextStyle(
-                              //                 color: Colors.white,
-                              //                 fontSize: 14,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),),
-                              //           ),
-                              //         ],
-                              //         onChanged: (value) {
-                              //           setState(() {
-                              //             if (value == "All") {
-                              //               progress = 0.5;
-                              //               progress2 = 0.2;
-                              //               dropDownValue = "All";
-                              //             } else if (value == "Today") {
-                              //               progress = 0.2;
-                              //               progress2 = 0.9;
-                              //               dropDownValue = "Today";
-                              //             } else if (value == "This Week") {
-                              //               progress = 0.5;
-                              //               progress2 = 0.5;
-                              //               dropDownValue = "This Week";
-                              //             } else if (value == "This Month") {
-                              //               progress = 0.8;
-                              //               progress2 = 0.2;
-                              //               dropDownValue = "This Month";
-                              //             }
-                              //           });
-                              //         },
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
-                              // const SizedBox(height: 30,),
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              //   children: [
-                              //     CustomPaint(
-                              //       size: const Size(150, 150),
-                              //       painter: CustomCircularProgressPainter(
-                              //         progress1: progress,
-                              //         progress2: progress2,
-                              //         color1: Colors.pinkAccent,
-                              //         color2: Colors.green,
-                              //       ),
-                              //     ),
-                              //     const SizedBox(width: 20,),
-                              //     Column(
-                              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //       children: [
-                              //         Row(
-                              //           children: [
-                              //             Container(
-                              //               height: 30,
-                              //               width: 30,
-                              //               decoration: const BoxDecoration(
-                              //                 shape: BoxShape.circle,
-                              //                 color: Colors.pinkAccent,
-                              //               ),
-                              //             ),
-                              //             const Text("Completed",
-                              //               style: TextStyle(
-                              //                 color: Color(0xff6562df),
-                              //                 fontSize: 20,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //           ],
-                              //         ),
-                              //         const SizedBox(height: 20,),
-                              //         Row(
-                              //           children: [
-                              //             Container(
-                              //               height: 30,
-                              //               width: 30,
-                              //               decoration: const BoxDecoration(
-                              //                 shape: BoxShape.circle,
-                              //                 color: Colors.green,
-                              //               ),
-                              //             ),
-                              //             const Text("In Progress",
-                              //               style: TextStyle(
-                              //                 color: Color(0xff6562df),
-                              //                 fontSize: 20,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //           ],
-                              //         ),
-                              //       ],
-                              //     ),
-                              //   ],
-                              // ),
-                              // const SizedBox(height: 40,),
                               const Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
@@ -551,7 +423,7 @@ String dropDownValue = "All";
   if (snapshot.data!.badge.kinship == true) {
     count++;
   }
-  if (snapshot.data!.badge.dirrection == true) {
+  if (snapshot.data!.badge.direction == true) {
     count++;
   }
   if (snapshot.data!.badge.classroom == true) {
@@ -561,6 +433,9 @@ String dropDownValue = "All";
     count++;
   }
 
+  if (snapshot.data!.badge.weather == true) {
+    count++;
+  }
   return count;
 }
 
@@ -577,7 +452,8 @@ String dropDownValue = "All";
     }
 
   }
-Widget buildContainer(int index, String header, String value) {
+
+  Widget buildContainer(int index, String header, String value) {
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(15),

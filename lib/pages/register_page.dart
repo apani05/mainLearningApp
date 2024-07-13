@@ -63,7 +63,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   userName: userNameController.text.split('@').first,
                   email: emailController.text,
                   savedWords: [],
-                   badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+                   badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
                 joinedDate: DateTime.now().toString(),
                    ),
               userCredential.user!.uid);

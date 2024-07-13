@@ -22,9 +22,12 @@ class UserProvider extends ChangeNotifier {
   int _heart = 0;
 
   String _username = "";
+  String _joinDate = "";
 
-  UserProvider() : _user = UserModel(
-    badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+  UserProvider() :
+      _badge = CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
+        _user = UserModel(
+    badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
     name: '',
     uid: '',
     imageUrl: '',
@@ -42,7 +45,7 @@ class UserProvider extends ChangeNotifier {
     _user = user;
     notifyListeners();
   }
-CardBadge _badge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
+CardBadge _badge;
 
   List<SavedWords> _savedWords = [];
   String get name => _name;
@@ -67,7 +70,8 @@ CardBadge _badge = CardBadge(kinship: false, dirrection: false, classroom: false
 
   String get username => _username;
 
-  List<SavedWords> get savedWords => _savedWords;
+    String get joinDate => _joinDate;
+    List<SavedWords> get savedWords => _savedWords;
 
 CardBadge get badge => _badge;
 
@@ -137,6 +141,11 @@ setBadge(CardBadge badge){
     notifyListeners();
   }
 
+    void setJoinedDate(String date) {
+   _joinDate = date;
+    notifyListeners();
+  }
+
   void clear() {
     _name = '';
     _email = '';
@@ -148,6 +157,7 @@ setBadge(CardBadge badge){
     _score = 0;
     _rank = 0;
     _heart = 0;
+    _joinDate = '';
     notifyListeners();
   }
 
@@ -160,7 +170,7 @@ setBadge(CardBadge badge){
       'score': user.score,
       'rank': user.rank,
       'badge': user.badge.toJson(),
-      'joinedDate': user.joinedDate,
+      'joinedDate': user.joinedDate ,
       'heart': user.heart,
       'userName': user.userName,
       'email': user.email,
@@ -205,6 +215,7 @@ print("user exists ${documentSnapshot.data()}");
       setRank(user.rank);
       setHeart(user.heart);
       setUsername(user.userName);
+      setJoinedDate(user.joinedDate);
       print("badge is ${user.badge} and of type ${user.badge.runtimeType}");
       // user.savedWords.forEach((element) {
       //   if(!_savedWords.contains(element))
@@ -215,6 +226,30 @@ print("user exists ${documentSnapshot.data()}");
     return UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
   }
 
+  // ... existing code ...
+
+Future<UserModel> getUserProfile(String uid) async {
+  DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  if(documentSnapshot.exists){
+    final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+    return user;
+  }
+  return UserModel(
+    badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
+    name: '',
+    uid: '',
+    imageUrl: '',
+    score: 0,
+    rank: 0,
+    heart: 0,
+    joinedDate: '',
+    savedWords: [],
+    userName: '',
+    email: '',
+  ); // Return a default UserModel when the document doesn't exist
+}
+
+// ... existing code ...
 
   Future<void> updateBadge(String uid, CardBadge badge) async {
   setBadge(badge);
@@ -223,19 +258,32 @@ print("user exists ${documentSnapshot.data()}");
       'badge': badge.toJson()
     });
   }
-  Future<void>getSavedWords(String uid) async {
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if(documentSnapshot.exists){
-      final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
-      _savedWords.clear();
-      user.savedWords.forEach((element) {
-        if(!_savedWords.contains(element))
-          setWords(element);
-      });
-
-    }
-   // return Data.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+  // Future<void>getSavedWords(String uid) async {
+  //   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  //   if(documentSnapshot.exists){
+  //     final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+  //     _savedWords.clear();
+  //     user.savedWords.forEach((element) {
+  //       if(!_savedWords.contains(element)) {
+  //         setWords(element);
+  //       }
+  //     });
+  //
+  //   }
+  //  // return Data.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+  // }
+  Future<void> getSavedWords(String uid, String category) async {
+  DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  if(documentSnapshot.exists){
+    final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+    _savedWords.clear();
+    user.savedWords.forEach((element) {
+      if(element.cat == category && !_savedWords.contains(element)) {
+        setWords(element);
+      }
+    });
   }
+}
   removeWord(String word,String uid) async {
     int i = _savedWords.indexWhere((element) => element.blackfoot == word);
     print("deleting index $i");
@@ -265,11 +313,12 @@ print("user exists ${documentSnapshot.data()}");
   //   });
   // }
 
-  Future<void> addWordToUser(String uid, SavedWords word) async {
+  Future<void> addWordToUser(String uid, SavedWords word,String cat) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (documentSnapshot.exists) {
       UserModel user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
       if (!user.savedWords.contains(word)) {
+        word.cat = cat;
         await FirebaseFirestore.instance.collection('users').doc(uid).update({
           'savedWords': FieldValue.arrayUnion([word.toJson()])
         });
@@ -288,8 +337,8 @@ print("user exists ${documentSnapshot.data()}");
     });
   }
 
-  Future<String> getScore(String uid) async {
-    String v;
+  Future<int> getScore(String uid) async {
+    int v;
     v = await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['score']);
     return v;
   }
@@ -345,7 +394,10 @@ users.sort((a, b) {
     await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['heart']);
   }
   Future<void> getBadge(String uid) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['badge']);
+    //_badge = await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['badge']);
+    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) {
+      _badge = CardBadge.fromJson(value.data()!['badge']);
+    });
   }
   Future<void> changePassword(String email, String currentPassword, String newPassword) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -454,4 +506,35 @@ users.sort((a, b) {
     });
   }
 
+  List<String> _badgeCategories = [];
+  List<String> get badgeCategories => _badgeCategories;
+
+  setBadgeCategories(List<String> value) {
+    _badgeCategories = value;
+    notifyListeners(); // Notify listeners when badgeCategories changes
+  }
+  setCatagories() async {
+    await getBadge(uid);
+    CardBadge badge = this.badge;
+
+    _badgeCategories.clear();
+
+    if (badge.kinship) {
+      _badgeCategories.add('Kinship Terms');
+    }
+    if (badge.direction) {
+      _badgeCategories.add('Directions and Time');
+    }
+    if (badge.classroom) {
+      _badgeCategories.add('Classroom Commands');
+    }
+    if (badge.time) {
+      _badgeCategories.add('Times of the day');
+    }
+    if (badge.weather) {
+      _badgeCategories.add('Weather');
+    }
+
+    notifyListeners(); // Notify listeners after setting categories
+  }
 }

@@ -37,9 +37,11 @@ class HomeViewState extends ConsumerState<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void handlePopupMenuSelection(String value) {
+    final userProvide = ref.read(userProvider);
     switch (value) {
       case 'signOut':
         FirebaseAuth.instance.signOut();
+        userProvide.clear();
         break;
       case 'changePassword':
         Navigator.push(
@@ -68,16 +70,17 @@ class HomeViewState extends ConsumerState<HomeView> {
             child: GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UserProfileScreen(isFromLeaderboard: false,)));
+                    MaterialPageRoute(builder: (context) => const UserProfileScreen(isFromLeaderboard: false,)));
               },
               child: CircleAvatar(
                 backgroundColor: theme.lightPurple,
                 radius: 23,
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(FirebaseAuth
-                          .instance.currentUser!.photoURL ??
-                      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+                  // backgroundImage: NetworkImage(FirebaseAuth
+                  //         .instance.currentUser!.photoURL ??
+                  //     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+                  backgroundImage: FirebaseAuth.instance.currentUser!.photoURL != null ? NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!) as ImageProvider<Object>? : AssetImage('assets/images/default_profile.png'),
                 ),
               ),
             ),

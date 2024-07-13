@@ -55,6 +55,7 @@ dependencies:
   animated_text_kit: ^4.2.2
   random_color:
   image_picker:
+  share_plus:
 
 
 
@@ -72,6 +73,7 @@ dev_dependencies:
   custom_lint:
   riverpod_generator: ^2.3.6
   riverpod_lint: ^2.3.4
+  intl: ^0.17.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -54,14 +54,14 @@ class UserModel {
     return UserModel(
       badge: CardBadge.fromJson(json["badge"]),
       name: json['name'],
-      email: json['email'],
+      email: json['email']??'',
       uid: json['uid'],
       imageUrl: json['imageUrl'],
       score: json['score'],
       rank: json['rank'],
       heart: json['heart'],
-      joinedDate: json['joindate'],
-      userName: json['userName'],
+      joinedDate: json['joindate']??DateTime.now().toString(),
+      userName: json['userName']??'',
       savedWords: (json['savedWords'] as List)
           .map((item) {
             print("item to be added $item");
@@ -73,7 +73,7 @@ class UserModel {
   String getBadgeCategory() {
     if (badge.kinship) {
       return 'Kinship Terms';
-    } else if (badge.dirrection) {
+    } else if (badge.direction) {
       return 'Directions and Time';
     } else if (badge.classroom) {
       return 'Classroom Commands';
@@ -87,29 +87,33 @@ class UserModel {
 
 class CardBadge {
   final bool kinship;
-  final bool dirrection;
+  final bool direction;
   final bool classroom;
   final bool time;
+  final bool weather;
 
   CardBadge({
     required this.kinship,
-    required this.dirrection,
+    required this.direction,
     required this.classroom,
     required this.time,
+    required this.weather,
   });
 
   factory CardBadge.fromJson(Map<String, dynamic> json) => CardBadge(
-    kinship: json["kinship"],
-    dirrection: json["dirrection"],
-    classroom: json["classroom"],
-    time: json["time"],
+    kinship: json["kinship"]??false,
+    direction: json["direction"]??false,
+    classroom: json["classroom"]??false,
+    time: json["time"]??false,
+    weather: json["weather"]??false,
   );
 
   Map<String, dynamic> toJson() => {
     "kinship": kinship,
-    "dirrection": dirrection,
+    "direction": direction,
     "classroom": classroom,
     "time": time,
+    "weather": weather,
   };
 }
 
@@ -133,14 +137,16 @@ class SavedWords {
   final String sound;
   final String english;
   final String blackfoot;
+   String cat;
 
-  SavedWords({required this.sound, required this.english, required this.blackfoot});
+  SavedWords({required this.sound, required this.english, required this.blackfoot,required this.cat});
 
   factory SavedWords.fromJson(Map<String, dynamic> json) {
     return SavedWords(
       sound: json['sound'],
       english: json['english'],
       blackfoot: json['blackfoot'],
+      cat: json['cat']??'',
     );
   }
 
@@ -148,5 +154,6 @@ class SavedWords {
         'sound': sound,
         'english': english,
         'blackfoot': blackfoot,
+        'cat':cat
       };
 }

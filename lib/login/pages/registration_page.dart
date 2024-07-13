@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
@@ -38,7 +39,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
 
@@ -51,6 +52,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
         if (userCredential.user != null) {
+          QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
+          int totalUsers = querySnapshot.docs.length;
+
+          int rank = totalUsers + 1;
           await userProvide.createUserInDb(
               UserModel(
                   name: userCredential.user!.displayName ??
@@ -58,12 +63,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   uid: userCredential.user!.uid,
                   imageUrl: userCredential.user!.photoURL ?? '',
                   score: 0,
-                  rank: 0,
+                  rank:rank,
                   heart: 0,
                   userName: userNameController.text.split('@').first,
                   email: emailController.text,
                   savedWords: [],
-                   badge: CardBadge(kinship: false, dirrection: false, classroom: false, time: false),
+                   badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
                 joinedDate: DateTime.now().toString(),
                    ),
               userCredential.user!.uid);

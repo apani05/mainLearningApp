@@ -87,6 +87,19 @@ void listenForComments(String postId) {
   notifyListeners();
 }
 
+  Future<void> reportPost({required String postId, required String reporterId, required String reason}) async {
+    try {
+      await _db.collection('reports').add({
+        'postId': postId,
+        'reporterId': reporterId,
+        'reason': reason,
+        'timestamp': Timestamp.now(),
+      });
+    } catch (e) {
+      // Handle any errors
+    }
+  }
+
  Future<void> toggleComment(String postId, String userId) async {
   final commentRef = _db.collection('Posts').doc(postId).collection('Comments').doc(userId);
 

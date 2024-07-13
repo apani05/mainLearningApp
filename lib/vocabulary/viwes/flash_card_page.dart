@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'dart:developer' as logger;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:bfootlearn/vocabulary/provider/voca_provider.dart';
@@ -38,23 +38,30 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
    late int score ;
    var lottieController;
    var progress2 = 0.0;
-   CardBadge newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
-
+   int cardsFlipped = 0;
+   late CardBadge newBadge;
+  Map<String, Map<String, dynamic>> categoryValues = {};
   late ConfettiController _controllerCenter;
+
   @override
   void initState() {
     final userRepo = ref.read(userProvider);
     final vocaProvide = ref.read(vocaProvider);
     //vocaProvide.titleId = widget.category;
     score = userRepo.score;
-    userRepo.getSavedWords(userRepo.uid);
+    vocaProvide.score = score;
+    userRepo.getSavedWords(userRepo.uid, widget.category);
+    vocaProvide.storeValuesForCategory(widget.category);
     print("init state categoy is ${widget.category}");
-    //getQustions();
+     userRepo.getBadge(userRepo.uid).then((value) {
+       newBadge = userRepo.badge;
+     });
     _controllerCenter =
         ConfettiController(duration: const Duration(seconds: 10));
-     lottieController = AnimationController(vsync: this, duration: Duration(seconds: 2));
+     lottieController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
     super.initState();
   }
+
 
 @override
   dispose() {
@@ -63,53 +70,101 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
     super.dispose();
   }
 
-  setNewBadge(String category){
-    switch(category){
-      case 'Weather':
-        setState(() {
-          newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
-        });
-        break;
-      case 'Times of the day':
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
-        break;
-      case 'Classroom Commands':
-        setState(() {
-          newBadge = CardBadge(kinship: false, dirrection: false, classroom: true, time: false);
-        });
-        break;
-      case 'Days':
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: true, time: false);
-        break;
-      case 'Kinship Terms':
-        newBadge = CardBadge(kinship: true, dirrection: false, classroom: false, time: false);
-        break;
-      case 'Directions and Time':
-        newBadge = CardBadge(kinship: false, dirrection: true, classroom: false, time: true);
-        break;
-      case 'Food':
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
-        break;
-      case 'Animals':
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
-        break;
-      case 'Numbers':
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: true);
-        break;
-      default:
-        newBadge = CardBadge(kinship: false, dirrection: false, classroom: false, time: false);
-    }
-  }
-  // getQustions() async {
-  //   final vProvider = ref.read(vocaProvider);
-  //   await vProvider.getDataByCategory(widget.category, 'class_c_', 0);
-  //   await vProvider.getDataByCategory2(widget.category, 'class_c_');
+  // setNewBadge(String category){
+  //   switch(category){
+  //     case 'Weather':
+  //       setState(() {
+  //         newBadge = CardBadge(kinship: false, direction: false, classroom: false, time: true, weather: false);
+  //       });
+  //       break;
+  //     case 'Times of the day':
+  //       newBadge = CardBadge(kinship: false, direction: false, classroom: false, time: true, weather: false);
+  //       break;
+  //     case 'Classroom Commands':
+  //       setState(() {
+  //         newBadge = CardBadge(kinship: false, direction: false, classroom: true, time: false, weather: false);
+  //       });
+  //       break;
+  //     case 'Kinship Terms':
+  //       newBadge = CardBadge(kinship: true, direction: false, classroom: false, time: false, weather: false);
+  //       break;
+  //     case 'Directions and Time':
+  //       newBadge = CardBadge(kinship: false, direction: true, classroom: false, time: true, weather: false);
+  //       break;
+  //     default:
+  //       newBadge = CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false);
+  //   }
   // }
-ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
+
+ void setNewBadge(String category){
+  switch(category){
+    case 'Weather':
+      if (!newBadge.weather) {
+        newBadge = CardBadge(
+          kinship: newBadge.kinship,
+          direction: newBadge.direction,
+          classroom: newBadge.classroom,
+          time: newBadge.time,
+          weather: true
+        );
+      }
+      break;
+    case 'Times of the day':
+      if (!newBadge.time) {
+        newBadge = CardBadge(
+          kinship: newBadge.kinship,
+          direction: newBadge.direction,
+          classroom: newBadge.classroom,
+          time: true,
+          weather: newBadge.weather
+        );
+      }
+      break;
+    case 'Classroom Commands':
+      if (!newBadge.classroom) {
+        newBadge = CardBadge(
+          kinship: newBadge.kinship,
+          direction: newBadge.direction,
+          classroom: true,
+          time: newBadge.time,
+          weather: newBadge.weather
+        );
+      }
+      break;
+    case 'Kinship Terms':
+      if (!newBadge.kinship) {
+        newBadge = CardBadge(
+          kinship: true,
+          direction: newBadge.direction,
+          classroom: newBadge.classroom,
+          time: newBadge.time,
+          weather: newBadge.weather
+        );
+      }
+      break;
+    case 'Directions and Time':
+      if (!newBadge.direction) {
+        newBadge = CardBadge(
+          kinship: newBadge.kinship,
+          direction: true,
+          classroom: newBadge.classroom,
+          time: newBadge.time,
+          weather: newBadge.weather
+        );
+      }
+      break;
+    default:
+      // If the category doesn't match any of the above, don't change anything
+      break;
+  }
+}
+
+  ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
   ValueNotifier<int> lastIndex = ValueNotifier<int>(0);
 int index = 0;
 int scoreIndex = 0;
+double progress = 0.0;
   setDocRefCat(String s){
     switch(s){
       case 'Weather':
@@ -124,12 +179,6 @@ int scoreIndex = 0;
         return 'Kinship_';
       case 'Directions and Time':
         return 'directions_time_';
-      case 'Food':
-        return 'class_g_';
-      case 'Animals':
-        return 'class_h_';
-      case 'Numbers':
-        return 'class_i_';
       default:
         return 'class_a_';
     }
@@ -141,24 +190,42 @@ int scoreIndex = 0;
     final userRepo = ref.watch(userProvider);
     final vocaProvide = ref.read(vocaProvider);
     print("build state categoy is ${widget.category}");
+    if(widget.category != vocaProvide.category) {
+      vocaProvide.resetGame();
+      vocaProvide.category = widget.category;
+    }
+// print("badge is ${newBadge.classroom}");
+
+    Map<String, dynamic> values = vocaProvide.getValuesForCategory(widget.category);
+    index = values['index'];
+    scoreIndex = values['scoreIndex'];
+    score = values['score'];
+    progressNotifier.value = values['progress'];
+    cardsFlipped = values['cardsFlipped'];
+    isPlaying.value = values['isPlaying'];
+    lottieController.animateTo(values['lProgress']);
+    print("index is $index");
+    print("lporgress is ${vocaProvide.lProgress}");
     return FutureBuilder(
       future: vocaProvide.getDataByCategory2(widget.category, setDocRefCat(widget.category)),
       builder: (context,snapshot) {
        // print("snapshot.data"+"${widget.category}");
         //print(snapshot.data);
         if(snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }else if(snapshot.hasError
-        //){
             ||
             snapshot.data!.where((element) =>
             element["data"] == null ||
                 (element["data"] != null && (element["data"]["blackfoot"] == null ||
                     element["data"]["english"] == null || element["data"]["sound"] == null))).length > 0 || snapshot.data!.isEmpty) {
           print("snapshot.data""${widget.category} + ${snapshot.data}");
-          return Center(child: Text('Error'));
+          return const Center(child: Text('Error'));
         }else{
         //  print("snapshot.data""${widget.category} + ${snapshot.data}");
+        //   if(vocaProvide.index != 0){
+        //     buttonCarouselController.jumpToPage(vocaProvide.index);
+        //   }
           return Stack(
             children: [
               Container(
@@ -171,24 +238,25 @@ int scoreIndex = 0;
                       IconButton(
                         onPressed: () {
                           buttonCarouselController.previousPage(
-                              duration: Duration(milliseconds: 300), curve: Curves.linear);
+                              duration: const Duration(milliseconds: 300), curve: Curves.linear);
+                          lastIndex.value = index;
                           if (index != 0 )index--;
                          // if (scoreIndex != 0 )scoreIndex--;
-                          lastIndex.value = index;
+
                         },
-                        // child: Icon(Icons.arrow_back_ios,color: Colors.black,),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: theme.lightPurple
-                        ), icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+                        ), icon: const Icon(Icons.arrow_back_ios,color: Colors.black,),
                       ),
-                      Container(
+
+
+                      SizedBox(
                         width: 250,
                         height: 300,
-                        //  color: Colors.green,
                         child: CarouselSlider(
                           items: snapshot.data?.map((e) {
-                           // print("data is ------ ${e["data"]["english"]}");
-                           // print("data is ------ ${e["data"]["blackfoot"]}");
+                           print("data is ------ ${e["data"]["english"]}");
+                           print("data is ------ ${e["data"]["blackfoot"]}");
                             return FlipCard(
                             direction: FlipDirection.HORIZONTAL,
                             speed: 500,
@@ -209,12 +277,12 @@ int scoreIndex = 0;
                                         style: ElevatedButton.styleFrom(
                                             backgroundColor: theme.lightPurple
                                         ),
-                                        icon: Icon(Icons.volume_up,color: Colors.black,),
-                                        label: Text('')),
+                                        icon: const Icon(Icons.volume_up,color: Colors.black,),
+                                        label: const Text('')),
                                     Container(
                                         child: Center(child: Column(
                                           children: [
-                                            Text(e["data"]["blackfoot"],style: TextStyle(fontSize: 30),),
+                                            Text(e["data"]["blackfoot"],style: const TextStyle(fontSize: 30),),
                                             Lottie.network(
                                               e["data"]["Lottie"]??"https://lottie.host/018122ea-52fb-474a-9e47-897379e8e629/foSzXLAMUp.json",
                                               renderCache: RenderCache.drawingCommands,
@@ -228,7 +296,7 @@ int scoreIndex = 0;
                               color: theme.lightPurple,
                               child: Container(
                                 child: Center(
-                                  child: Text(e["data"]["english"],style: TextStyle(fontSize: 30),),
+                                  child: Text(e["data"]["english"],style: const TextStyle(fontSize: 30),),
                                 )
                               ),
                             ),
@@ -236,20 +304,27 @@ int scoreIndex = 0;
 
                               if(index == scoreIndex){
                                 scoreIndex = index+1;
-                                score += 3;
+                                score += 1;
                                 userRepo.updateScore(userRepo.uid, score);
                                 leaderboardRepo.addToLeaderBoard(userRepo.user.name, score);
+                                vocaProvide.cardsFlipped++;
                                 print("score is -------------- $score");
-                                double progress = (scoreIndex / snapshot.data!.length) ; // replace totalNumberOfCards with the actual number of cards
+                                double progress = (vocaProvide.cardsFlipped / snapshot.data!.length) ; // replace totalNumberOfCards with the actual number of cards
                                 print("progress is -------------- $progress");
+                                logger.log('progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
+                                    'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
+                                    'progressNotifier is ${progressNotifier.value} \n',name: "log1");
                                  isPlaying.value = true;
                                  vocaProvide.lProgress = progress;
-                                 if(progress <= 0.8) {
-                                   lottieController.animateTo(progress);
-                                 }else if(progress > 0.8){
+                                 if(vocaProvide.lProgress <= 0.8) {
+                                   lottieController.animateTo(vocaProvide.lProgress);
+                                 }else if(vocaProvide.lProgress > 0.8){
                                    lottieController.animateTo(1.toDouble());
                                  }
                                 progressNotifier.value = progress;
+                                logger.log('progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
+                                    'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
+                                    'progressNotifier is ${progressNotifier.value} \n',name: "log2");
                               }},
                           );
                           }).toList(),
@@ -260,9 +335,10 @@ int scoreIndex = 0;
                             enlargeCenterPage: true,
                             viewportFraction: 1,
                             aspectRatio: 2.0,
-                            initialPage: 0,
+                            initialPage: index,
                             clipBehavior: Clip.hardEdge,
                             enableInfiniteScroll: false,
+                            scrollPhysics: const NeverScrollableScrollPhysics(),
                           ),
                         ),
                       ),
@@ -277,12 +353,13 @@ int scoreIndex = 0;
                                 scoreIndex = index+1;
                                 index++;
                                 lastIndex.value = index;
+                                vocaProvide.index = index;
 
-                              },
+                                },
                               // child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: theme.lightPurple
-                              ), icon: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              ), icon: const Icon(Icons.arrow_forward_ios,color: Colors.black,),
                             ),
                           );
                         }, valueListenable:lastIndex,
@@ -296,22 +373,22 @@ int scoreIndex = 0;
                 right: MediaQuery.of(context).size.width * 0.25 ,
                 child: ElevatedButton(
                     onPressed: () {
-                     // leaderboardRepo.getTopHighScores("all", false);
-                     // leaderboardRepo.saveHighScore("shrek", );
-                      userRepo.addWordToUser(userRepo.uid, SavedWords.fromJson(snapshot.data![index]["data"]), );
+                      userRepo.addWordToUser(userRepo.uid, SavedWords.fromJson(snapshot.data![index]["data"]),widget.category );
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Word saved')));
+
                     },
-                    child: Text('save',style: TextStyle(color: Colors.black),),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple
-                    )
+                    ),
+                    child: const Text('save',style: TextStyle(color: Colors.black),)
                 ),
               ),
               Positioned(
                 bottom: 140,
                 left:  MediaQuery.of(context).size.width * 0.25,
                 child: ElevatedButton(
-                    onPressed: () => buttonCarouselController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.linear),
-                    child: Text('skip',style: TextStyle(color: Colors.black),),
+                    onPressed: () => buttonCarouselController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.linear),
+                    child: const Text('skip',style: TextStyle(color: Colors.black),),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple
                     )
@@ -357,7 +434,7 @@ int scoreIndex = 0;
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple
                     ),
-                    child: Text('Explore related phrases?',style: TextStyle(color: Colors.black),)
+                    child: const Text('Explore related phrases?',style: TextStyle(color: Colors.black),)
                 ),
               ),
               Positioned(
@@ -371,8 +448,11 @@ int scoreIndex = 0;
                           child: ValueListenableBuilder<double>(
                             valueListenable: progressNotifier,
                             builder: (context, value, child) {
+                              Future(() {
+                                vocaProvide.progress = value;
+                              });
                               if(value>=1){
-                                Future.delayed(const Duration(seconds: 30), () {
+                                Future.delayed(const Duration(seconds: 5), () {
                                   _controllerCenter.play();
                                   WidgetsBinding.instance.addPostFrameCallback((_) {
                                     _showMyDialog(DefaultTabController.of(context));
@@ -405,7 +485,7 @@ int scoreIndex = 0;
                                     fit: BoxFit.fill,
                                   );
                                 }else{
-                                  return Icon(Icons.favorite_border,color: Colors.orangeAccent,size: 40,);
+                                  return const Icon(Icons.favorite_border,color: Colors.orangeAccent,size: 40,);
                                 }
                               }
                           )
@@ -413,7 +493,6 @@ int scoreIndex = 0;
                     ],
                   )
               ),
-              
               Positioned(
                 top: 0,
                 left: MediaQuery.of(context).size.width * 0.5,
@@ -456,6 +535,7 @@ int scoreIndex = 0;
       print('Error: $e');
     }
   }
+
   Path drawStar(Size size) {
     // Method to convert degree to radians
     double degToRad(double deg) => deg * (pi / 180.0);
@@ -494,13 +574,31 @@ int scoreIndex = 0;
                 TextButton(
                   child: const Text('Choose a new category'),
                   onPressed: () async{
+                    final vocaProvide = ref.read(vocaProvider);
                     setNewBadge(widget.category);
                     await ref.read(userProvider).updateBadge(ref.read(userProvider).uid, newBadge);
+                    ref.read(userProvider).setCatagories();
                     _controllerCenter.stop();
                     progressNotifier.value = 0.0;
+                    scoreIndex = 0;
+                    index = 0;
+                    score = 0;
+                    vocaProvide.score = score;
+                    vocaProvide.index = index;
+                    vocaProvide.progress = 0.0;
+                    lastIndex.value = index;
+                    vocaProvide.lProgress = 0.0;
+                    isPlaying.value = false;
+                    progress = 0.0;
+                    progressNotifier.value = 0.0;
+                    vocaProvide.resetGame();
+
                     if(mounted) {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => VocabularyHome()));
+                      Navigator.of(context).pop();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const VocabularyHome()));
+                      Navigator.of(context).pop();
+
                     }
 
                   },
@@ -508,10 +606,7 @@ int scoreIndex = 0;
                 TextButton(
                   child: const Text('Master Again'),
                   onPressed: () {
-                    _controllerCenter.stop();
-                    scoreIndex = 0;
-                    index = 0;
-                    buttonCarouselController.jumpToPage(0);
+                   _resetGame();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -520,6 +615,7 @@ int scoreIndex = 0;
                     return TextButton(
                       child: const Text('Practice'),
                       onPressed: () {
+                      _resetGame();
                         if(mounted) {
                          tabController.animateTo(1);
                         }
@@ -541,6 +637,39 @@ int scoreIndex = 0;
       },
     );
   }
+  _resetGame() {
+    final vocaProvide = ref.read(vocaProvider);
+    _controllerCenter.stop();
+    progressNotifier.value = 0.0;
+    scoreIndex = 0;
+    index = 0;
+    score = 0;
+    vocaProvide.score = score;
+    vocaProvide.index = index;
+    vocaProvide.progress = 0.0;
+    lastIndex.value = index;
+    vocaProvide.lProgress = 0.0;
+    isPlaying.value = false;
+    progress = 0.0;
+    progressNotifier.value = 0.0;
+    buttonCarouselController.jumpToPage(0);
+    // vocaProvide.setValuesForCategory(widget.category);
+    vocaProvide.resetGame();
+  }
+
+//   void updateProgressAndAnimation(AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+//   final vocaProvide = ref.read(vocaProvider);
+//   vocaProvide.cardsFlipped++;
+//   double progress = (vocaProvide.cardsFlipped / snapshot.data!.length);
+//   isPlaying.value = true;
+//   vocaProvide.lProgress = progress;
+//   if(vocaProvide.lProgress <= 0.8) {
+//     lottieController.animateTo(vocaProvide.lProgress);
+//   } else if(vocaProvide.lProgress > 0.8){
+//     lottieController.animateTo(1.toDouble());
+//   }
+//   progressNotifier.value = progress;
+// }
 }
 
 class Qustion {

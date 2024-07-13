@@ -23,3 +23,5 @@ final dissCussionProvider = ChangeNotifierProvider((ref) {
 });
 
 final currentQuestionIndexProvider = StateProvider<int>((ref) => 0);
+
+final scoreProvider = StateProvider<int>((ref) => 0);

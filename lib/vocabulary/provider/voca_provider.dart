@@ -109,25 +109,64 @@ class vocabularyProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getDataByCategory2(String category, String id) async {
+//   Future<List<Map<String, dynamic>>> getDataByCategory2(String category, String id) async {
+//   try {
+//     List<Map<String, dynamic>> allData = [];
+//     int index = 1;
+//     print("++++++++++++++++$id$index++++++++++++++++++++++");
+//     while (true) {
+//       QuerySnapshot querySnapshot = await vocabularyCollection
+//           .doc(category)
+//           .collection("$id$index")
+//           .get();
+//
+//       if (querySnapshot.docs.isEmpty) {
+//         break;
+//       }
+//
+//       List<Map<String, dynamic>> data = querySnapshot.docs
+//           .map((doc) => doc.data() as Map<String, dynamic>)
+//           .toList();
+//
+//
+//       allData.addAll(data);
+//       index++;
+//     }
+//
+//     return allData;
+//   } catch (e) {
+//     print("Error getting data for category '$category': $e");
+//     return [];
+//   }
+// }
+
+Future<List<Map<String, dynamic>>> getDataByCategory2(String category, String id) async {
   try {
     List<Map<String, dynamic>> allData = [];
     int index = 1;
-    print("++++++++++++++++$id$index++++++++++++++++++++++");
     while (true) {
+      String formattedIndex = index.toString().padLeft(2, '0');
+      print("++++++++++++++++$id$formattedIndex++++++++++++++++++++++");
       QuerySnapshot querySnapshot = await vocabularyCollection
           .doc(category)
-          .collection("$id$index")
+          .collection("$id$formattedIndex")
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        break;
+        // If no data found with the padded index, check for the unpadded index
+        querySnapshot = await vocabularyCollection
+            .doc(category)
+            .collection("$id$index")
+            .get();
+
+        if (querySnapshot.docs.isEmpty) {
+          break;
+        }
       }
 
       List<Map<String, dynamic>> data = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
-
 
       allData.addAll(data);
       index++;
@@ -139,6 +178,7 @@ class vocabularyProvider extends ChangeNotifier {
     return [];
   }
 }
+
   getVocabulary() async {
     List<String> vocab = [];
     await firestore.collection("Vocabulary").
@@ -207,5 +247,86 @@ class vocabularyProvider extends ChangeNotifier {
       _score = 0; // Reset score for next quiz
     }
     notifyListeners();
+  }
+
+  int _scoreT = 0;
+  int _index = 0;
+  int _scoreIndex = 0;
+  double _progress = 0.0;
+  int _cardsFlipped = 0;
+  bool _isPlaying = false;
+  String _categoryT = '';
+
+  int get score => _scoreT;
+  int get index => _index;
+  int get scoreIndex => _scoreIndex;
+  double get progress => _progress;
+  int get cardsFlipped => _cardsFlipped;
+  bool get isPlaying => _isPlaying;
+  String get categoryT => _categoryT;
+
+  set score(int score) {
+    _scoreT = score;
+    notifyListeners();
+  }
+
+  set index(int index) {
+    _index = index;
+    notifyListeners();
+  }
+  set scoreIndex(int scoreIndex) {
+    _scoreIndex = scoreIndex;
+    notifyListeners();
+  }
+  set progress(double progress) {
+    _progress = progress;
+    notifyListeners();
+  }
+  set cardsFlipped(int cardsFlipped) {
+    _cardsFlipped = cardsFlipped;
+    notifyListeners();
+  }
+  set isPlaying(bool isPlaying) {
+    _isPlaying = isPlaying;
+    notifyListeners();
+  }
+
+  set categoryT(String categoryT) {
+    _categoryT = categoryT;
+    notifyListeners();
+  }
+
+  void resetGame() {
+    _scoreT = 0;
+    _index = 0;
+    _scoreIndex = 0;
+    _progress = 0.0;
+    _cardsFlipped = 0;
+    _isPlaying = false;
+    notifyListeners();
+  }
+
+  Map<String, Map<String, dynamic>> categoryValues = {};
+
+  // Method to store the values for a specific category
+  void storeValuesForCategory(String category) {
+    categoryValues[category] = {
+      'index': index,
+      'scoreIndex': scoreIndex,
+      'score': score,
+      'progress': progress,
+      'cardsFlipped': cardsFlipped,
+      'isPlaying': isPlaying,
+      'lProgress': lProgress,
+    };
+    notifyListeners();
+  }
+
+  // Method to retrieve the values for a specific category
+  Map<String, dynamic> getValuesForCategory(String category) {
+    return categoryValues[category] ?? {};
+  }
+  Map<String,dynamic> setValuesForCategory(String category) {
+    return categoryValues[category] ?? {};
   }
 }

@@ -50,7 +50,7 @@ class DisscussionPageState extends ConsumerState<DisscussionPage> {
                  ), // Replace with your profile image asset
                  radius: 20,
                ),
-               SizedBox(width: 10),
+               const SizedBox(width: 10),
                Expanded(
                  child: TextField(
                    controller: _postController,
@@ -63,7 +63,7 @@ class DisscussionPageState extends ConsumerState<DisscussionPage> {
                      ),
                      filled: true,
                      fillColor: Colors.grey[200],
-                     contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                     contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                    ),
                    onSubmitted: (value) {
                      if (value.trim().isEmpty) {
@@ -122,6 +122,100 @@ class PostCard extends ConsumerStatefulWidget {
 }
 
 class _PostCardState extends ConsumerState<PostCard> {
+  final TextEditingController _reportController = TextEditingController();
+
+
+  void _reportPost() {
+  List<bool> isSelected = [false, false, false, false]; // one for each checkbox
+  final _formKey = GlobalKey<FormState>();
+  final _otherController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) => StatefulBuilder( // wrap with StatefulBuilder to update the state
+      builder: (context, setState) => AlertDialog(
+        title: const Text('Report Post'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CheckboxListTile(
+                title: const Text('Inappropriate language'),
+                value: isSelected[0],
+                onChanged: (bool? value) {
+                  setState(() {
+                    isSelected[0] = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Spam'),
+                value: isSelected[1],
+                onChanged: (bool? value) {
+                  setState(() {
+                    isSelected[1] = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Incorrect information'),
+                value: isSelected[2],
+                onChanged: (bool? value) {
+                  setState(() {
+                    isSelected[2] = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Offensive content'),
+                value: isSelected[3],
+                onChanged: (bool? value) {
+                  setState(() {
+                    isSelected[3] = value!;
+                  });
+                },
+              ),
+              TextFormField(
+                controller: _otherController,
+                decoration: const InputDecoration(hintText: 'Other'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a reason';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Report'),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                // Here, you can call a function from your provider to report the post
+                // For example:
+                ref.read(dissCussionProvider.notifier).reportPost(
+                  postId: widget.post.id ?? "",
+                  reporterId: ref.read(userProvider).uid,
+                  reason: isSelected.toString() + ', Other: ' + _otherController.text, // pass the selected reasons
+                );
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
 
@@ -137,7 +231,7 @@ class _PostCardState extends ConsumerState<PostCard> {
         );
       },
       child: Card(
-        margin: EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(8.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -152,22 +246,16 @@ class _PostCardState extends ConsumerState<PostCard> {
                 ),
                 title: Text(widget.post.name.isEmpty ? 'Anonymous' : widget.post.name),
                 subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    // Container(
-                    //   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.blue,
-                    //     borderRadius: BorderRadius.circular(12.0),
-                    //   ),
-                    //   child: Text(
-                    //     post.likesList,
-                    //     style: TextStyle(color: Colors.white),
-                    //   ),
-                    // ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Text(widget.post.time),
                   ],
                 ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.flag,color: Colors.red,),
+                  onPressed: _reportPost,
+                )
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -214,7 +302,7 @@ class _CommentInputWidgetState extends ConsumerState<CommentInputWidget> {
                 minLines: null,
                 expands: true,
                 textInputAction: TextInputAction.send,
-                decoration: InputDecoration(hintText: "Write a comment..."),
+                decoration: const InputDecoration(hintText: "Write a comment..."),
                 onSubmitted: (value) {
                   if (value.trim().isNotEmpty) {
                     ref.read(dissCussionProvider.notifier).addComment(widget.postId, Comment(

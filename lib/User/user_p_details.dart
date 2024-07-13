@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:bfootlearn/User/user_firebase_operation.dart';
 import 'package:bfootlearn/User/user_provider.dart';
 import 'package:bfootlearn/User/widgets/custom_progress.dart';
+import 'package:bfootlearn/login/authentication/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -131,10 +133,19 @@ Future<void> pickImage() async {
                   return SingleChildScrollView(
                     child: Column(
                       children: [
-                         CircleAvatar(
-                          radius: 50,
-                           backgroundImage:NetworkImage(_userProvider.photoUrl)
-                        ),
+                         Stack(
+                           children: [
+                             CircleAvatar(
+                              radius: 50,
+                               backgroundImage:NetworkImage(_userProvider.photoUrl)
+                                                     ),
+                             const Positioned(
+                               right: 0,
+                               bottom: 0,
+                               child: Icon(Icons.camera_alt, color: Colors.white, size: 30),
+                             ),
+                           ],
+                         ),
                         const SizedBox(height: 10,),
                          TextButton(
                             onPressed:()async{
@@ -362,7 +373,7 @@ Future<void> pickImage() async {
                                 ),
                               ),
                               const SizedBox(height: 30,),
-                              ElevatedButton(onPressed: (){
+                              ElevatedButton(onPressed: ()async{
                                 if(_isEditing.value){
                                   _userProvider.updateProfile(
                                     uid: widget.uid,
@@ -374,7 +385,21 @@ Future<void> pickImage() async {
                                   );
                                   _isEditing.value = false;
                                 }else{
-                                _userProvider.deleteAccount(widget.uid);
+                                // _userProvider.deleteAccount(widget.uid);
+                                // Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                                  try {
+                                    await _userProvider.deleteAccount(widget.uid);
+                                    FirebaseAuth.instance.signOut();
+
+                                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const AuthPage()), (route) => false);
+                                  } catch (error) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to delete account: $error'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                                 style: ButtonStyle(

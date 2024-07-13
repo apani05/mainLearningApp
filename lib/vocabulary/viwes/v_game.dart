@@ -14,7 +14,9 @@ import 'flash_card_page.dart';
 
 class VocabularyGame extends ConsumerStatefulWidget {
   final String category;
-   const VocabularyGame({required this.category,super.key});
+
+  final String uid;
+   const VocabularyGame({required this.category,required this.uid,super.key});
 
   @override
   VocabularyViewState createState() => VocabularyViewState();
@@ -38,7 +40,7 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
   child: Scaffold(
     appBar: AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios,color: Colors.white,),
+        icon: const Icon(Icons.arrow_back_ios,color: Colors.white,),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -64,8 +66,8 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
         // The widgets that will be shown when the corresponding tab is selected
         // Replace these with your own widgets
               FlashCradPage(category: widget.category,),
-              PracticePage(category: widget.category, ),
-              SavedPage(),
+              PracticePage(category: widget.category,uid: widget.uid, ),
+              SavedPage(category: widget.category,),
       ],
     ),
   ),

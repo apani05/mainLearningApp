@@ -53,6 +53,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     final leaderboardRepo = ref.watch(leaderboardProvider);
+    final userProvide = ref.watch(userProvider);
     final currentUser = FirebaseAuth.instance.currentUser;
     final String? currentUserName;
     // Get the current user's name
@@ -68,12 +69,14 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
       builder: (context,snapshot) {
 
         if(snapshot.connectionState == ConnectionState.waiting){
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }else if(snapshot.hasData){
+          List<LeaderBoardModel>? leaderboardData = snapshot.data;
+          leaderboardData?.sort((a, b) => b.score.compareTo(a.score));
           SliverListWithTopContainer sliverList = SliverListWithTopContainer(
             items: List.generate(snapshot.data!.length,
                     (index) => LeaderCard(snapshot.data!.elementAt(index).name ,
-                      index: index, score: snapshot.data!.elementAt(index).score,currentUserId: currentUserName??"",)),
+                      index: index, score: snapshot.data!.elementAt(index).score,currentUserId: userProvide.name,)),
             topContainer: topContainer,
           );
           return Scaffold(
@@ -81,15 +84,15 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
             body:Stack(
               children: [
                 sliverList,
-                Positioned(
-                  bottom: -40,
-                  left: 0,
-                  child: Container(
-                    height: 300,
-                    width: 450,
-                    child: Lottie.network('https://lottie.host/a59bd46f-ce8c-4fe5-88ea-b13a6fb2fa42/9izka5ILTd.json'),
-                  ),
-                ),
+                // Positioned(
+                //   bottom: -40,
+                //   left: 0,
+                //   child: Container(
+                //     height: 300,
+                //     width: 450,
+                //     child: Lottie.network('https://lottie.host/a59bd46f-ce8c-4fe5-88ea-b13a6fb2fa42/9izka5ILTd.json'),
+                //   ),
+                // ),
                 Positioned(
                   top: 20,
                   right: 10,
@@ -105,7 +108,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: DropdownButton<String>(
                         dropdownColor:  theme.lightPurple,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         value: _selectedTimeRange,
                         items: <String>['Daily', 'Weekly', 'Monthly', 'All-time'].map((String value) {
                           return DropdownMenuItem<String>(
@@ -126,7 +129,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
             ),
           );
         }else{
-          return Center(child: Text("No Data"));
+          return const Center(child: Text("No Data"));
         }
 
       }

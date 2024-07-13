@@ -27,7 +27,7 @@ class _SliverListWithTopContainerState extends ConsumerState<SliverListWithTopCo
     return Padding(
       padding: const EdgeInsets.only(bottom: 18.0),
       child: CustomScrollView(
-
+        controller: PrimaryScrollController.of(context),
         slivers: [
           SliverAppBar(
             backgroundColor: Colors.white,
@@ -45,10 +45,7 @@ class _SliverListWithTopContainerState extends ConsumerState<SliverListWithTopCo
             flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 background: Container(
-                  decoration: BoxDecoration(
-                    // gradient: LinearGradient(
-                    //   colors: [Colors.purple, Colors.deepPurple],
-                    // ),
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                   ),
                   child: SizedBox(
