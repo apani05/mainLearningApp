@@ -4,6 +4,7 @@ import 'package:bfootlearn/adminProfile/services/show_dialog_conversation.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_export_batch.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_conversations_listview.dart';
+import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,14 +86,7 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Text(
-          categoryName,
-          textAlign: TextAlign.left,
-          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-        ),
-      ),
+      appBar: customAppBar(context: context, title: categoryName),
 
       // add new phase to particular category
       floatingActionButton: !_isMultiSelectMode
@@ -153,6 +147,7 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 20),
             AdminSearchBar(
                 hintText: 'Search phrases...', controller: _searchController),
             const SizedBox(height: 20),

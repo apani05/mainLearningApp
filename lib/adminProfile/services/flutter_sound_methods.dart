@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bfootlearn/notifications/showPermissionDeniedDialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,21 +24,66 @@ class FlutterSoundMethods {
   bool get isPlaying => _audioPlayer.isPlaying;
   bool get isPlayingPaused => _audioPlayer.isPaused;
 
-  Future init() async {
-    final microphonePermissionStatus = await Permission.microphone.request();
-    final storagePermissionStatus = await Permission.storage.request();
-
-    if (microphonePermissionStatus != PermissionStatus.granted ||
-        storagePermissionStatus != PermissionStatus.granted) {
-      throw RecordingPermissionException(
-          'Microphone or Storage permission is not allowed.');
+  Future<void> requestStoragePermission() async {
+    // Request permission for notifications
+    var status = await Permission.notification.request();
+    if (status.isGranted) {
+      final microphonePermissionStatus = await Permission.microphone.request();
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      // Permission is denied, handle this case accordingly
+      // showPermissionDeniedDialog(context: context);
     }
-    final directory = await getExternalStorageDirectory();
-    if (directory != null) {
+  }
+
+  Future<void> init({required BuildContext context}) async {
+    debugPrint('init started');
+
+    try {
+      // debugPrint('Requesting microphone permission...');
+      // final microphonePermissionStatus = await Permission.microphone.request();
+      // debugPrint('Microphone permission status: $microphonePermissionStatus');
+
+      // debugPrint('Requesting storage permission...');
+      // final storagePermissionStatus = await Permission.storage.request();
+      // debugPrint('Storage permission status: $storagePermissionStatus');
+
+      final microphonePermissionStatus = await Permission.microphone.request();
+
+      if (microphonePermissionStatus.isGranted) {
+        final storagePermissionStatus = await Permission.storage.request();
+        if (storagePermissionStatus.isDenied ||
+            storagePermissionStatus.isPermanentlyDenied) {
+          debugPrint('Storage Permission Denied');
+          Navigator.of(context).pop();
+          showPermissionDeniedDialog(
+              context: context,
+              content:
+                  'Storage permission is required to add or update conversations. Please enable it in the app settings.');
+        }
+      } else if (microphonePermissionStatus.isDenied ||
+          microphonePermissionStatus.isPermanentlyDenied) {
+        debugPrint('Microphone Permission Denied');
+        Navigator.of(context).pop();
+        showPermissionDeniedDialog(
+            context: context,
+            content:
+                'Audio permission is required to add or update conversations. Please enable it in the app settings.');
+      }
+
+      // if (microphonePermissionStatus != PermissionStatus.granted ||
+      //     storagePermissionStatus != PermissionStatus.granted) {
+      //   throw RecordingPermissionException(
+      //       'Microphone or Storage permission is not allowed. '
+      //       'Microphone: $microphonePermissionStatus, '
+      //       'Storage: $storagePermissionStatus');
+      // }
+
+      final directory = await getTemporaryDirectory();
       pathToSaveAudio = '${directory.path}/picked_audio_recording.aac';
-      print('pathToSave $pathToSaveAudio');
-    } else {
-      throw Exception('Failed to get external storage directory');
+      debugPrint('pathToSave $pathToSaveAudio');
+    } catch (e) {
+      debugPrint('Error initializing FlutterSoundMethods: $e');
+      rethrow;
     }
   }
 
@@ -45,9 +93,9 @@ class FlutterSoundMethods {
     _audioRecorder.deleteRecord(fileName: pathToSaveAudio);
   }
 
-  Future<String> getPathToSave() async {
+  Future<String> getPathToSave({required BuildContext context}) async {
     if (pathToSaveAudio == '') {
-      await init();
+      await init(context: context);
     }
     return pathToSaveAudio;
   }
