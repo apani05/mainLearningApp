@@ -3,6 +3,7 @@ import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/models/question_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../Phrases/provider/mediaProvider.dart';
 import '../../riverpod/river_pod.dart';
 import 'quiz_result_page.dart';
@@ -41,7 +42,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text("Select Series"),
+        title: const Text("Select Series"),
         content: StatefulBuilder(
           builder: (context, setState) {
             return Column(
@@ -76,7 +77,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 Navigator.pop(context);
               }
             },
-            child: Text("OK"),
+            child: const Text("OK"),
           ),
         ],
       ),
@@ -217,8 +218,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: Text("Exit Quiz?"),
-          content: Text("Are you sure you want to exit the quiz?"),
+          title: const Text("Exit Quiz?"),
+          content: const Text("Are you sure you want to exit the quiz?"),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
@@ -228,13 +229,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 isPlaying = false;
                 Navigator.of(context).pop(true);
               },
-              child: Text("Yes"),
+              child: const Text("Yes"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: Text("No"),
+              child: const Text("No"),
             ),
           ],
         ),
@@ -256,18 +257,20 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 if (mounted) {
-                  _onBackPressed().then((shouldPop) {
-                    if (shouldPop) {
-                      Navigator.pop(context);
-                    }
-                  });
+                  _onBackPressed().then(
+                    (shouldPop) {
+                      if (shouldPop) {
+                        Navigator.pop(context);
+                      }
+                    },
+                  );
                 }
               },
             ),
-            title: Text('Quiz'),
+            title: const Text('Quiz'),
             backgroundColor: theme.lightPurple,
           ),
           body: Expanded(
@@ -296,16 +299,16 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 children: [
                   Text(
                     'Question ${_currentIndex + 1} of ${quizQuestions.length}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   ElevatedButton(
                     onPressed: _isNextButtonEnabled ? nextQuestion : null,
-                    child: Text("Next"),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: theme.lightPurple),
+                    child: const Text("Next"),
                   ),
                 ],
               ),
@@ -319,23 +322,23 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   Widget buildQuestionCard(Question question) {
     final theme = ref.watch(themeProvider);
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               question.isAudioTypeQuestion
                   ? "Match the audio with the corresponding blackfoot text?"
-                  : "${question.questionText.split('|')[0]}",
+                  : question.questionText.split('|')[0],
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
                 color: theme.lightPurple,
               ),
             ),
-            if (question.isAudioTypeQuestion) SizedBox(height: 20.0),
+            if (question.isAudioTypeQuestion) const SizedBox(height: 20.0),
             if (question.isAudioTypeQuestion)
               ElevatedButton.icon(
                 onPressed: () {
@@ -364,20 +367,20 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
                   "Correct Answer: ${question.correctAnswer}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
                 ),
               ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             ElevatedButton(
               onPressed:
                   _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
-              child: Text("Check Answer"),
               style:
                   ElevatedButton.styleFrom(backgroundColor: theme.lightPurple),
+              child: const Text("Check Answer"),
             ),
           ],
         ),
@@ -391,7 +394,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
       return RadioListTile<String>(
         title: Text(
           option,
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
+          style: const TextStyle(fontSize: 18.0, color: Colors.black),
         ),
         value: option,
         groupValue: quizQuestions[_currentIndex].selectedAnswer,

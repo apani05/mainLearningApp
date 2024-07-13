@@ -89,7 +89,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       });
     } else if (status.isDenied || status.isPermanentlyDenied) {
       // Permission is denied, handle this case accordingly
-      showPermissionDeniedDialog(context: context);
+      showPermissionDeniedDialog(
+          context: context,
+          content:
+              'Notification permission is required to enable study reminders. Please enable it in the app settings.');
     }
   }
 

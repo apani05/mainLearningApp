@@ -1,4 +1,5 @@
 import 'package:bfootlearn/adminProfile/services/show_dialog_grant_access.dart';
+import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -20,14 +21,7 @@ class AdminAccessPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      appBar: AppBar(
-        title: const Text('Admin Access Settings'),
-        titleTextStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-          color: Colors.black,
-        ),
-      ),
+      appBar: customAppBar(context: context, title: 'Admin Access Settings'),
       floatingActionButton: FloatingActionButton.extended(
         label: const Row(
           children: [

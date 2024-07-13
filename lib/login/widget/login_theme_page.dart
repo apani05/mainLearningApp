@@ -1,11 +1,14 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:lottie/lottie.dart';
+
 import 'fadein_animation.dart';
 
 class LoginPageTop extends ConsumerStatefulWidget {
+  const LoginPageTop({super.key});
+
   @override
   _LoginPageTopState createState() => _LoginPageTopState();
 }
@@ -19,7 +22,7 @@ class _LoginPageTopState extends ConsumerState<LoginPageTop> {
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(30),
               bottomRight: Radius.circular(30),
             ),
@@ -30,7 +33,7 @@ class _LoginPageTopState extends ConsumerState<LoginPageTop> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.065),
-                FadeIn(
+                const FadeIn(
                   child: Text(
                     "I'poyit",
                     style: TextStyle(

@@ -3,15 +3,16 @@ import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
 import '../../riverpod/river_pod.dart';
-import 'quiz_result_page.dart';
 import '../widgets/bar_graph.dart';
+import 'quiz_result_page.dart';
 
 class QuizResultList extends ConsumerStatefulWidget {
   const QuizResultList({super.key});
 
   @override
-  _QuizResultListState createState() => _QuizResultListState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _QuizResultListState();
 }
 
 class _QuizResultListState extends ConsumerState<QuizResultList> {
@@ -45,7 +46,7 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
             ),
           ),
           quizResults.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text(
                     'No quizzes taken yet',
                     style: TextStyle(fontSize: 18, color: Colors.grey),
