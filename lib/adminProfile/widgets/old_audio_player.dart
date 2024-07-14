@@ -38,7 +38,7 @@ class _OldAudioPlayerState extends State<OldAudioPlayer> {
             onPressed: onPressedAudioButton,
             icon: const Icon(Icons.volume_up_rounded),
             iconSize: 25,
-            color: Colors.purpleAccent,
+            color: Color(0xff6562df),
           ),
           const Text(
             'Old Blackfoot Audio',

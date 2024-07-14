@@ -34,7 +34,7 @@ void showDialogAddCategory(
 
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          backgroundColor: Colors.purple.shade300,
+          backgroundColor: Color(0xff6562df),
           title: Text(
             'Add category',
             style: dialogBoxTitleTextStyle,
@@ -52,13 +52,13 @@ void showDialogAddCategory(
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Colors.purple.shade300,
+                          foregroundColor: Color(0xff6562df),
                         ),
                         icon: const Icon(Icons.image),
                         label: Text(
                           'Pick icon for category',
                           style: actionButtonTextStyle.copyWith(
-                            color: Colors.purple.shade300,
+                            color: Color(0xff6562df),
                           ),
                         ),
                       )
@@ -168,7 +168,7 @@ void showDialogUpdateCategory({
 
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          backgroundColor: Colors.purple.shade300,
+          backgroundColor: Color(0xff6562df),
           title: Text(
             'Update category',
             style: dialogBoxTitleTextStyle,
@@ -191,13 +191,13 @@ void showDialogUpdateCategory({
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Colors.purple.shade300,
+                          foregroundColor: Color(0xff6562df),
                         ),
                         icon: const Icon(Icons.image),
                         label: Text(
                           'Pick icon for category',
                           style: actionButtonTextStyle.copyWith(
-                            color: Colors.purple.shade300,
+                            color: Color(0xff6562df),
                           ),
                         ),
                       )
@@ -312,7 +312,7 @@ void showDialogDeleteCategory({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         content: Text(
           'Do you want to delete this category?',
           style: dialogBoxContentTextStyle,

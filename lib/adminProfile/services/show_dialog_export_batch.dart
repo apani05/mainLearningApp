@@ -14,7 +14,7 @@ void showDialogExportBatch({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
