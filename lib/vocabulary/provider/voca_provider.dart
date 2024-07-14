@@ -54,7 +54,8 @@ class vocabularyProvider extends ChangeNotifier {
   }
 
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-  GlobalKey<CurvedNavigationBarState> get bottomNavigationKey => _bottomNavigationKey;
+  GlobalKey<CurvedNavigationBarState> get bottomNavigationKey =>
+      _bottomNavigationKey;
 
   // TabController _tabController = TabController(length: 3, vsync: ScrollableState());
   // TabController get tabController => _tabController;
@@ -70,21 +71,20 @@ class vocabularyProvider extends ChangeNotifier {
   }
 
   final CollectionReference vocabularyCollection =
-  FirebaseFirestore.instance.collection('Vocabulary');
-
+      FirebaseFirestore.instance.collection('Vocabulary');
 
   setDocRef(String category) {
     final DocumentReference parentDocument =
-    FirebaseFirestore.instance.doc('Vocabulary/$_category');
+        FirebaseFirestore.instance.doc('Vocabulary/$_category');
     return parentDocument;
   }
-
 
   Future<List<String>> getAllCategories() async {
     try {
       QuerySnapshot querySnapshot = await vocabularyCollection.get();
 
-      List<String> categories = querySnapshot.docs.map((doc) => doc.id).toList();
+      List<String> categories =
+          querySnapshot.docs.map((doc) => doc.id).toList();
       return categories;
     } catch (e) {
       print("Error getting categories: $e");
@@ -92,15 +92,17 @@ class vocabularyProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getDataByCategory(String category,String id,index) async {
+  Future<List<Map<String, dynamic>>> getDataByCategory(
+      String category, String id, index) async {
     try {
       QuerySnapshot querySnapshot = await vocabularyCollection
           .doc(category)
-          .collection("$id${index+1}")
+          .collection("$id${index + 1}")
           .get();
 
-      List<Map<String, dynamic>> data =
-      querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      List<Map<String, dynamic>> data = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
       print(data.first);
       return data;
     } catch (e) {
@@ -164,9 +166,9 @@ Future<List<Map<String, dynamic>>> getDataByCategory2(String category, String id
         }
       }
 
-      List<Map<String, dynamic>> data = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
+        List<Map<String, dynamic>> data = querySnapshot.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
 
       allData.addAll(data);
       index++;
@@ -181,9 +183,7 @@ Future<List<Map<String, dynamic>>> getDataByCategory2(String category, String id
 
   getVocabulary() async {
     List<String> vocab = [];
-    await firestore.collection("Vocabulary").
-    get()
-        .then((value) {
+    await firestore.collection("Vocabulary").get().then((value) {
       value.docs.forEach((element) {
         vocab.add(element.data()["word"]);
       });

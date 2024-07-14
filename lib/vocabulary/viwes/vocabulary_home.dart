@@ -66,10 +66,13 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
     // print("badge category $badgeCategory");
 
     return Scaffold(
-      backgroundColor:  Colors.white,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios,color: Colors.white,),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -93,7 +96,9 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
                 backgroundImage: AssetImage("assets/person_logo.png"),
               ),
             ),
-            SizedBox(width: 30,)
+            SizedBox(
+              width: 30,
+            )
           ],
         ),
         body: Consumer(
@@ -217,9 +222,4 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
        // bottomNavigationBar:  BottomNavItem.bottomBar(ref, theme.themeData),
     );
   }
-
-
-
 }
-
-

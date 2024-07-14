@@ -1,5 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:bfootlearn/Phrases/sentence_homepage.dart';
+import 'package:bfootlearn/Phrases/views/sentence_homepage.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,10 +18,10 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   List<Color> colorizeColors = [
-    Color(0xFFE6E6FA) ,
-    Color(0xFFFFF0F5),
-    Color(0xFF967BB6),
-    Color(0xFFA76BCF)
+    const Color(0xFFE6E6FA),
+    const Color(0xFFFFF0F5),
+    const Color(0xFF967BB6),
+    const Color(0xFFA76BCF)
   ];
   TextStyle colorizeTextStyle2 = TextStyle(
     fontSize: 34.0,
@@ -54,12 +54,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: 20,
               ),
               Center(
-                // child: Text(
-                //   'Welcome to I\'poyít ',
-                //   style: widget.theme.textTheme.headline1?.copyWith(
-                //     color: Colors.white,
-                //   ),
-                // ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -83,7 +77,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               const SizedBox(
                 height: 60,
               ),
-
               Text(
                 'Start your quest ',
                 style: widget.theme.textTheme.headlineLarge?.copyWith(
@@ -93,41 +86,31 @@ class _HomePageState extends ConsumerState<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, '/vocabulary');
                 },
                 child: Card(
                   elevation: 10,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
                   color: theme.lightPurple,
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.25,
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center ,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Vocabulary',
                             textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headlineLarge?.copyWith(
-                              color: Colors.white,
-                              fontSize: 35
-                            ),
+                            style: widget.theme.textTheme.headlineLarge
+                                ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
-                          // Text(
-                          //   'Broaden you word bank',
-                          //   textAlign: TextAlign.center,
-                          //   style: widget.theme.textTheme.headline1?.copyWith(
-                          //     color: Colors.white,
-                          //     fontSize: 20
-                          //   ),
-                          // ),
                           AnimatedTextKit(animatedTexts: [
                             ColorizeAnimatedText(
-                              'Broaden you word bank',
+                              'Broaden your word bank',
                               textStyle: colorizeTextStyle,
                               colors: colorizeColors,
                             ),
@@ -139,15 +122,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SentenceHomePage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SentenceHomePage()));
                 },
                 child: Card(
                   elevation: 10,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
                   color: theme.lightPurple,
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.25,
@@ -159,26 +146,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Text(
                             'Phrases',
                             textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headlineLarge?.copyWith(
-                              color: Colors.white,
-                              fontSize: 35
-                            ),
+                            style: widget.theme.textTheme.headlineLarge
+                                ?.copyWith(color: Colors.white, fontSize: 35),
                           ),
-                          // Text(
-                          //   'Master everyday phrases',
-                          //   textAlign: TextAlign.center,
-                          //   style: widget.theme.textTheme.headline1?.copyWith(
-                          //     color: Colors.white,
-                          //     fontSize: 20
-                          //   ),
-                          // ),
-                          AnimatedTextKit(animatedTexts: [
-                            ColorizeAnimatedText(
-                              'Master everyday phrases',
-                              textStyle: colorizeTextStyle,
-                              colors: colorizeColors,
-                            ),
-                          ],
+                          AnimatedTextKit(
+                            animatedTexts: [
+                              ColorizeAnimatedText(
+                                'Master everyday phrases',
+                                textStyle: colorizeTextStyle,
+                                colors: colorizeColors,
+                              ),
+                            ],
                           ),
                         ],
                       ),

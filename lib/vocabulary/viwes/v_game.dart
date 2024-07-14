@@ -22,7 +22,7 @@ class VocabularyGame extends ConsumerStatefulWidget {
   VocabularyViewState createState() => VocabularyViewState();
 }
 
-class VocabularyViewState extends ConsumerState<VocabularyGame>  {
+class VocabularyViewState extends ConsumerState<VocabularyGame> {
   @override
   void initState() {
     super.initState();
@@ -31,6 +31,7 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
   FlipperController flipperController = FlipperController(
     dragAxis: DragAxis.horizontal,
   );
+  //TabController tabController = TabController(length: 3, vsync: ScrollableState());
   //TabController tabController = TabController(length: 3, vsync: ScrollableState());
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,3 @@ class VocabularyViewState extends ConsumerState<VocabularyGame>  {
 );
   }
 }
-
-
-
-

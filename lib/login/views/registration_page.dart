@@ -1,13 +1,14 @@
-import 'package:bfootlearn/login/widget/fadein_animation.dart';
-import 'package:bfootlearn/login/widget/login_theme_page.dart';
+import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/riverpod/river_pod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bfootlearn/riverpod/river_pod.dart';
 import '../../helper/helper_functions.dart';
-import 'package:bfootlearn/User/user_model.dart';
+import '../widget/fadein_animation.dart';
+import '../widget/login_theme_page.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   final void Function()? onTap;
@@ -38,7 +39,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
 
@@ -47,28 +48,34 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       displaySnackBarMessageToUser("Passwords don't match", context);
     } else {
       try {
+        Navigator.pop(context);
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
         if (userCredential.user != null) {
           await userProvide.createUserInDb(
               UserModel(
-                  name: userCredential.user!.displayName ??
-                      userNameController.text,
-                  uid: userCredential.user!.uid,
-                  imageUrl: userCredential.user!.photoURL ?? '',
-                  score: 0,
-                  rank: 0,
-                  heart: 0,
-                  userName: userNameController.text.split('@').first,
-                  email: emailController.text,
-                  savedWords: [],
-                   badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
+                name:
+                    userCredential.user!.displayName ?? userNameController.text,
+                uid: userCredential.user!.uid,
+                imageUrl: userCredential.user!.photoURL ?? '',
+                role: 'user',
+                score: 0,
+                rank: 0,
+                heart: 0,
+                userName: userNameController.text.split('@').first,
+                email: emailController.text,
+                savedWords: [],
+                savedPhrases: [],
+                badge: CardBadge(
+                    kinship: false,
+                    dirrection: false,
+                    classroom: false,
+                    time: false),
                 joinedDate: DateTime.now().toString(),
-                   ),
+              ),
               userCredential.user!.uid);
         }
-        Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         String errorMessage = e.code.replaceAll('-', ' ');
@@ -91,7 +98,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           children: [
             LoginPageTop(),
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   FadeIn(
@@ -123,10 +130,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   const SizedBox(height: 8),
                   FadeIn(
                     child: MyTextField(
-                        controller: passwordController,
-                        textColor: theme.lightPurple,
-                        labelText: 'Password',
-                        obscureText: true),
+                      controller: passwordController,
+                      textColor: theme.lightPurple,
+                      labelText: 'Password',
+                      obscureText: true,
+                      suffix: true,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   FadeIn(

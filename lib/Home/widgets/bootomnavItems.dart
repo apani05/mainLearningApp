@@ -8,32 +8,40 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'home_page.dart';
 
 class BottomNavItem {
-  static bottomBar(WidgetRef ref,ThemeData theme){
+  static bottomBar(WidgetRef ref, ThemeData theme) {
     final vProvider = ref.watch(vocaProvider);
     final theme = ref.watch(themeProvider);
-   return  CurvedNavigationBar(
-     backgroundColor: vProvider.currentPage == 1 ? Color(0xFFb9bdbe) : Colors.white,
-     key:vProvider.bottomNavigationKey,
-     color:  theme.lightPurple,
-     items: <Widget>[
-       Icon(Icons.home, size: 30, color: vProvider.currentPage == 0 ? Colors.white : Colors.grey),
-       Icon(Icons.leaderboard, size: 30, color: vProvider.currentPage == 1 ? Colors.white : Colors.grey),
-       Icon(Icons.group, size: 30, color: vProvider.currentPage == 2 ? Colors.white : Colors.grey),
-       Icon(Icons.ac_unit, size: 30, color: vProvider.currentPage == 3 ? Colors.white : Colors.grey)
-     ],
-     onTap: (index) {
-       vProvider.currentPage = index;
-     },
-   );
- }
+    return CurvedNavigationBar(
+      backgroundColor:
+          vProvider.currentPage == 1 ? Color(0xFFb9bdbe) : Colors.white,
+      key: vProvider.bottomNavigationKey,
+      color: theme.lightPurple,
+      items: <Widget>[
+        Icon(Icons.home,
+            size: 30,
+            color: vProvider.currentPage == 0 ? Colors.white : Colors.grey),
+        Icon(Icons.leaderboard,
+            size: 30,
+            color: vProvider.currentPage == 1 ? Colors.white : Colors.grey),
+        Icon(Icons.group,
+            size: 30,
+            color: vProvider.currentPage == 2 ? Colors.white : Colors.grey)
+      ],
+      onTap: (index) {
+        vProvider.currentPage = index;
+      },
+    );
+  }
 
-  static bottomNavItems(int index,ThemeData theme){
-    if(index == 0){
-      return HomePage( theme: theme,) ;
-    }else if(index == 1){
-      return LeaderBoardPage() ;
-    }else if(index == 2){
-      return DisscussionPage();
+  static bottomNavItems(int index, ThemeData theme) {
+    if (index == 0) {
+      return HomePage(
+        theme: theme,
+      );
+    } else if (index == 1) {
+      return const LeaderBoardPage();
+    } else if (index == 2) {
+      return const DisscussionPage();
     }
   }
 }

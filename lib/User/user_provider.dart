@@ -1,7 +1,5 @@
 import 'dart:io';
-
-import 'package:bfootlearn/User/user_model.dart';
-import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/User/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +11,7 @@ class UserProvider extends ChangeNotifier {
   String _email = '';
   String _photoUrl = '';
   String _uid = '';
+  String _role = '';
   String _token = '';
   String _refreshToken = '';
   String _expiresIn = '';
@@ -30,12 +29,14 @@ class UserProvider extends ChangeNotifier {
     badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
     name: '',
     uid: '',
+    role: '',
     imageUrl: '',
     score: 0,
     rank: 0,
     heart: 0,
     joinedDate: '',
     savedWords: [],
+    savedPhrases: [],
     userName: '',
     email: '',
   ); // Initialize _user in the constructor
@@ -48,6 +49,7 @@ class UserProvider extends ChangeNotifier {
 CardBadge _badge;
 
   List<SavedWords> _savedWords = [];
+  List<CardData> _savedPhrases = [];
   String get name => _name;
 
   String get email => _email;
@@ -55,6 +57,8 @@ CardBadge _badge;
   String get photoUrl => _photoUrl;
 
   String get uid => _uid;
+
+  String get role => _role;
 
   String get token => _token;
 
@@ -70,15 +74,19 @@ CardBadge _badge;
 
   String get username => _username;
 
+
     String get joinDate => _joinDate;
     List<SavedWords> get savedWords => _savedWords;
 
-CardBadge get badge => _badge;
+  List<CardData> get savedPhrases => _savedPhrases;
 
-setBadge(CardBadge badge){
-  _badge = badge;
-  notifyListeners();
-}
+  CardBadge get badge => _badge;
+
+  setBadge(CardBadge badge) {
+    _badge = badge;
+    notifyListeners();
+  }
+
   void setUid(String uid) {
     _uid = uid;
     notifyListeners();
@@ -91,6 +99,11 @@ setBadge(CardBadge badge){
 
   void setEmail(String email) {
     _email = email;
+    notifyListeners();
+  }
+
+  void setRole(String role) {
+    _role = role;
     notifyListeners();
   }
 
@@ -129,6 +142,16 @@ setBadge(CardBadge badge){
     notifyListeners();
   }
 
+  void setUsername(String username) {
+    _username = username;
+    notifyListeners();
+  }
+
+  void setJoinedDate(String date) {
+   _joinDate = date;
+    notifyListeners();
+  }
+
   void setWords(SavedWords words) {
     if (!_savedWords.contains(words)) {
       _savedWords.add(words);
@@ -136,21 +159,12 @@ setBadge(CardBadge badge){
     }
   }
 
-  void setUsername(String username) {
-    _username = username;
-    notifyListeners();
-  }
-
-    void setJoinedDate(String date) {
-   _joinDate = date;
-    notifyListeners();
-  }
-
   void clear() {
     _name = '';
     _email = '';
     _photoUrl = '';
     _uid = '';
+    _role = '';
     _token = '';
     _refreshToken = '';
     _expiresIn = '';
@@ -161,11 +175,12 @@ setBadge(CardBadge badge){
     notifyListeners();
   }
 
-
   createUserInDb(UserModel user, String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'name': user.name,
+      'email': user.email,
       'uid': user.uid,
+      'role': user.role,
       'imageUrl': user.imageUrl,
       'score': user.score,
       'rank': user.rank,
@@ -175,7 +190,8 @@ setBadge(CardBadge badge){
       'userName': user.userName,
       'email': user.email,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
-
+      'savedPhrases':
+          user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
     });
   }
 
@@ -186,6 +202,7 @@ setBadge(CardBadge badge){
      setEmail(user.email);
      setName(user.name);
       setUid(user.uid);
+      setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
@@ -196,20 +213,24 @@ setBadge(CardBadge badge){
       //   setWords(element);
       // });
       //setWords(user.savedWords[0]);
-print("user exists ${documentSnapshot.data()}");
+      print("user exists ${documentSnapshot.data()}");
     }
     return documentSnapshot.exists;
   }
- //get user from db while using app
+
+  //get user from db while using app
   Future<UserModel> getUserFromDb(String uid) async {
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    DocumentSnapshot documentSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     print("user from db ${documentSnapshot.data()}");
-    if(documentSnapshot.exists){
-      final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+    if (documentSnapshot.exists) {
+      final user =
+          UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
       setUserData(user);
       setEmail(user.email);
       setName(user.name);
       setUid(user.uid);
+      setRole(user.role);
       setPhotoUrl(user.imageUrl);
       setScore(user.score);
       setRank(user.rank);
@@ -221,13 +242,10 @@ print("user exists ${documentSnapshot.data()}");
       //   if(!_savedWords.contains(element))
       //   setWords(element);
       // });
-
     }
     return UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
   }
-
-  // ... existing code ...
-
+  
 Future<UserModel> getUserProfile(String uid) async {
   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
   if(documentSnapshot.exists){
@@ -238,25 +256,27 @@ Future<UserModel> getUserProfile(String uid) async {
     badge: CardBadge(kinship: false, direction: false, classroom: false, time: false, weather: false),
     name: '',
     uid: '',
+    role: '',
     imageUrl: '',
     score: 0,
     rank: 0,
     heart: 0,
     joinedDate: '',
     savedWords: [],
+    savedPhrases: [],
     userName: '',
     email: '',
   ); // Return a default UserModel when the document doesn't exist
 }
 
-// ... existing code ...
 
   Future<void> updateBadge(String uid, CardBadge badge) async {
-  setBadge(badge);
-  print("badge to be updated ${badge.toJson()}");
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'badge': badge.toJson()
-    });
+    setBadge(badge);
+    print("badge to be updated ${badge.toJson()}");
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'badge': badge.toJson()});
   }
   // Future<void>getSavedWords(String uid) async {
   //   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -284,25 +304,30 @@ Future<UserModel> getUserProfile(String uid) async {
     });
   }
 }
+
   removeWord(String word,String uid) async {
     int i = _savedWords.indexWhere((element) => element.blackfoot == word);
     print("deleting index $i");
-    await removeWordFromUser( uid, _savedWords[i]);
+    await removeWordFromUser(uid, _savedWords[i]);
     _savedWords.removeWhere((element) => element.blackfoot == word);
     notifyListeners();
   }
+
   Future<void> updateUserInDb(UserModel user, String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'name': user.name,
+      'email': user.email,
       'uid': user.uid,
+      'role': user.role,
       'imageUrl': user.imageUrl,
       'score': user.score,
       'rank': user.rank,
       'savedWords': user.savedWords.map((word) => word.toJson()).toList(),
-
+      'savedPhrases':
+          user.savedPhrases.map((phrase) => phrase.toJson()).toList(),
     });
   }
-  
+
   Future<void> deleteUserFromDb(String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).delete();
   }
@@ -316,7 +341,8 @@ Future<UserModel> getUserProfile(String uid) async {
   Future<void> addWordToUser(String uid, SavedWords word,String cat) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (documentSnapshot.exists) {
-      UserModel user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+      UserModel user =
+          UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
       if (!user.savedWords.contains(word)) {
         word.cat = cat;
         await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -325,6 +351,7 @@ Future<UserModel> getUserProfile(String uid) async {
       }
     }
   }
+
   Future<void> removeWordFromUser(String uid, SavedWords word) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'savedWords': FieldValue.arrayRemove([word.toJson()])
@@ -332,14 +359,25 @@ Future<UserModel> getUserProfile(String uid) async {
   }
 
   Future<void> updateScore(String uid, int score) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'score': score
-    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'score': score});
   }
 
   Future<int> getScore(String uid) async {
     int v;
     v = await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['score']);
+    return v;
+  }
+
+  Future<String> getRole(String uid) async {
+    String v;
+    v = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((value) => value.data()!['role']);
     return v;
   }
 
@@ -371,41 +409,28 @@ users.sort((a, b) {
   }
 
   updateRank(String uid, int rank) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'rank': rank
-    });
-  }
-
-  getJoinDate(String uid) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['joindate']);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'rank': rank});
   }
 
   updateJoinDate(String uid, String date) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'joindate': date
-    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'joindate': date});
   }
-  updateHeart(String uid, int heart) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'heart': heart
-    });
-  }
-  getHeart(String uid) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['heart']);
-  }
-  Future<void> getBadge(String uid) async {
-    //_badge = await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['badge']);
-    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) {
-      _badge = CardBadge.fromJson(value.data()!['badge']);
-    });
-  }
-  Future<void> changePassword(String email, String currentPassword, String newPassword) async {
+
+  Future<void> changePassword(
+      String email, String currentPassword, String newPassword) async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       try {
         // Re-authenticate the user
-        AuthCredential credential = EmailAuthProvider.credential(email: email, password: currentPassword);
+        AuthCredential credential = EmailAuthProvider.credential(
+            email: email, password: currentPassword);
         await user.reauthenticateWithCredential(credential);
 
         // If re-authentication is successful, update the password
@@ -417,13 +442,15 @@ users.sort((a, b) {
     }
   }
 
-  Future<void> changeEmail(String email, String password, String newEmail) async {
+  Future<void> changeEmail(
+      String email, String password, String newEmail) async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       try {
         // Re-authenticate the user
-        AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+        AuthCredential credential =
+            EmailAuthProvider.credential(email: email, password: password);
         await user.reauthenticateWithCredential(credential);
 
         // If re-authentication is successful, update the email
@@ -436,36 +463,33 @@ users.sort((a, b) {
   }
 
   Future<void> changeName(String uid, String name) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'name': name
-    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'name': name});
   }
-
-  // Future<void> changePhotoUrl(String uid, String photoUrl) async {
-  //   await FirebaseFirestore.instance.collection('users').doc(uid).update({
-  //     'imageUrl': photoUrl
-  //   });
-  // }
 
   Future<void> changePhotoUrl(String uid, File imageFile) async {
-  try {
-    // Upload the file to Firebase Storage
-    Reference ref = FirebaseStorage.instance.ref().child('user_images').child('$uid.jpg');
-    UploadTask uploadTask = ref.putFile(imageFile);
+    try {
+      // Upload the file to Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('user_images').child('$uid.jpg');
+      UploadTask uploadTask = ref.putFile(imageFile);
 
-    // Get the download URL of the uploaded file
-    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+      // Get the download URL of the uploaded file
+      String downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
-    // Update the user's photo URL in Firestore with the download URL
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'imageUrl': downloadUrl
-    });
+      // Update the user's photo URL in Firestore with the download URL
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'imageUrl': downloadUrl});
 
-    print("Photo URL has been changed successfully");
-  } catch (error) {
-    print("Failed to change photo URL: $error");
+      print("Photo URL has been changed successfully");
+    } catch (error) {
+      print("Failed to change photo URL: $error");
+    }
   }
-}
 
   Future<void> deleteAccount(String uid) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -484,20 +508,24 @@ users.sort((a, b) {
     }
   }
 
-  void updateProfile({required String uid, required String name,
-    required String username, required String email,required String currentPassword,required String newPassword}) async{
-
-  print("updating profile with $uid $name $username $email $currentPassword $newPassword");
-    FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'name': name,
-      'email': email,
-      'userName': username,
-      'uid': uid
-    });
+  void updateProfile(
+      {required String uid,
+      required String name,
+      required String username,
+      required String email,
+      required String currentPassword,
+      required String newPassword}) async {
+    print(
+        "updating profile with $uid $name $username $email $currentPassword $newPassword");
+    FirebaseFirestore.instance.collection('users').doc(uid).update(
+        {'name': name, 'email': email, 'userName': username, 'uid': uid});
     await changePassword(email, currentPassword, newPassword);
   }
 
-  Future<void> createFeedback({required String id, required String name, required String feedback}) async {
+  Future<void> createFeedback(
+      {required String id,
+      required String name,
+      required String feedback}) async {
     await FirebaseFirestore.instance.collection('feedbacks').add({
       'id': id,
       'name': name,
@@ -506,6 +534,33 @@ users.sort((a, b) {
     });
   }
 
+  getJoinDate(String uid) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['joindate']);
+  }
+  
+  updateHeart(String uid, int heart) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'heart': heart
+    });
+  }
+
+  getHeart(String uid) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['heart']);
+  }
+
+  Future<void> getBadge(String uid) async {
+    //_badge = await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['badge']);
+    await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) {
+      _badge = CardBadge.fromJson(value.data()!['badge']);
+    });
+  }
+
+  // Future<void> changePhotoUrl(String uid, String photoUrl) async {
+  //   await FirebaseFirestore.instance.collection('users').doc(uid).update({
+  //     'imageUrl': photoUrl
+  //   });
+  // }
+
   List<String> _badgeCategories = [];
   List<String> get badgeCategories => _badgeCategories;
 
@@ -513,6 +568,7 @@ users.sort((a, b) {
     _badgeCategories = value;
     notifyListeners(); // Notify listeners when badgeCategories changes
   }
+
   setCatagories() async {
     await getBadge(uid);
     CardBadge badge = this.badge;

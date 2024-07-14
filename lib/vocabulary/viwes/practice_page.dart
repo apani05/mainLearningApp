@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../pages/quiz_page.dart';
 import '../../riverpod/river_pod.dart';
 
 class PracticePage extends ConsumerStatefulWidget {

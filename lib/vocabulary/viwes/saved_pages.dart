@@ -20,7 +20,6 @@ class SavedPage extends ConsumerStatefulWidget {
 }
 
 class _SavedPageState extends ConsumerState<SavedPage> {
-
   CarouselController buttonCarouselController = CarouselController();
   List<SavedWords> savedWords = [];
   String uid = "";
@@ -103,16 +102,18 @@ class _SavedPageState extends ConsumerState<SavedPage> {
       ],
     );
   }
+
   Future<void> playAudio(String Url) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     String audioUrl = Url;
 
     try {
       // Get the download URL for the audio file
-      Uri downloadUrl =Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL()) ;
+      Uri downloadUrl =
+          Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL());
 
       // Play the audio using the audioplayers package
-      await player.play(UrlSource( downloadUrl.toString()));
+      await player.play(UrlSource(downloadUrl.toString()));
       print('Playing');
     } catch (e) {
       // Handle errors
@@ -120,5 +121,3 @@ class _SavedPageState extends ConsumerState<SavedPage> {
     }
   }
 }
-
-

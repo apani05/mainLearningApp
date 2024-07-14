@@ -21,7 +21,7 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
-String score = "0";
+  String score = "0";
   @override
   void initState() {
     super.initState();

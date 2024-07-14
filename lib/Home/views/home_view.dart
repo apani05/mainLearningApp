@@ -1,13 +1,10 @@
 import 'package:bfootlearn/Home/views/ack_page.dart';
 import 'package:bfootlearn/Home/widgets/bootomnavItems.dart';
-import 'package:bfootlearn/Home/widgets/crad_option.dart';
-import 'package:bfootlearn/Home/widgets/home_page.dart';
+import 'package:bfootlearn/Home/widgets/popup_menu.dart';
 import 'package:bfootlearn/User/user_profile_screen.dart';
-import 'package:bfootlearn/common/bottomnav.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flippy/flippy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flippy/flippy.dart';
@@ -23,12 +20,17 @@ class HomeView extends ConsumerStatefulWidget {
 class HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
+    super.initState();
     final leaderBoardRepo = ref.read(leaderboardProvider);
     final UserProvide = ref.read(userProvider);
     //leaderBoardRepo.addToLeaderBoard(UserProvide.name??"", UserProvide.score);
     //UserProvide.getScore(UserProvide.uid);
     //UserProvide.setScore(UserProvide.score);
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   FlipperController flipperController = FlipperController(
@@ -95,7 +97,7 @@ class HomeViewState extends ConsumerState<HomeView> {
           Visibility(
             child: Center(child: Padding(
               padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width/5.5),
-              child: const Text("Discusion Forum",style: TextStyle(color: Colors.white),),
+              child: const Text("Discussion Forum",style: TextStyle(color: Colors.white),),
             )),
             visible: vProvider.currentPage == 2 ? true : false,
           ),

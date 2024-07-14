@@ -1,53 +1,62 @@
+import 'package:bfootlearn/Phrases/models/card_data.dart';
+
 class UserModel {
   final String name;
+  final String email;
   final String uid;
+  final String role;
   final String imageUrl;
   final int score;
   final int rank;
   final int heart;
-  final String email;
   final String userName;
   final CardBadge badge;
-  final String joinedDate ;
+  final String joinedDate;
   final List<SavedWords> savedWords;
+  final List<CardData> savedPhrases;
 
-  UserModel({
-    required this.name,
-    required this.uid,
-    required this.imageUrl,
-    required this.score,
-    required this.rank,
-    required this.heart,
-    required this.email,
-    required this.savedWords,
-    required this.badge,
-    required this.joinedDate,
-    required this.userName
-  });
-
+  UserModel(
+      {required this.name,
+      required this.email,
+      required this.uid,
+      required this.role,
+      required this.imageUrl,
+      required this.score,
+      required this.rank,
+      required this.heart,
+      required this.savedWords,
+      required this.savedPhrases,
+      required this.badge,
+      required this.joinedDate,
+      required this.userName});
   String get getName => name;
+  String get getEmail => email;
   String get getUid => uid;
+  String get getRole => role;
   String get getImageUrl => imageUrl;
   int get getScore => score;
   int get getRank => rank;
   int get getHeart => heart;
   String get getJoinedDate => joinedDate;
   String get getUserName => userName;
-  String get getEmail => email;
+ 
   List<SavedWords> get getSavedWords => savedWords;
+  List<CardData> get getSavedPhrases => savedPhrases;
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'email': email,
         'uid': uid,
+        'role': role,
         'imageUrl': imageUrl,
         'score': score,
         'rank': rank,
         'heart': heart,
         'userName': userName,
-    "badge": badge.toJson(),
-    'joinedDate': joinedDate,
+        'badge': badge.toJson(),
+        'joinedDate': joinedDate,
         'savedWords': savedWords.map((word) => word.toJson()).toList(),
+        'savedPhrases': savedPhrases.map((phrase) => phrase.toJson()).toList(),
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -56,18 +65,21 @@ class UserModel {
       name: json['name'],
       email: json['email']??'',
       uid: json['uid'],
+      role: json['role'],
       imageUrl: json['imageUrl'],
       score: json['score'],
       rank: json['rank'],
       heart: json['heart'],
       joinedDate: json['joindate']??DateTime.now().toString(),
       userName: json['userName']??'',
-      savedWords: (json['savedWords'] as List)
-          .map((item) {
-            print("item to be added $item");
-            return SavedWords.fromJson(item);
-          })
-          .toList(),
+      savedWords: (json['savedWords'] as List).map((item) {
+        print("item to be added $item");
+        return SavedWords.fromJson(item);
+      }).toList(),
+      savedPhrases: (json['savedPhrases'] as List).map((item) {
+        print("item to be added $item");
+        return CardData.fromJson(item);
+      }).toList(),
     );
   }
   String getBadgeCategory() {
@@ -137,23 +149,21 @@ class SavedWords {
   final String sound;
   final String english;
   final String blackfoot;
-   String cat;
 
-  SavedWords({required this.sound, required this.english, required this.blackfoot,required this.cat});
+  SavedWords(
+      {required this.sound, required this.english, required this.blackfoot});
 
   factory SavedWords.fromJson(Map<String, dynamic> json) {
     return SavedWords(
       sound: json['sound'],
       english: json['english'],
       blackfoot: json['blackfoot'],
-      cat: json['cat']??'',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'sound': sound,
         'english': english,
-        'blackfoot': blackfoot,
-        'cat':cat
+        'blackfoot': blackfoot
       };
 }

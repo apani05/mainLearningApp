@@ -13,16 +13,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../Phrases/category_learning_page.dart';
 import '../../User/user_model.dart';
 
 class FlashCradPage extends ConsumerStatefulWidget {
-   String category;
-   //final TabController tabController ;
-   FlashCradPage(
+  String category;
+  //final TabController tabController ;
+  FlashCradPage(
       // this.tabController,
-       {
+      {
     required this.category,
     super.key,
   });
@@ -31,8 +30,8 @@ class FlashCradPage extends ConsumerStatefulWidget {
   _FlashCradPageState createState() => _FlashCradPageState();
 }
 
-class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProviderStateMixin{
-
+class _FlashCradPageState extends ConsumerState<FlashCradPage>
+    with TickerProviderStateMixin {
   CarouselController buttonCarouselController = CarouselController();
   final player = AudioPlayer();
    late int score ;
@@ -41,6 +40,7 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage> with TickerProvid
    int cardsFlipped = 0;
    late CardBadge newBadge;
   Map<String, Map<String, dynamic>> categoryValues = {};
+
   late ConfettiController _controllerCenter;
 
   @override
@@ -183,6 +183,7 @@ double progress = 0.0;
         return 'class_a_';
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
@@ -519,22 +520,25 @@ double progress = 0.0;
       }
     );
   }
+
   Future<void> playAudio(String Url) async {
     FirebaseStorage storage = FirebaseStorage.instance;
     String audioUrl = Url;
 
     try {
       // Get the download URL for the audio file
-      Uri downloadUrl =Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL()) ;
+      Uri downloadUrl =
+          Uri.parse(await storage.refFromURL(audioUrl).getDownloadURL());
 
       // Play the audio using the audioplayers package
-       await player.play(UrlSource( downloadUrl.toString()));
+      await player.play(UrlSource(downloadUrl.toString()));
       print('Playing');
     } catch (e) {
       // Handle errors
       print('Error: $e');
     }
   }
+
 
   Path drawStar(Size size) {
     // Method to convert degree to radians
@@ -568,8 +572,9 @@ double progress = 0.0;
           fit: StackFit.passthrough,
           children: [
             AlertDialog(
-              title: const Text('Congratulations'),
-              content: Text('You have completed the category and earned a badge. Your score is $score.'),
+              title: const Text('Great'),
+              content: Text(
+                  'You have completed the category and earned a badge. Your score is $score.'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('Choose a new category'),
@@ -600,7 +605,6 @@ double progress = 0.0;
                       Navigator.of(context).pop();
 
                     }
-
                   },
                 ),
                 TextButton(
@@ -628,10 +632,11 @@ double progress = 0.0;
             ),
             Positioned(
               top: 270, // Adjust this value as needed
+              
               right: 60, // Adjust this value as needed
               child: Lottie.asset('assets/badge.json', width: 50, height: 50),
+             
             ),
-
           ],
         );
       },
@@ -676,16 +681,17 @@ class Qustion {
   String blackfoot;
   String english;
   Qustion({required this.blackfoot, required this.english});
-  factory Qustion.fromFireStore(DocumentSnapshot <Map<String, dynamic>> snapshot,
-  SnapshotOptions? options,
+  factory Qustion.fromFireStore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
   ) {
-    final data = snapshot.data() ;
+    final data = snapshot.data();
     return Qustion(
       blackfoot: data?['blackfoot'],
       english: data?['english'],
     );
   }
- toFireStore() {
+  toFireStore() {
     return {
       'blackfoot': blackfoot,
       'english': english,
