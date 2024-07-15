@@ -31,16 +31,9 @@ class _ExistingConversationsListViewState
   @override
   Widget build(BuildContext context) {
     final AudioPlayer audioPlayer = AudioPlayer();
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bottomPadding = screenHeight * 0.1;
-
     return ListView.builder(
-      itemCount: widget.conversations.length + 1,
+      itemCount: widget.conversations.length,
       itemBuilder: (context, index) {
-        if (index == widget.conversations.length) {
-          return SizedBox(height: bottomPadding);
-        }
-
         final currentConversation = widget.conversations[index];
         final uploadDate = DateFormat("dd MMMM, yyyy")
             .format(DateTime.parse(currentConversation.timestamp));
@@ -106,7 +99,7 @@ class _ExistingConversationsListViewState
                       onPressed: onPressedAudioButton,
                       icon: const Icon(Icons.volume_up_rounded),
                       iconSize: 25,
-                      color: Color(0xff6562df),
+                      color: Colors.purpleAccent,
                     ),
                     // edit and delete conversation buttons
                     IconButton(
@@ -114,7 +107,7 @@ class _ExistingConversationsListViewState
                       onPressed: onPressedEditButton,
                       icon: const Icon(Icons.mode_edit_rounded),
                       iconSize: 25,
-                      color: Color(0xff6562df),
+                      color: Colors.cyan,
                     ),
                   ],
                 )

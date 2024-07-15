@@ -258,25 +258,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.white,
-                size: 30,
-              ),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 if (mounted) {
                   _onBackPressed(false);
                 }
               },
             ),
-            title: const Text(
-              'Quiz',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            title: const Text('Quiz'),
             backgroundColor: theme.lightPurple,
           ),
           body: Column(
@@ -341,15 +330,14 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             Text(
               question.isAudioTypeQuestion
                   ? "Match the audio with the corresponding blackfoot text?"
-                  : "Select Blackfoot Translation for: ${question.questionText.split('|')[0]}",
+                  : question.questionText.split('|')[0],
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
                 color: theme.lightPurple,
               ),
             ),
-            const Text('Select Answer and scroll down to check answer!'),
-            if (question.isAudioTypeQuestion) const SizedBox(height: 15.0),
+            if (question.isAudioTypeQuestion) const SizedBox(height: 20.0),
             if (question.isAudioTypeQuestion)
               ElevatedButton.icon(
                 onPressed: () {
@@ -368,7 +356,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 ),
                 label: const Text(''),
               ),
-            SizedBox(height: question.isAudioTypeQuestion ? 0 : 15.0),
+            SizedBox(height: question.isAudioTypeQuestion ? 0 : 20.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: buildRadioOptionsList(question.options),

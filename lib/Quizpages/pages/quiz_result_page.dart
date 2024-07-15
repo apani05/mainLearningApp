@@ -36,11 +36,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              color: Colors.white,
-              size: 30,
-            ),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () async {
               if (mounted) {
                 player.stop();
@@ -48,14 +44,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
               }
             },
           ),
-          title: const Text(
-            'Quiz Result',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          title: const Text('Quiz Result'),
           backgroundColor: const Color(0xFFcccbff),
         ),
         body: _buildQuizResultContent(screenWidth),
