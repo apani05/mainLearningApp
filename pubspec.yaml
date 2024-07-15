@@ -79,8 +79,6 @@ dependencies:
   file_picker: ^8.0.5
   android_intent_plus: ^5.0.2
   flutter_speed_dial: ^7.0.0
-  random_color:
-  image_picker:
   share_plus:
 
 

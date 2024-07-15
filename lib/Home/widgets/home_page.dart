@@ -23,151 +23,196 @@ class _HomePageState extends ConsumerState<HomePage> {
     const Color(0xFF967BB6),
     const Color(0xFFA76BCF)
   ];
-  TextStyle colorizeTextStyle2 = TextStyle(
-    fontSize: 34.0,
-    fontFamily: 'Horizon',
-  );
+
   TextStyle colorizeTextStyle = TextStyle(
     fontSize: 28.0,
     fontFamily: 'Horizon',
   );
+
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
-    return Stack(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.1,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(40),
-              bottomRight: Radius.circular(40),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              "assets/DiscussionForum_Image.jpeg",
+              fit: BoxFit.cover,
             ),
-            color: theme.lightPurple,
           ),
-        ),
-        SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Welcome to ',
-                      style: widget.theme.textTheme.headlineLarge?.copyWith(
-                        color: Colors.white,
-                        fontSize: 30,
-                      ),
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
                     ),
-                    AnimatedTextKit(animatedTexts: [
-                      ColorizeAnimatedText(
-                        ' I\'poyít',
-                        textStyle: colorizeTextStyle2,
-                        colors: colorizeColors,
-                      ),
-                    ]),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-              Text(
-                'Start your quest ',
-                style: widget.theme.textTheme.headlineLarge?.copyWith(
-                  color: theme.lightPurple,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/vocabulary');
-                },
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                  color: theme.lightPurple,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Vocabulary',
-                            textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headlineLarge
-                                ?.copyWith(color: Colors.white, fontSize: 35),
+                    color: theme.lightPurple,
+                  ),
+                  child: Center(
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        ColorizeAnimatedText(
+                          'Welcome to I\'poyít',
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontFamily: 'Horizon',
                           ),
-                          AnimatedTextKit(animatedTexts: [
-                            ColorizeAnimatedText(
-                              'Broaden your word bank',
-                              textStyle: colorizeTextStyle,
-                              colors: colorizeColors,
+                          colors: colorizeColors,
+                        ),
+                      ],
+                      repeatForever: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    'Start your quest',
+                    style: widget.theme.textTheme.headlineLarge?.copyWith(
+                      color: Color.fromARGB(255, 10, 10, 10),
+                      fontSize: 24.0,
+                      fontFamily: 'Chewy',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Card for Vocabulary
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/vocabulary');
+                  },
+                  child: Card(
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    color: theme.lightPurple,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Vocabulary',
+                              textAlign: TextAlign.center,
+                              style: widget.theme.textTheme.headlineLarge?.copyWith(color: Colors.white, fontSize: 35),
                             ),
-                          ]),
-                        ],
+                            AnimatedTextKit(
+                              animatedTexts: [
+                                ColorizeAnimatedText(
+                                  'Broaden your word bank',
+                                  textStyle: colorizeTextStyle,
+                                  colors: colorizeColors,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
+                const SizedBox(height: 30),
+                // Card for Phrases
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SentenceHomePage()));
-                },
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
-                  color: theme.lightPurple,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Phrases',
-                            textAlign: TextAlign.center,
-                            style: widget.theme.textTheme.headlineLarge
-                                ?.copyWith(color: Colors.white, fontSize: 35),
-                          ),
-                          AnimatedTextKit(
-                            animatedTexts: [
-                              ColorizeAnimatedText(
-                                'Master everyday phrases',
-                                textStyle: colorizeTextStyle,
-                                colors: colorizeColors,
-                              ),
-                            ],
+                        builder: (context) => const SentenceHomePage(),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    color: theme.lightPurple,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Phrases',
+                              textAlign: TextAlign.center,
+                              style: widget.theme.textTheme.headlineLarge?.copyWith(color: Colors.white, fontSize: 35),
+                            ),
+                            AnimatedTextKit(
+                              animatedTexts: [
+                                ColorizeAnimatedText(
+                                  'Master everyday phrases',
+                                  textStyle: colorizeTextStyle,
+                                  colors: colorizeColors,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  color: theme.lightPurple.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Explore and preserve the rich heritage of the Blackfoot culture.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontFamily: 'Chewy',
+                        shadows: [
+                          Shadow(
+                            blurRadius: 3.0,
+                            color: Colors.black,
+                            offset: Offset(1, 1),
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Container(
+                  color: theme.lightPurple.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Join us in learning and spreading knowledge about this vibrant tradition.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontFamily: 'Chewy',
+                        shadows: [
+                          Shadow(
+                            blurRadius: 3.0,
+                            color: Colors.black,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

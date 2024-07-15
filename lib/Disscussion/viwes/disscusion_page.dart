@@ -14,7 +14,6 @@ class DisscussionPage extends ConsumerStatefulWidget {
 }
 
 class DisscussionPageState extends ConsumerState<DisscussionPage> {
-  List<Post> posts = [];
   final TextEditingController _postController = TextEditingController();
 
   @override
@@ -36,82 +35,76 @@ class DisscussionPageState extends ConsumerState<DisscussionPage> {
     final isLoading = ref.watch(dissCussionProvider.select((provider) => provider.isLoading));
     final posts = ref.watch(dissCussionProvider.select((provider) => provider.posts));
     final user = ref.watch(userProvider);
-    return isLoading?
-    const Center(child: CircularProgressIndicator()):
+    return isLoading ?
+    const Center(child: CircularProgressIndicator()) :
     Padding(
-       padding: const EdgeInsets.all(8.0),
-       child: Column(
-         children: [
-           Row(
-             children: [
-               CircleAvatar(
-                 backgroundImage: NetworkImage(
-                    user.photoUrl,
-                 ), // Replace with your profile image asset
-                 radius: 20,
-               ),
-               const SizedBox(width: 10),
-               Expanded(
-                 child: TextField(
-                   controller: _postController,
-                   textInputAction: TextInputAction.send,
-                   decoration: InputDecoration(
-                     hintText: "Start a new discussion",
-                     border: OutlineInputBorder(
-                       borderRadius: BorderRadius.circular(20),
-                       borderSide: BorderSide.none,
-                     ),
-                     filled: true,
-                     fillColor: Colors.grey[200],
-                     contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                   ),
-                   onSubmitted: (value) {
-                     if (value.trim().isEmpty) {
-                       // Optionally handle empty input case, e.g., show a Snackbar message
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         const SnackBar(content: Text('Please enter some text before posting.')),
-                       );
-                       return;
-                     }
-                     final newPost = Post(
-                       name: user.name,
-                       profileImage: user.photoUrl,
-                       content: value,
-                       time: DateTime.now().toString(), // Convert to Timestamp in `toMap` method
-                       likes: 0,
-                       comments: 0,
-                     );
-                     ref.read(dissCussionProvider.notifier).addPost(newPost).then((_) {
-                       // Success feedback
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         const SnackBar(content: Text('Post added successfully')),
-                       );
-                        _postController.clear();
-                     }).catchError((error) {
-                       // Error feedback
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(content: Text('Failed to add post: $error')),
-                       );
-                     });
-                   },
-                 ),
-               ),
-             ],
-           ),
-           Expanded(
-             child: ListView.builder(
-               itemCount: posts.length,
-               itemBuilder: (context, index) {
-                 return PostCard(post: posts[index]);
-               },
-             ),
-           ),
-         ],
-       ),
-     );
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(user.photoUrl), // Replace with your profile image asset
+                radius: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _postController,
+                  textInputAction: TextInputAction.send,
+                  decoration: InputDecoration(
+                    hintText: "Start a new discussion",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  ),
+                  onSubmitted: (value) {
+                    if (value.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please enter some text before posting.'))
+                      );
+                      return;
+                    }
+                    final newPost = Post(
+                      name: user.name,
+                      profileImage: user.photoUrl,
+                      content: value,
+                      time: DateTime.now().toString(), // Convert to Timestamp in `toMap` method
+                      likes: 0,
+                      comments: 0,
+                    );
+                    ref.read(dissCussionProvider.notifier).addPost(newPost).then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Post added successfully'))
+                      );
+                      _postController.clear();
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to add post: $error'))
+                      );
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                return PostCard(post: posts[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
-
 
 class PostCard extends ConsumerStatefulWidget {
   final Post post;
@@ -124,109 +117,105 @@ class PostCard extends ConsumerStatefulWidget {
 class _PostCardState extends ConsumerState<PostCard> {
   final TextEditingController _reportController = TextEditingController();
 
-
   void _reportPost() {
-  List<bool> isSelected = [false, false, false, false]; // one for each checkbox
-  final _formKey = GlobalKey<FormState>();
-  final _otherController = TextEditingController();
+    List<bool> isSelected = [false, false, false, false]; // one for each checkbox
+    final _formKey = GlobalKey<FormState>();
+    final _otherController = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (context) => StatefulBuilder( // wrap with StatefulBuilder to update the state
-      builder: (context, setState) => AlertDialog(
-        title: const Text('Report Post'),
-        content: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CheckboxListTile(
-                title: const Text('Inappropriate language'),
-                value: isSelected[0],
-                onChanged: (bool? value) {
-                  setState(() {
-                    isSelected[0] = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Spam'),
-                value: isSelected[1],
-                onChanged: (bool? value) {
-                  setState(() {
-                    isSelected[1] = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Incorrect information'),
-                value: isSelected[2],
-                onChanged: (bool? value) {
-                  setState(() {
-                    isSelected[2] = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Offensive content'),
-                value: isSelected[3],
-                onChanged: (bool? value) {
-                  setState(() {
-                    isSelected[3] = value!;
-                  });
-                },
-              ),
-              TextFormField(
-                controller: _otherController,
-                decoration: const InputDecoration(hintText: 'Other'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a reason';
-                  }
-                  return null;
-                },
-              ),
-            ],
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder( // wrap with StatefulBuilder to update the state
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Report Post'),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CheckboxListTile(
+                  title: const Text('Inappropriate language'),
+                  value: isSelected[0],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isSelected[0] = value!;
+                    });
+                  },
+                ),
+                CheckboxListTile(
+                  title: const Text('Spam'),
+                  value: isSelected[1],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isSelected[1] = value!;
+                    });
+                  },
+                ),
+                CheckboxListTile(
+                  title: const Text('Incorrect information'),
+                  value: isSelected[2],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isSelected[2] = value!;
+                    });
+                  },
+                ),
+                CheckboxListTile(
+                  title: const Text('Offensive content'),
+                  value: isSelected[3],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isSelected[3] = value!;
+                    });
+                  },
+                ),
+                TextFormField(
+                  controller: _otherController,
+                  decoration: const InputDecoration(hintText: 'Other'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a reason';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Report'),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Here, you can call a function from your provider to report the post
-                // For example:
-                ref.read(dissCussionProvider.notifier).reportPost(
-                  postId: widget.post.id ?? "",
-                  reporterId: ref.read(userProvider).uid,
-                  reason: isSelected.toString() + ', Other: ' + _otherController.text, // pass the selected reasons
-                );
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
                 Navigator.of(context).pop();
-              }
-            },
-          ),
-        ],
+              },
+            ),
+            TextButton(
+              child: const Text('Report'),
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  ref.read(dissCussionProvider.notifier).reportPost(
+                    postId: widget.post.id ?? "",
+                    reporterId: ref.read(userProvider).uid,
+                    reason: isSelected.toString() + ', Other: ' + _otherController.text, // pass the selected reasons
+                  );
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final user = ref.watch(userProvider);
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DiscussionsDetailsPage(postId: widget.post.id??"",),
+            builder: (context) => DiscussionsDetailsPage(postId: widget.post.id ?? "",),
           ),
         );
       },
@@ -249,19 +238,21 @@ class _PostCardState extends ConsumerState<PostCard> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(width: 10),
-                    Text(widget.post.time),
+                    Expanded( // Wrapped in Expanded
+                      child: Text(widget.post.time),
+                    ),
                   ],
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.flag,color: Colors.red,),
+                  icon: const Icon(Icons.flag, color: Colors.red,),
                   onPressed: _reportPost,
-                )
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(widget.post.content),
               ),
-              PostActionsWidget(postId: widget.post.id??"", userId: user.uid),
+              PostActionsWidget(postId: widget.post.id ?? "", userId: user.uid),
             ],
           ),
         ),
@@ -318,6 +309,7 @@ class _CommentInputWidgetState extends ConsumerState<CommentInputWidget> {
               ),
             ),
           ),
+          // Uncomment the following lines if needed
           // IconButton(
           //   icon: Icon(Icons.send),
           //   onPressed: () {
