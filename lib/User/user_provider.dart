@@ -432,6 +432,37 @@ Future<UserModel> getUserProfile(String uid) async {
         .update({'rank': rank});
   }
 
+  sortAndUpdateRank() async {
+    // Fetch all users
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
+
+    // Sort the users based on score
+    List<QueryDocumentSnapshot> users = querySnapshot.docs;
+    if (users.isNotEmpty) {
+      users.sort((a, b) {
+        var aData = a.data() as Map<String, dynamic>?;
+        var bData = b.data() as Map<String, dynamic>?;
+        if (aData != null && bData != null) {
+          int aScore = aData['score'] ?? 0; // Use 0 if 'score' is null
+          int bScore = bData['score'] ?? 0; // Use 0 if 'score' is null
+          return bScore.compareTo(aScore);
+        }
+        return 0;
+      });
+
+      // Find the index of the current user
+      int rank = 1;
+      for (var doc in users) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(doc.id)
+            .update({'rank': rank});
+        print("updating ${doc.id} to rank $rank");
+        rank++;
+      }
+    }
+  }
+
   updateJoinDate(String uid, String date) async {
     await FirebaseFirestore.instance
         .collection('users')

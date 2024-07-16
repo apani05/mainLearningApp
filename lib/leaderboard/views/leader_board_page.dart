@@ -72,6 +72,7 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
           return const Center(child: CircularProgressIndicator());
         }else if(snapshot.hasData){
           List<LeaderBoardModel>? leaderboardData = snapshot.data;
+          userProvide.sortAndUpdateRank();
           leaderboardData?.sort((a, b) => b.score.compareTo(a.score));
           SliverListWithTopContainer sliverList = SliverListWithTopContainer(
             items: List.generate(leaderboardData!.length,
