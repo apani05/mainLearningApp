@@ -140,7 +140,7 @@ void showDialogRemoveAdminAccess({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         content: Text(
           'Do you want to remove admin access for this account?',
           style: dialogBoxContentTextStyle,

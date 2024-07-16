@@ -28,10 +28,5 @@ PreferredSizeWidget customAppBar({
       ),
     ),
     backgroundColor: const Color(0xffbdbcfd),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(30),
-      ),
-    ),
   );
 }

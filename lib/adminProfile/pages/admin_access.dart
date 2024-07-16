@@ -38,7 +38,7 @@ class AdminAccessPage extends StatelessWidget {
           ],
         ),
         onPressed: () => showGrantAccessDialog(context),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xFFcccbff),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance

@@ -23,7 +23,7 @@ void showDialogDeleteConversations({
           "Delete Phrases",
           style: dialogBoxTitleTextStyle,
         ),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         content: Text(
           "Are you sure you want to delete the selected phrases?",
           style: dialogBoxContentTextStyle,
@@ -69,7 +69,7 @@ void showDialogUpdatePhase({
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         title: Text(
           'Update Phrase',
           style: dialogBoxTitleTextStyle,
@@ -177,7 +177,7 @@ void showDialogAddPhase({
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xff6562df),
         title: Text(
           'Add Phrase',
           style: dialogBoxTitleTextStyle,

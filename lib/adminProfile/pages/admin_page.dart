@@ -55,9 +55,14 @@ class _AdminPageState extends ConsumerState<AdminPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
 
-      appBar: customAppBar(
-        context: context,
-        title: 'Manage Categories',
+      appBar: AppBar(
+        title: const Text('Manage Categories'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 25,
+          fontWeight: FontWeight.w500,
+        ),
+        backgroundColor: const Color(0xffbdbcfd),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -113,7 +118,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
       // floatingbutton for adding new category
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialogAddCategory(context),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: Color(0xFFcccbff),
         child: const Icon(
           Icons.add_rounded,
           size: 30,
