@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/models/question_model.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,21 +46,30 @@ class _QuizPageState extends ConsumerState<QuizPage> {
         title: const Text("Select Series"),
         content: StatefulBuilder(
           builder: (context, setState) {
-            return Column(
-              children: seriesOptions.asMap().entries.map((entry) {
-                int index = entry.key;
-                Map<String, dynamic> seriesMap = entry.value;
-                String series = seriesMap['seriesName'];
-                return CheckboxListTile(
-                  title: Text(series),
-                  value: isSelected[index],
-                  onChanged: (value) {
-                    setState(() {
-                      isSelected[index] = value!;
-                    });
-                  },
-                );
-              }).toList(),
+            return Scrollbar(
+              trackVisibility: true,
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Column(
+                    children: seriesOptions.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      Map<String, dynamic> seriesMap = entry.value;
+                      String series = seriesMap['seriesName'];
+                      return CheckboxListTile(
+                        title: Text(series),
+                        value: isSelected[index],
+                        onChanged: (value) {
+                          setState(() {
+                            isSelected[index] = value!;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
             );
           },
         ),
@@ -277,7 +287,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            backgroundColor: theme.lightPurple,
+            backgroundColor: purpleLight,
           ),
           body: Column(
             children: [
@@ -301,7 +311,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             ],
           ),
           bottomNavigationBar: BottomAppBar(
-            color: theme.lightPurple,
+            color: purpleLight,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -316,8 +326,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   ),
                   ElevatedButton(
                     onPressed: _isNextButtonEnabled ? nextQuestion : null,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.lightPurple),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: purpleLight),
                     child: const Text("Next"),
                   ),
                 ],
@@ -330,7 +340,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Widget buildQuestionCard(Question question) {
-    final theme = ref.watch(themeProvider);
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Padding(
@@ -342,13 +351,13 @@ class _QuizPageState extends ConsumerState<QuizPage> {
               question.isAudioTypeQuestion
                   ? "Match the audio with the corresponding blackfoot text?"
                   : "Select Blackfoot Translation for: ${question.questionText.split('|')[0]}",
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: theme.lightPurple,
+                color: purpleLight,
               ),
             ),
-            const Text('Select Answer and scroll down to check answer!'),
+            const Text('Select answer and scroll down to check answer!'),
             if (question.isAudioTypeQuestion) const SizedBox(height: 15.0),
             if (question.isAudioTypeQuestion)
               ElevatedButton.icon(
@@ -360,11 +369,11 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isPlaying ? theme.red : Colors.white,
+                  backgroundColor: isPlaying ? red : Colors.white,
                 ),
                 icon: Icon(
                   isPlaying ? Icons.stop : Icons.volume_up,
-                  color: isPlaying ? Colors.white : theme.lightPurple,
+                  color: isPlaying ? Colors.white : purpleLight,
                 ),
                 label: const Text(''),
               ),
@@ -381,7 +390,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: green,
                   ),
                 ),
               ),
@@ -389,8 +398,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             ElevatedButton(
               onPressed:
                   _isSubmitButtonEnabled ? () => submitAnswer(question) : null,
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: theme.lightPurple),
+              style: ElevatedButton.styleFrom(backgroundColor: purpleLight),
               child: const Text("Check Answer"),
             ),
           ],
@@ -400,7 +408,6 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   List<Widget> buildRadioOptionsList(List<String> options) {
-    final theme = ref.watch(themeProvider);
     return options.map((option) {
       return RadioListTile<String>(
         title: Text(
@@ -417,7 +424,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
             }
           });
         },
-        activeColor: theme.lightPurple,
+        activeColor: purpleLight,
       );
     }).toList();
   }

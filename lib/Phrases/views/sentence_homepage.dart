@@ -4,6 +4,7 @@ import 'package:bfootlearn/Phrases/views/saved_phrases.dart';
 import 'package:bfootlearn/Phrases/views/stories_page.dart';
 import 'package:bfootlearn/Quizpages/pages/quiz_page.dart';
 import 'package:bfootlearn/Quizpages/pages/quiz_result_list.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +69,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFcccbff),
+                      color: purpleLight,
                       fontFamily: 'Chewy',
                       letterSpacing: 2,
                     ),
@@ -130,7 +131,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFcccbff),
+                      color: purpleLight,
                       fontFamily: 'Chewy',
                       letterSpacing: 2,
                     ),

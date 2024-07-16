@@ -1,7 +1,7 @@
 import 'package:bfootlearn/Phrases/models/quiz_model.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:intl/intl.dart';
 
 class ChartData {
   final String x;
@@ -66,7 +66,7 @@ class QuizBarData {
           yValueMapper: (ChartData data, _) => data.y,
           borderRadius: BorderRadius.all(Radius.circular(15)),
           dataLabelSettings: DataLabelSettings(isVisible: true),
-          color: Color(0xff6562df),
+          color: purpleDark,
         ),
       ],
       tooltipBehavior: TooltipBehavior(enable: true),

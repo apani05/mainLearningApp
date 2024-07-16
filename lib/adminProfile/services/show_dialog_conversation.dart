@@ -3,6 +3,7 @@ import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
 import 'package:bfootlearn/adminProfile/services/flutter_sound_methods.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
 import 'package:bfootlearn/adminProfile/widgets/old_audio_player.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/text_style.dart';
@@ -23,7 +24,7 @@ void showDialogDeleteConversations({
           "Delete Phrases",
           style: dialogBoxTitleTextStyle,
         ),
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         content: Text(
           "Are you sure you want to delete the selected phrases?",
           style: dialogBoxContentTextStyle,
@@ -69,7 +70,7 @@ void showDialogUpdatePhase({
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         title: Text(
           'Update Phrase',
           style: dialogBoxTitleTextStyle,
@@ -177,7 +178,7 @@ void showDialogAddPhase({
     builder: (BuildContext context) {
       return AlertDialog(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         title: Text(
           'Add Phrase',
           style: dialogBoxTitleTextStyle,

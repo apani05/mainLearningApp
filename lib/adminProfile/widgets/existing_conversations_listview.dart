@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/adminProfile/models/conversation_model.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_conversation.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -106,7 +107,7 @@ class _ExistingConversationsListViewState
                       onPressed: onPressedAudioButton,
                       icon: const Icon(Icons.volume_up_rounded),
                       iconSize: 25,
-                      color: Color(0xff6562df),
+                      color: purpleDark,
                     ),
                     // edit and delete conversation buttons
                     IconButton(
@@ -114,7 +115,7 @@ class _ExistingConversationsListViewState
                       onPressed: onPressedEditButton,
                       icon: const Icon(Icons.mode_edit_rounded),
                       iconSize: 25,
-                      color: Color(0xff6562df),
+                      color: purpleDark,
                     ),
                   ],
                 )

@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_conversations_listview.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 class OldAudioPlayer extends StatefulWidget {
@@ -38,7 +39,7 @@ class _OldAudioPlayerState extends State<OldAudioPlayer> {
             onPressed: onPressedAudioButton,
             icon: const Icon(Icons.volume_up_rounded),
             iconSize: 25,
-            color: Color(0xff6562df),
+            color: purpleDark,
           ),
           const Text(
             'Old Blackfoot Audio',

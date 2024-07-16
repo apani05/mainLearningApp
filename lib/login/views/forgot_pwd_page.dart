@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -78,7 +79,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   labelText: "Email",
                   obscureText: false,
                   controller: emailController,
-                  textColor: theme.lightPurple),
+                  textColor: purpleLight),
               SizedBox(height: 10),
               MyButton(
                 text: "Reset Password",

@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -13,10 +14,8 @@ class CircularGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<ChartData> chartData = [
-      ChartData(
-          'Correct', quizScore.toDouble(), Color.fromARGB(255, 116, 194, 118)),
-      ChartData('Incorrect', (totalQuestions - quizScore).toDouble(),
-          Color.fromARGB(255, 230, 125, 118)),
+      ChartData('Correct', quizScore.toDouble(), green),
+      ChartData('Incorrect', (totalQuestions - quizScore).toDouble(), red),
     ];
 
     return Container(

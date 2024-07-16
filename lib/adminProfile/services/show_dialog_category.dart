@@ -4,6 +4,7 @@ import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
 import 'package:bfootlearn/adminProfile/services/category_functions.dart';
 import 'package:bfootlearn/adminProfile/widgets/dialogbox_textfield.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -34,7 +35,7 @@ void showDialogAddCategory(
 
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          backgroundColor: Color(0xff6562df),
+          backgroundColor: purpleDark,
           title: Text(
             'Add category',
             style: dialogBoxTitleTextStyle,
@@ -52,13 +53,13 @@ void showDialogAddCategory(
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Color(0xff6562df),
+                          foregroundColor: purpleDark,
                         ),
                         icon: const Icon(Icons.image),
                         label: Text(
                           'Pick icon for category',
                           style: actionButtonTextStyle.copyWith(
-                            color: Color(0xff6562df),
+                            color: purpleDark,
                           ),
                         ),
                       )
@@ -168,7 +169,7 @@ void showDialogUpdateCategory({
 
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          backgroundColor: Color(0xff6562df),
+          backgroundColor: purpleDark,
           title: Text(
             'Update category',
             style: dialogBoxTitleTextStyle,
@@ -191,13 +192,13 @@ void showDialogUpdateCategory({
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Color(0xff6562df),
+                          foregroundColor: purpleDark,
                         ),
                         icon: const Icon(Icons.image),
                         label: Text(
                           'Pick icon for category',
                           style: actionButtonTextStyle.copyWith(
-                            color: Color(0xff6562df),
+                            color: purpleDark,
                           ),
                         ),
                       )
@@ -312,7 +313,7 @@ void showDialogDeleteCategory({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         content: Text(
           'Do you want to delete this category?',
           style: dialogBoxContentTextStyle,

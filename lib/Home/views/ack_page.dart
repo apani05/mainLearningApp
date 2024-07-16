@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:flutter/material.dart';
 
@@ -13,28 +14,6 @@ class _AcknowledegementState extends State<Acknowledegement> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: customAppBar(context: context, title: 'Acknowledgements'),
-
-        // AppBar(
-        //   leading: IconButton(
-        //     icon: const Icon(
-        //       Icons.arrow_back_ios,
-        //       color: Colors.white,
-        //     ),
-        //     onPressed: () {
-        //       Navigator.pop(context);
-        //     },
-        //   ),
-        //   title: const Text(
-        //     'Acknowledgement',
-        //     style: TextStyle(color: Colors.white),
-        //   ),
-        //   backgroundColor: const Color(0xffbdbcfd),
-        //   shape: const RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.vertical(
-        //       bottom: Radius.circular(30),
-        //     ),
-        //   ),
-        // ),
         body: Center(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -43,10 +22,7 @@ class _AcknowledegementState extends State<Acknowledegement> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color(0xffbdbcfd),
-              ),
-              // color: Color(0xffbdbcfd),
+                  borderRadius: BorderRadius.circular(20), color: purpleLight2),
               child: const Center(
                 child: Text(
                   'Acknowledgments',
@@ -67,9 +43,8 @@ class _AcknowledegementState extends State<Acknowledegement> {
                 width: 400,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: const Color(0xffbdbcfd),
+                  color: purpleLight2,
                 ),
-                // color: Color(0xffbdbcfd),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(children: [

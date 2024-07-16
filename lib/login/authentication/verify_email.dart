@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,7 +75,7 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
             home: Scaffold(
               appBar: AppBar(
                 title: const Text("Email Verification"),
-                backgroundColor: theme.lightPurple,
+                backgroundColor: purpleLight,
               ),
               body: Center(
                 child: Container(
@@ -87,7 +88,7 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                         style: TextStyle(
                           fontSize: 22.0,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFFcccbff),
+                          color: purpleLight,
                         ),
                       ),
                       SizedBox(height: mediaQuery.size.height * 0.02),
@@ -95,7 +96,7 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                         onPressed:
                             canResendEmail ? sendVerificationEmail : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.lightPurple,
+                          backgroundColor: purpleLight,
                         ),
                         child: const Text(
                           'Resend Email',
@@ -112,7 +113,7 @@ class _EmailVerifyPageState extends ConsumerState<EmailVerifyPage> {
                           FirebaseAuth.instance.signOut();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.lightPurple,
+                          backgroundColor: purpleLight,
                         ),
                         child: const Text(
                           'Sign Out',

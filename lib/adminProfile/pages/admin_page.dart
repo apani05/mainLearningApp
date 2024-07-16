@@ -3,7 +3,7 @@ import 'package:bfootlearn/adminProfile/pages/admin_access.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
 import 'package:bfootlearn/adminProfile/widgets/existing_categories_listview.dart';
-import 'package:bfootlearn/components/custom_appbar.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/login/views/change_password.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,7 +62,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
           fontSize: 25,
           fontWeight: FontWeight.w500,
         ),
-        backgroundColor: const Color(0xffbdbcfd),
+        backgroundColor: purpleLight2,
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -118,7 +118,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
       // floatingbutton for adding new category
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialogAddCategory(context),
-        backgroundColor: Color(0xFFcccbff),
+        backgroundColor: purpleLight,
         child: const Icon(
           Icons.add_rounded,
           size: 30,

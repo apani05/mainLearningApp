@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +154,7 @@ class _StoryAudioPlayerState extends State<StoryAudioPlayer> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-        color: Color(0xFFcccbff),
+        color: purpleLight,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(

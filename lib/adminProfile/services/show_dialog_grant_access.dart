@@ -1,4 +1,5 @@
 import 'package:bfootlearn/adminProfile/widgets/admin_searchbar.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +141,7 @@ void showDialogRemoveAdminAccess({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         content: Text(
           'Do you want to remove admin access for this account?',
           style: dialogBoxContentTextStyle,

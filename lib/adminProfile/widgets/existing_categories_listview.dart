@@ -1,6 +1,7 @@
 import 'package:bfootlearn/adminProfile/models/category_model.dart';
 import 'package:bfootlearn/adminProfile/pages/edit_category_page.dart';
 import 'package:bfootlearn/adminProfile/services/show_dialog_category.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,7 +67,7 @@ class _CategoryListTileItemState extends ConsumerState<CategoryListTileItem> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.arrow_circle_right_outlined, color: Color(0xff6562df)),
+          const Icon(Icons.arrow_circle_right_outlined, color: purpleDark),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded),
             onSelected: (String result) {

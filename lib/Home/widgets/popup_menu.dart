@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bfootlearn/login/views/change_password.dart';
@@ -45,40 +46,40 @@ class CustomPopupMenu extends StatelessWidget {
           const PopupMenuItem<String>(
             value: 'acknowledgements',
             child: ListTile(
-              leading: Icon(Icons.school, color: Color(0xff6562df)),
+              leading: Icon(Icons.school, color: purpleDark),
               title: Text(
                 'Acknowledgements',
-                style: TextStyle(color: Color(0xff6562df)),
+                style: TextStyle(color: purpleDark),
               ),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'localNotifications',
             child: ListTile(
-              leading: Icon(Icons.notifications, color: Color(0xff6562df)),
+              leading: Icon(Icons.notifications, color: purpleDark),
               title: Text(
                 'Notifications',
-                style: TextStyle(color: Color(0xff6562df)),
+                style: TextStyle(color: purpleDark),
               ),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'changePassword',
             child: ListTile(
-              leading: Icon(Icons.password_rounded, color: Color(0xff6562df)),
+              leading: Icon(Icons.password_rounded, color: purpleDark),
               title: Text(
                 'Change Password',
-                style: TextStyle(color: Color(0xff6562df)),
+                style: TextStyle(color: purpleDark),
               ),
             ),
           ),
           const PopupMenuItem<String>(
             value: 'signOut',
             child: ListTile(
-              leading: Icon(Icons.exit_to_app, color: Color(0xff6562df)),
+              leading: Icon(Icons.exit_to_app, color: purpleDark),
               title: Text(
                 'Sign Out',
-                style: TextStyle(color: Color(0xff6562df)),
+                style: TextStyle(color: purpleDark),
               ),
             ),
           ),

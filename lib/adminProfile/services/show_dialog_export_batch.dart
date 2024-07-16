@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bfootlearn/adminProfile/services/conversation_functions.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/text_style.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
@@ -14,7 +15,7 @@ void showDialogExportBatch({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor: Color(0xff6562df),
+        backgroundColor: purpleDark,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -27,7 +28,7 @@ void showDialogExportBatch({
             ),
             const SizedBox(height: 20),
             Text(
-              '''The file should be in XLSX or XLS format. The 1st Column should contain English Text and their respective Blackfoot Text should be present in the adjacent cell (i.e. in the 2nd Column).''',
+              '''The file should be in XLSX or XLS format. The 1st Column should contain English Text and the 2nd Column should contain their respective Blackfoot Text.''',
               style: dialogBoxContentTextStyle.copyWith(fontSize: 16),
             ),
           ],

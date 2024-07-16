@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 void displayMessageToUser(String message, BuildContext context) {
@@ -10,21 +11,16 @@ void displayMessageToUser(String message, BuildContext context) {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.blue, // Change the color to your preferred style
-            // Add more text styles as needed
+            color: Colors.blue,
           ),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        backgroundColor: Colors.white, // Change the background color if needed
+        backgroundColor: Colors.white,
       );
     },
   );
-  // Automatically dismiss the AlertDialog after 3 seconds
-  //Future.delayed(Duration(seconds: 3), () {
-  //  Navigator.of(context).pop();
-  //});
 }
 
 void displaySnackBarMessageToUser(String message, BuildContext context) {
@@ -37,8 +33,7 @@ void displaySnackBarMessageToUser(String message, BuildContext context) {
           color: Colors.white,
         ),
       ),
-      backgroundColor:
-          Color.fromARGB(255, 230, 125, 118), // Adjust the color as needed
+      backgroundColor: red,
       duration: Duration(seconds: 3),
     ),
   );
