@@ -460,7 +460,7 @@ double progress = 0.0;
                     children: [
                       SizedBox(
                           height: 30,
-                          width: 300,
+                          width: 260,
                           child: ValueListenableBuilder<double>(
                             valueListenable: progressNotifier,
                             builder: (context, value, child) {
