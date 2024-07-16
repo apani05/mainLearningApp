@@ -38,7 +38,7 @@ class HomeViewState extends ConsumerState<VocabularyHome> {
       appBar: customAppBar(context: context, title: 'Vocabulary Learning'),
       body: Consumer(
         builder: (context, ref, child) {
-          final badgeCategories = userRepo.badgeCategories;
+          final badgeCategories = userRepo.getBadgeCategories();
           return FutureBuilder(
             future: vProvider.getAllCategories(),
             builder: (context, snapshot) {

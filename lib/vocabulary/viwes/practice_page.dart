@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bfootlearn/User/user_provider.dart';
+import 'package:bfootlearn/leaderboard/repo/leaderboard_repo.dart';
 import 'package:bfootlearn/vocabulary/model/quiz_model.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,6 +39,8 @@ class PracticePageState extends ConsumerState<PracticePage> {
   final int _duration = 20;
   int _score = 0;
   final CountDownController _controller = CountDownController();
+  late final LeaderBoardRepo leaderBoardRepo;
+  late final UserProvider userRepo;
 
   int _currentQuestionIndex = 0;
 
@@ -47,6 +51,9 @@ class PracticePageState extends ConsumerState<PracticePage> {
   String _selectedAnswer = '';
   @override
   void initState() {
+    leaderBoardRepo = ref.read(leaderboardProvider);
+    userRepo = ref.read(userProvider);
+
     super.initState();
     fetchQuestions();
     print("initState");
@@ -87,7 +94,7 @@ class PracticePageState extends ConsumerState<PracticePage> {
     });
   }
 
-  void _selectAnswer(String selectedAnswer) async{
+  void _selectAnswer(String selectedAnswer) async {
     if (!_isAnswered) {
       setState(() {
         _isAnswered = true;
@@ -95,10 +102,11 @@ class PracticePageState extends ConsumerState<PracticePage> {
       });
 
       if (selectedAnswer == _questions[_currentQuestionIndex].correctAnswer) {
-      _score =  await ref.read(userProvider).getScore(widget.uid);
+        int expScore =  await userRepo.getScore(widget.uid);
         _score++;
-        ref.read(userProvider).updateScore(widget.uid, _score);
-        ref.read(scoreProvider.notifier).state = _score;
+        userRepo.updateScore(widget.uid, expScore + _score);
+        leaderBoardRepo.addToLeaderBoard(userRepo.name, expScore);
+        ref.read(scoreProvider.notifier).state = expScore;
         print('Correct!');
       } else {
         print('Incorrect!');

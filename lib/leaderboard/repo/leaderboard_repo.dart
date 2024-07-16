@@ -135,7 +135,7 @@ class LeaderBoardRepo extends ChangeNotifier {
     }
   }
 
-  (String,String,String)getUserName(){
+  (String,String,String) getUserName() {
     final currentUser = FirebaseAuth.instance.currentUser;
     print(currentUser?.email);
       var k =  currentUser?.email?.substring(0, currentUser.email?.indexOf('@'))??"";

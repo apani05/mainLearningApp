@@ -361,6 +361,7 @@ Future<UserModel> getUserProfile(String uid) async {
   }
 
   Future<void> updateScore(String uid, int score) async {
+    _score = score ;
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -552,11 +553,18 @@ Future<UserModel> getUserProfile(String uid) async {
   getJoinDate(String uid) async {
     await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => value.data()!['joindate']);
   }
-  
-  updateHeart(String uid, int heart) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'heart': heart
-    });
+
+  Future<void> incrementHeart(String uid) async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if(documentSnapshot.exists) {
+      final user = UserModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+      int currentHeart = user.heart;
+      _heart = ++currentHeart;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'heart': currentHeart});
+    }
   }
 
   getHeart(String uid) async {
@@ -577,14 +585,39 @@ Future<UserModel> getUserProfile(String uid) async {
   // }
 
   List<String> _badgeCategories = [];
-  List<String> get badgeCategories => _badgeCategories;
-
   setBadgeCategories(List<String> value) {
     _badgeCategories = value;
     notifyListeners(); // Notify listeners when badgeCategories changes
   }
 
-  setCatagories() async {
+  List<String> getBadgeCategories() {
+    getBadge(uid).then((_) {
+      print("Got the categories for : $uid");
+    });
+    CardBadge badge = this.badge;
+
+    _badgeCategories.clear();
+
+    if (badge.kinship) {
+      _badgeCategories.add('Kinship Terms');
+    }
+    if (badge.direction) {
+      _badgeCategories.add('Directions and Time');
+    }
+    if (badge.classroom) {
+      _badgeCategories.add('Classroom Commands');
+    }
+    if (badge.time) {
+      _badgeCategories.add('Times of the day');
+    }
+    if (badge.weather) {
+      _badgeCategories.add('Weather');
+    }
+
+    return _badgeCategories;
+  }
+
+  refreshCatagories() async {
     await getBadge(uid);
     CardBadge badge = this.badge;
 

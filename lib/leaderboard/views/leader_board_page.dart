@@ -74,9 +74,9 @@ class _LeaderBoardPageState extends ConsumerState<LeaderBoardPage> {
           List<LeaderBoardModel>? leaderboardData = snapshot.data;
           leaderboardData?.sort((a, b) => b.score.compareTo(a.score));
           SliverListWithTopContainer sliverList = SliverListWithTopContainer(
-            items: List.generate(snapshot.data!.length,
-                    (index) => LeaderCard(snapshot.data!.elementAt(index).name ,
-                      index: index, score: snapshot.data!.elementAt(index).score,currentUserId: userProvide.name,)),
+            items: List.generate(leaderboardData!.length,
+                    (index) => LeaderCard(leaderboardData!.elementAt(index).name ,
+                      index: index, score: leaderboardData.elementAt(index).score,currentUserId: userProvide.name,)),
             topContainer: topContainer,
           );
           return Scaffold(

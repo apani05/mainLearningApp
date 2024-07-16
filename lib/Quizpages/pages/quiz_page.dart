@@ -190,7 +190,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
     final leaderboardRepo = ref.watch(leaderboardProvider);
     final userRepo = ref.watch(userProvider);
     userRepo.updateScore(userRepo.uid, quizScore);
-    leaderboardRepo.addToLeaderBoard(userRepo.user.name, quizScore);
+    leaderboardRepo.addToLeaderBoard(userRepo.name, quizScore);
 
     Navigator.pushReplacement(
       context,
