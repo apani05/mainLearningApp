@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 class FeatureItem extends StatelessWidget {
@@ -24,7 +25,7 @@ class FeatureItem extends StatelessWidget {
         height: MediaQuery.of(context).size.width * 0.25,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFcccbff),
+          color: purpleLight,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(

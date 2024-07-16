@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 PreferredSizeWidget customAppBar({
@@ -27,11 +28,6 @@ PreferredSizeWidget customAppBar({
         fontWeight: FontWeight.w500,
       ),
     ),
-    backgroundColor: const Color(0xffbdbcfd),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(30),
-      ),
-    ),
+    backgroundColor: purpleLight2,
   );
 }

@@ -1,4 +1,5 @@
 import 'package:bfootlearn/Phrases/models/card_data.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../riverpod/river_pod.dart';
@@ -53,7 +54,7 @@ class CategoryItem extends ConsumerWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFcccbff),
+                  color: purpleLight,
                 ),
                 textAlign: TextAlign.center,
               ),

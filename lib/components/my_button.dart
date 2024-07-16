@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 
 class MyButton extends StatelessWidget {
@@ -12,7 +13,7 @@ class MyButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFcccbff),
+          color: purpleLight,
           borderRadius: BorderRadius.circular(15),
         ),
         padding: const EdgeInsets.all(15),

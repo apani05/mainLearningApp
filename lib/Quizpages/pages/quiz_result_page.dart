@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/models/question_model.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,7 +37,11 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
             onPressed: () async {
               if (mounted) {
                 player.stop();
@@ -44,8 +49,15 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
               }
             },
           ),
-          title: const Text('Quiz Result'),
-          backgroundColor: const Color(0xFFcccbff),
+          title: const Text(
+            'Quiz Result',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          backgroundColor: purpleLight,
         ),
         body: _buildQuizResultContent(screenWidth),
       ),
@@ -72,7 +84,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                   style: TextStyle(
                     fontSize: screenWidth * 0.07,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xff6562df),
+                    color: purpleDark,
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.04),
@@ -86,7 +98,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                   style: TextStyle(
                     fontSize: screenWidth * 0.05,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xff6562df),
+                    color: purpleDark,
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.02),
@@ -95,7 +107,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                   style: TextStyle(
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xff6562df),
+                    color: purpleDark,
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.02),
@@ -114,7 +126,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                                   : 'Q${entry.key + 1}: ${entry.value.questionText.split('|')[0]}',
                               style: TextStyle(
                                 fontSize: screenWidth * 0.04,
-                                color: const Color(0xff6562df),
+                                color: purpleDark,
                               ),
                             ),
                             if (entry.value.isAudioTypeQuestion)
@@ -129,7 +141,7 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                                 },
                                 icon: const Icon(
                                   Icons.volume_up,
-                                  color: Color(0xff6562df),
+                                  color: purpleDark,
                                 ),
                                 label: const Text(''),
                               ),
@@ -139,16 +151,13 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
                               Text(
                                 'Your Answer: ${entry.value.selectedAnswer}',
                                 style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  color:
-                                      const Color.fromARGB(255, 230, 125, 118),
-                                ),
+                                    fontSize: screenWidth * 0.035, color: red),
                               ),
                             Text(
                               'Correct Answer: ${entry.value.correctAnswer}',
                               style: TextStyle(
                                 fontSize: screenWidth * 0.035,
-                                color: const Color.fromARGB(255, 116, 194, 118),
+                                color: green,
                               ),
                             ),
                             SizedBox(height: screenWidth * 0.04),

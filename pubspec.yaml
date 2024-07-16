@@ -80,6 +80,7 @@ dependencies:
   android_intent_plus: ^5.0.2
   flutter_speed_dial: ^7.0.0
   share_plus:
+  flutter_launcher_icons: ^0.13.1
 
 
 
@@ -98,6 +99,9 @@ dev_dependencies:
   riverpod_generator: ^2.3.6
   riverpod_lint: ^2.3.4
   intl: ^0.17.0
+flutter_launcher_icons:
+  image_path: "icons/app_logo.png"
+  android: "launcher_icon"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -95,7 +95,7 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
               children: [
                 SpeedDialChild(
                   child: const Icon(Icons.add_rounded),
-                  label: 'Add',
+                  label: 'Add a new phrase',
                   onTap: () => showDialogAddPhase(
                     context: context,
                     categoryName: categoryName,
@@ -103,12 +103,12 @@ class _EditCategoryPageState extends ConsumerState<EditCategoryPage> {
                 ),
                 SpeedDialChild(
                   child: const Icon(Icons.delete_rounded),
-                  label: 'Delete',
+                  label: 'Delete phrases',
                   onTap: _toggleMultiSelectMode,
                 ),
                 SpeedDialChild(
                   child: const Icon(Icons.import_export_rounded),
-                  label: 'Export',
+                  label: 'Import from excel',
                   onTap: () => showDialogExportBatch(
                     context: context,
                     categoryName: categoryName,

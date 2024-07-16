@@ -1,4 +1,5 @@
 import 'package:bfootlearn/adminProfile/services/show_dialog_grant_access.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class AdminAccessPage extends StatelessWidget {
           ],
         ),
         onPressed: () => showGrantAccessDialog(context),
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: purpleLight,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance

@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +41,12 @@ class _StoriesPageState extends State<StoriesPage> {
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Stories'),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Center(
           child: Column(
             children: [
               Image.asset(
-                'assets/phrase_image.jpg',
+                'assets/stories_image.png',
                 height: screenSize.height * 0.35,
                 width: screenSize.width,
                 fit: BoxFit.cover,
@@ -153,7 +154,7 @@ class _StoryAudioPlayerState extends State<StoryAudioPlayer> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-        color: Color(0xFFcccbff),
+        color: purpleLight,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(

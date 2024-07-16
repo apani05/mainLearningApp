@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:bfootlearn/notifications/notification_provider.dart';
 import 'package:bfootlearn/notifications/showPermissionDeniedDialog.dart';
@@ -50,7 +51,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/Background2.jpg',
+              'assets/DiscussionForum_Image.jpeg',
               fit: BoxFit.cover,
             ),
           ),
@@ -109,7 +110,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       const Spacer(),
       Switch(
           value: isReminderOn,
-          activeColor: const Color(0xFFcccbff),
+          activeColor: purpleLight,
           onChanged: (bool value) async {
             if (value) {
               // Request permission when enabling the reminder
@@ -170,7 +171,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
           decoration: BoxDecoration(
-            color: const Color(0xFFcccbff),
+            color: purpleLight,
             borderRadius: BorderRadius.circular(5),
           ),
           child: Text(

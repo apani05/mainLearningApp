@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +44,7 @@ class _PasswordChangePageState extends ConsumerState<PasswordChangePage> {
             title: Text(
               'Change Password',
             ),
-            backgroundColor: theme.lightPurple,
+            backgroundColor: purpleLight,
           ),
           body: Stack(
             children: [
@@ -54,7 +55,7 @@ class _PasswordChangePageState extends ConsumerState<PasswordChangePage> {
                   children: [
                     MyTextField(
                       labelText: 'Old Password',
-                      textColor: theme.lightPurple,
+                      textColor: purpleLight,
                       obscureText: true,
                       controller: oldPasswordController,
                       suffix: true,
@@ -62,7 +63,7 @@ class _PasswordChangePageState extends ConsumerState<PasswordChangePage> {
                     SizedBox(height: mediaQuery.size.height * 0.02),
                     MyTextField(
                       labelText: 'New Password',
-                      textColor: theme.lightPurple,
+                      textColor: purpleLight,
                       obscureText: true,
                       controller: newPasswordController,
                       suffix: true,
@@ -77,7 +78,7 @@ class _PasswordChangePageState extends ConsumerState<PasswordChangePage> {
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.lightPurple,
+                        backgroundColor: purpleLight,
                       ),
                     ),
                   ],

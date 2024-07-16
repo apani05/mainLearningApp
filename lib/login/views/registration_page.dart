@@ -1,4 +1,5 @@
 import 'package:bfootlearn/User/user_model.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -102,13 +103,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  FadeIn(
+                  const FadeIn(
                     child: Text(
                       "Hello There!",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: theme.lightPurple,
+                        color: purpleLight,
                       ),
                     ),
                   ),
@@ -116,7 +117,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   FadeIn(
                     child: MyTextField(
                         controller: userNameController,
-                        textColor: theme.lightPurple,
+                        textColor: purpleLight,
                         labelText: 'User Name',
                         obscureText: false),
                   ),
@@ -124,7 +125,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   FadeIn(
                     child: MyTextField(
                         controller: emailController,
-                        textColor: theme.lightPurple,
+                        textColor: purpleLight,
                         labelText: 'Email',
                         obscureText: false),
                   ),
@@ -132,7 +133,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   FadeIn(
                     child: MyTextField(
                       controller: passwordController,
-                      textColor: theme.lightPurple,
+                      textColor: purpleLight,
                       labelText: 'Password',
                       obscureText: true,
                       suffix: true,
@@ -142,7 +143,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   FadeIn(
                     child: MyTextField(
                       controller: confirmPwdController,
-                      textColor: theme.lightPurple,
+                      textColor: purpleLight,
                       labelText: 'Confirm Password',
                       obscureText: true,
                       suffix: true,

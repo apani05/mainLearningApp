@@ -1,3 +1,4 @@
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/helper/helper_functions.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -101,7 +102,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: theme.lightPurple,
+                        color: purpleLight,
                       ),
                     ),
                   ),
@@ -109,7 +110,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   FadeIn(
                     child: MyTextField(
                         controller: emailController,
-                        textColor: theme.lightPurple,
+                        textColor: purpleLight,
                         labelText: 'Email',
                         obscureText: false),
                   ),
@@ -117,7 +118,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   FadeIn(
                     child: MyTextField(
                       controller: passwordController,
-                      textColor: theme.lightPurple,
+                      textColor: purpleLight,
                       labelText: 'Password',
                       obscureText: true,
                       suffix: true,

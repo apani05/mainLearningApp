@@ -1,4 +1,5 @@
 import 'package:bfootlearn/Phrases/models/quiz_model.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/components/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,10 +75,10 @@ class _QuizResultListState extends ConsumerState<QuizResultList> {
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: theme.lightPurple.withOpacity(0.8),
+                                color: purpleLight.withOpacity(0.8),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: theme.lightPurple,
+                                  color: purpleLight,
                                   width: 1,
                                 ),
                               ),

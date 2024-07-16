@@ -1,4 +1,5 @@
 import 'package:bfootlearn/Phrases/provider/mediaProvider.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +41,7 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
         .savedPhrases
         .any((phrase) => phrase.documentId == widget.documentId);
     return Card(
-      color: theme.lightPurple.withOpacity(0.9),
+      color: purpleLight.withOpacity(0.9),
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -95,12 +96,11 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
                     playAudio(widget.blackfootAudio, player, widget.isPlaying);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        widget.isPlaying ? theme.red : Colors.white,
+                    backgroundColor: widget.isPlaying ? red : Colors.white,
                   ),
                   icon: Icon(
                     widget.isPlaying ? Icons.stop : Icons.volume_up,
-                    color: widget.isPlaying ? Colors.white : theme.lightPurple,
+                    color: widget.isPlaying ? Colors.white : purpleLight,
                   ),
                   label: const Text(''),
                 ),
