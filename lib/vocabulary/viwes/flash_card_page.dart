@@ -591,7 +591,7 @@ double progress = 0.0;
             AlertDialog(
               title: const Text('Great'),
               content: Text(
-                  'You have completed the category and earned a badge. Your score is $score.'),
+                  'You have completed the category and earned a ♥. Your XP points are $score.'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('Choose a new category'),

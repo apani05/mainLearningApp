@@ -233,17 +233,7 @@ String dropDownValue = "All";
                                   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                                     const PopupMenuItem<String>(
                                       value: 'profile',
-                                      child: Text('Profile',
-                                        style:
-                                        TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    const PopupMenuItem<String>(
-                                      value: 'ack',
-                                      child: Text('Acknowledgements',
+                                      child: Text('Edit Profile',
                                         style:
                                         TextStyle(
                                           color: Colors.white,

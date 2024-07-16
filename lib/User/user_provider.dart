@@ -410,6 +410,7 @@ Future<UserModel> getUserProfile(String uid) async {
       rank++;
     }
 
+    print("current rank : $rank");
     return rank;
   }
 
