@@ -1,0 +1,106 @@
+// Appscripts Link: https://script.google.com/home
+// Google sheets Link: https://docs.google.com/spreadsheets/d/1MZX87p_WeyebK7hl-rKWwcIl92o02tw5k-fyI4hhnxc/edit?gid=0#gid=0
+// Open browser through Blackfoot account
+// Duplicate file of automation code
+
+function syncData() {
+    try {
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+      var data = sheet.getDataRange().getValues();
+  
+      // The first row are headers
+      var headers = data[0];
+      var seriesIndex = headers.indexOf("Series");
+      var englishIndex = headers.indexOf("Content");
+      var blackfootIndex = headers.indexOf("Transcription");
+      var audioIndex = headers.indexOf("Audio");
+  
+      // Access the Firestore database
+      var firebaseProjectId = "blackfootapplication";
+  
+      // Create a set to store unique series names
+      var uniqueSeriesNames = new Set();
+  
+      // Loop through rows starting from the second row (index 1)
+      for (var i = 1; i < data.length; i++) {
+        var series = data[i][seriesIndex];
+        var english = data[i][englishIndex];
+        var blackfoot = data[i][blackfootIndex];
+        var bfAudio = data[i][audioIndex];
+  
+        var timestamp = new Date().toISOString();
+  
+        // Check if the series name is unique before creating the document
+        if (!uniqueSeriesNames.has(series)) {
+          // Add series name to the set to track unique series names
+          uniqueSeriesNames.add(series);
+        }
+  
+        // Create a document in Firestore for "Conversations" collection
+        createFirestoreDocument(firebaseProjectId, "Conversations", {
+          seriesName: series,
+          englishText: english,
+          blackfootText: blackfoot,
+          blackfootAudio: bfAudio,
+          timestamp: timestamp,
+        });
+      }
+  
+      // Create Firestore documents for "ConversationTypes" using unique series names
+      uniqueSeriesNames.forEach(function (seriesName) {
+        createFirestoreDocument(firebaseProjectId, "ConversationTypes", {
+          seriesName: seriesName,
+          iconImage: "gs://blackfootapplication.appspot.com/images/default_icon.png",
+          timestamp: new Date().toISOString(),
+        });
+      });
+    } catch (error) {
+      Logger.log("Error in syncData: " + error.message);
+      // Handle the error appropriately (e.g., send an email notification)
+    }
+  }
+  
+  function createFirestoreDocument(projectId, collection, data) {
+    try {
+      var apiUrl = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/" + collection;
+  
+      // Create the payload based on the collection
+      var payload = {};
+      if (collection === "Conversations") {
+        payload = {
+          fields: {
+            seriesName: { stringValue: data.seriesName || "" },
+            englishText: { stringValue: data.englishText || "" },
+            blackfootText: { stringValue: data.blackfootText || "" },
+            blackfootAudio: { stringValue: data.blackfootAudio || "" },
+            timestamp: { stringValue: data.timestamp || "" },
+          },
+        };
+      } else if (collection === "ConversationTypes") {
+        payload = {
+          fields: {
+            seriesName: { stringValue: data.seriesName || "" },
+            iconImage: { stringValue: data.iconImage || "" },
+            timestamp: { stringValue: data.timestamp || "" },
+          },
+        };
+      }
+  
+      var options = {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify(payload),
+      };
+  
+      // Make a request to Firebase REST API to create a document
+      var response = UrlFetchApp.fetch(apiUrl, options);
+  
+      // Parse and log the response
+      var responseData = JSON.parse(response.getContentText());
+      Logger.log(responseData);
+    } catch (error) {
+      Logger.log("Error in createFirestoreDocument: " + error.message);
+      // Handle the error appropriately (e.g., send an email notification)
+    }
+  }
+  
