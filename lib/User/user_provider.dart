@@ -521,6 +521,8 @@ class UserProvider extends ChangeNotifier {
       // Get the download URL of the uploaded file
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
+      _photoUrl = downloadUrl;
+
       // Update the user's photo URL in Firestore with the download URL
       await FirebaseFirestore.instance
           .collection('users')

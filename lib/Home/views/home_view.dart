@@ -19,8 +19,6 @@ class HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
-    final leaderBoardRepo = ref.read(leaderboardProvider);
-    final UserProvide = ref.read(userProvider);
     //leaderBoardRepo.addToLeaderBoard(UserProvide.name??"", UserProvide.score);
     //UserProvide.getScore(UserProvide.uid);
     //UserProvide.setScore(UserProvide.score);
@@ -37,6 +35,7 @@ class HomeViewState extends ConsumerState<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   AppBar buildAppBar(BuildContext context) {
+    final userRepo = ref.read(userProvider);
     final theme = ref.watch(themeProvider);
     final vProvider = ref.watch(vocaProvider);
     return AppBar(
@@ -53,19 +52,15 @@ class HomeViewState extends ConsumerState<HomeView> {
             visible: true,
             child: GestureDetector(
               onTap: () {
-                final userProvide = ref.read(userProvider);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  UserProfileScreen(isFromLeaderboard: false,uid: userProvide.uid,)));
+                    MaterialPageRoute(builder: (context) =>  UserProfileScreen(isFromLeaderboard: false,uid: userRepo.uid,)));
               },
               child: CircleAvatar(
                 backgroundColor: theme.lightPurple,
                 radius: 23,
                 child: CircleAvatar(
                   radius: 20,
-                  // backgroundImage: NetworkImage(FirebaseAuth
-                  //         .instance.currentUser!.photoURL ??
-                  //     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
-                  backgroundImage: FirebaseAuth.instance.currentUser!.photoURL != null ? NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!)
+                  backgroundImage: userRepo.photoUrl.isNotEmpty ? NetworkImage(userRepo.photoUrl)
                   as ImageProvider<Object>? : AssetImage('assets/Background2.jpg'),
                 ),
               ),

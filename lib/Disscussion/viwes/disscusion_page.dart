@@ -231,7 +231,8 @@ class _PostCardState extends ConsumerState<PostCard> {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage(widget.post.profileImage),
+                  backgroundImage: widget.post.profileImage.isEmpty ?
+                  AssetImage('assets/person_logo.png',):Image.network(widget.post.profileImage).image,
                 ),
                 title: Text(widget.post.name.isEmpty ? 'Anonymous' : widget.post.name),
                 subtitle: Row(
