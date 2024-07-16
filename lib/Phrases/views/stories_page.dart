@@ -40,12 +40,12 @@ class _StoriesPageState extends State<StoriesPage> {
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Stories'),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Center(
           child: Column(
             children: [
               Image.asset(
-                'assets/phrase_image.jpg',
+                'assets/stories_image.png',
                 height: screenSize.height * 0.35,
                 width: screenSize.width,
                 fit: BoxFit.cover,
