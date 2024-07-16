@@ -102,8 +102,9 @@ class PracticePageState extends ConsumerState<PracticePage> {
       });
 
       if (selectedAnswer == _questions[_currentQuestionIndex].correctAnswer) {
-        int expScore =  await userRepo.getScore(widget.uid);
-        expScore = ++_score;
+        int expScore = await userRepo.getScore(widget.uid);
+        ++_score;
+        ++expScore;
         userRepo.updateScore(widget.uid, expScore);
         leaderBoardRepo.addToLeaderBoard(userRepo.name, expScore);
         ref.read(scoreProvider.notifier).state = expScore;
