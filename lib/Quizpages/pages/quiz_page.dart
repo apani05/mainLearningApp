@@ -291,19 +291,23 @@ class _QuizPageState extends ConsumerState<QuizPage> {
           ),
           body: Column(
             children: [
-              Image.asset(
-                'assets/quiz_image.jpg',
-                height: MediaQuery.of(context).size.height * 0.35,
-                width: MediaQuery.of(context).size.width,
-                fit: BoxFit.cover,
-              ),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _currentIndex < quizQuestions.length
-                          ? buildQuestionCard(quizQuestions[_currentIndex])
-                          : Container(),
+                      Image.asset(
+                        'assets/quiz_image.png',
+                        height: MediaQuery.of(context).size.height * 0.40,
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
+                      ),
+                      Column(
+                        children: [
+                          _currentIndex < quizQuestions.length
+                              ? buildQuestionCard(quizQuestions[_currentIndex])
+                              : Container(),
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -57,8 +57,8 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset(
-                  'assets/phrase_image.jpg',
-                  height: screenSize.height * 0.35,
+                  'assets/phrase_image.png',
+                  height: screenSize.height * 0.45,
                   width: screenSize.width,
                   fit: BoxFit.cover,
                 ),

@@ -51,7 +51,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/DiscussionForum_Image.jpeg',
+              'assets/Background2.jpg',
               fit: BoxFit.cover,
             ),
           ),

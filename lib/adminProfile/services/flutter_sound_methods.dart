@@ -24,62 +24,44 @@ class FlutterSoundMethods {
   bool get isPlaying => _audioPlayer.isPlaying;
   bool get isPlayingPaused => _audioPlayer.isPaused;
 
-  Future<void> requestStoragePermission() async {
-    // Request permission for notifications
-    var status = await Permission.notification.request();
-    if (status.isGranted) {
-      final microphonePermissionStatus = await Permission.microphone.request();
-    } else if (status.isDenied || status.isPermanentlyDenied) {
-      // Permission is denied, handle this case accordingly
-      // showPermissionDeniedDialog(context: context);
-    }
-  }
-
   Future<void> init({required BuildContext context}) async {
     debugPrint('init started');
 
     try {
-      // debugPrint('Requesting microphone permission...');
-      // final microphonePermissionStatus = await Permission.microphone.request();
-      // debugPrint('Microphone permission status: $microphonePermissionStatus');
-
-      // debugPrint('Requesting storage permission...');
-      // final storagePermissionStatus = await Permission.storage.request();
-      // debugPrint('Storage permission status: $storagePermissionStatus');
-
       final microphonePermissionStatus = await Permission.microphone.request();
-
       if (microphonePermissionStatus.isGranted) {
-        final storagePermissionStatus = await Permission.storage.request();
-        if (storagePermissionStatus.isDenied ||
-            storagePermissionStatus.isPermanentlyDenied) {
-          debugPrint('Storage Permission Denied');
-          Navigator.of(context).pop();
-          showPermissionDeniedDialog(
+        final manageExternalStorageStatus =
+            await Permission.manageExternalStorage.request();
+        if (manageExternalStorageStatus.isDenied ||
+            manageExternalStorageStatus.isPermanentlyDenied ||
+            manageExternalStorageStatus.isRestricted) {
+          final storagePermissionStatus = await Permission.storage.request();
+          if (storagePermissionStatus.isDenied ||
+              storagePermissionStatus.isPermanentlyDenied) {
+            debugPrint('Storage Permission Denied');
+            Navigator.of(context).pop();
+            showPermissionDeniedDialog(
               context: context,
               content:
-                  'Storage permission is required to add or update conversations. Please enable it in the app settings.');
+                  'Storage permission is required to add or update conversations. Please enable it in the app settings.',
+            );
+            return;
+          }
         }
       } else if (microphonePermissionStatus.isDenied ||
           microphonePermissionStatus.isPermanentlyDenied) {
         debugPrint('Microphone Permission Denied');
         Navigator.of(context).pop();
         showPermissionDeniedDialog(
-            context: context,
-            content:
-                'Audio permission is required to add or update conversations. Please enable it in the app settings.');
+          context: context,
+          content:
+              'Audio permission is required to add or update conversations. Please enable it in the app settings.',
+        );
+        return;
       }
 
-      // if (microphonePermissionStatus != PermissionStatus.granted ||
-      //     storagePermissionStatus != PermissionStatus.granted) {
-      //   throw RecordingPermissionException(
-      //       'Microphone or Storage permission is not allowed. '
-      //       'Microphone: $microphonePermissionStatus, '
-      //       'Storage: $storagePermissionStatus');
-      // }
-
-      final directory = await getTemporaryDirectory();
-      pathToSaveAudio = '${directory.path}/picked_audio_recording.aac';
+      final directory = await getExternalStorageDirectory();
+      pathToSaveAudio = '${directory?.path}/picked_audio_recording.aac';
       debugPrint('pathToSave $pathToSaveAudio');
     } catch (e) {
       debugPrint('Error initializing FlutterSoundMethods: $e');

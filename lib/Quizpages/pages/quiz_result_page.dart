@@ -30,6 +30,12 @@ class _QuizResultScreenState extends ConsumerState<QuizResultScreen> {
   }
 
   @override
+  void dispose() {
+    player.stop();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 

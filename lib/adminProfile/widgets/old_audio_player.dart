@@ -23,6 +23,16 @@ class _OldAudioPlayerState extends State<OldAudioPlayer> {
         .play(UrlSource(convertGsUrlToHttp(widget.oldBlackfootAudioPath)));
   }
 
+  void disposeAudio() async {
+    await audioPlayer.dispose();
+  }
+
+  @override
+  void dispose() {
+    disposeAudio();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

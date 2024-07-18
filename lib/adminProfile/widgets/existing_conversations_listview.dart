@@ -29,9 +29,16 @@ class ExistingConversationsListView extends StatefulWidget {
 
 class _ExistingConversationsListViewState
     extends State<ExistingConversationsListView> {
+  final AudioPlayer audioPlayer = AudioPlayer();
+
+  @override
+  void dispose() {
+    audioPlayer.stop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AudioPlayer audioPlayer = AudioPlayer();
     final screenHeight = MediaQuery.of(context).size.height;
     final bottomPadding = screenHeight * 0.1;
 
