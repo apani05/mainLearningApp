@@ -70,7 +70,7 @@ class UserModel {
       score: json['score'] ?? 0,
       rank: json['rank'] ?? 0,
       heart: json['heart'] ?? 0,
-      joinedDate: json['joindate'] ?? DateTime.now().toString(),
+      joinedDate: json['joinedDate'] ?? DateTime.now().toString(),
       userName: json['userName'] ?? '',
       savedWords: (json['savedWords'] as List).map((item) {
         print("item to be added $item");

@@ -492,7 +492,7 @@ class UserProvider extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .update({'joindate': date});
+        .update({'joinedDate': date});
   }
 
   Future<void> changePassword(

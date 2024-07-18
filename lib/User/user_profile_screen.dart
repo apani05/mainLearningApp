@@ -41,6 +41,8 @@ String dropDownValue = "All";
   Widget build(BuildContext context) {
     final UserProvide = ref.read(userProvider);
     final leaderBoardRepo = ref.read(leaderboardProvider);
+    print("widget UID ${widget.uid}");
+    print("UserProvie UID ${UserProvide.name}");
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.grey[400],
@@ -153,7 +155,7 @@ String dropDownValue = "All";
                                     ),
                                     Center(
                                       child: Text(
-                                        UserProvide.email??"",
+                                        snapshot.data!.email??"",
                                         style:  const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -166,7 +168,7 @@ String dropDownValue = "All";
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           const Text(
-                                            "Date joined: ",
+                                            "Date Joined: ",
                                             style:  TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
@@ -219,7 +221,7 @@ String dropDownValue = "All";
                                       case 'profile':
                                         Navigator.push(context,
                                             MaterialPageRoute(
-                                              builder: (context) =>  ProfileScoreFeed(uid: widget.isFromLeaderboard ?widget.uid??"": UserProvide.uid),
+                                              builder: (context) =>  ProfileScoreFeed(uid: widget.isFromLeaderboard ? widget.uid??"": UserProvide.uid),
                                             ));
                                         break;
                                       case 'ack':
@@ -231,16 +233,17 @@ String dropDownValue = "All";
                                     }
                                   },
                                   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                    const PopupMenuItem<String>(
-                                      value: 'profile',
-                                      child: Text('Edit Profile',
-                                        style:
-                                        TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
+                                    if (widget.isFromLeaderboard && widget.uid != UserProvide.uid)
+                                      const PopupMenuItem<String>(
+                                        value: 'profile',
+                                        child: Text('Edit Profile',
+                                          style:
+                                          TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ),
                               ),
