@@ -37,7 +37,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              "assets/DiscussionForum_Image.jpeg",
+              "assets/HomePageBG.jpeg",
               fit: BoxFit.cover,
             ),
           ),
@@ -76,7 +76,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: Text(
                     'Start your quest',
                     style: widget.theme.textTheme.headlineLarge?.copyWith(
-                      color: Color.fromARGB(255, 10, 10, 10),
+                      color: theme.lightPurple,
                       fontSize: 24.0,
                       fontFamily: 'Chewy',
                     ),
@@ -165,49 +165,48 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  color: theme.lightPurple.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Explore and preserve the rich heritage of the Blackfoot culture.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontFamily: 'Chewy',
-                        shadows: [
-                          Shadow(
-                            blurRadius: 3.0,
-                            color: Colors.black,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  color: theme.lightPurple.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Join us in learning and spreading knowledge about this vibrant tradition.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontFamily: 'Chewy',
-                        shadows: [
-                          Shadow(
-                            blurRadius: 3.0,
-                            color: Colors.black,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+  child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      "Explore and preserve the rich heritage of the Blackfoot culture.",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: theme.darkPurple,
+        fontSize: 15,
+        fontFamily: 'Chewy',
+        shadows: [
+          Shadow(
+            blurRadius: 3.0,
+            color: Colors.white,
+            offset: Offset(1, 1),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+Container(
+  child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      "Join us in learning and spreading knowledge about this vibrant tradition.",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: theme.darkPurple,
+        fontSize: 15,
+        fontFamily: 'Chewy',
+        shadows: [
+          Shadow(
+            blurRadius: 3.0,
+            color: Colors.white,
+            offset: Offset(1, 1),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
               ],
             ),
           ),
