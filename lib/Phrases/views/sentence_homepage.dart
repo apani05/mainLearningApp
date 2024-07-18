@@ -63,6 +63,18 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                   fit: BoxFit.cover,
                 ),
                 const Padding(
+                  padding: EdgeInsets.only(top: 15, right: 15, left: 15),
+                  child: Text(
+                    '"Discover the Blackfoot spirit: each phrase connects you to our language, heritage, and ancestral wisdom."',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: purpleLight,
+                      fontFamily: 'Chewy',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 18),
                   child: Text(
                     'Features',
@@ -92,6 +104,16 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                         },
                       ),
                       FeatureItem(
+                        title: 'Stories',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const StoriesPage()),
+                          );
+                        },
+                      ),
+                      FeatureItem(
                         title: 'Quiz',
                         onTap: () {
                           Navigator.push(
@@ -108,16 +130,6 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const QuizResultList()),
-                          );
-                        },
-                      ),
-                      FeatureItem(
-                        title: 'Stories',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const StoriesPage()),
                           );
                         },
                       ),

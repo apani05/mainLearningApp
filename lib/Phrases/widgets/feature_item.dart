@@ -16,8 +16,10 @@ class FeatureItem extends StatelessWidget {
     IconData iconData = (title == 'Quiz')
         ? Icons.quiz
         : (title == 'Saved')
-            ? Icons.saved_search
-            : Icons.newspaper;
+            ? Icons.folder_special
+            : (title == 'Stories')
+                ? Icons.diversity_1_rounded
+                : Icons.newspaper;
     return GestureDetector(
       onTap: onTap,
       child: Container(
