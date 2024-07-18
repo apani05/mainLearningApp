@@ -58,7 +58,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
               children: [
                 Image.asset(
                   'assets/phrase_image.png',
-                  height: screenSize.height * 0.45,
+                  height: screenSize.height * 0.35,
                   width: screenSize.width,
                   fit: BoxFit.cover,
                 ),
@@ -68,7 +68,7 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                     '"Discover the Blackfoot spirit: each phrase connects you to our language, heritage, and ancestral wisdom."',
                     style: TextStyle(
                       fontSize: 18,
-                      color: purpleLight,
+                      color: purpleDark,
                       fontFamily: 'Chewy',
                     ),
                     textAlign: TextAlign.center,

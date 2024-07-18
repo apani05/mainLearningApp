@@ -296,8 +296,8 @@ class _QuizPageState extends ConsumerState<QuizPage> {
                   child: Column(
                     children: [
                       Image.asset(
-                        'assets/quiz_image.png',
-                        height: MediaQuery.of(context).size.height * 0.40,
+                        'assets/quiz_image.jpg',
+                        height: MediaQuery.of(context).size.height * 0.30,
                         width: MediaQuery.of(context).size.width,
                         fit: BoxFit.cover,
                       ),

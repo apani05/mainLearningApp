@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:bfootlearn/Phrases/views/sentence_homepage.dart';
+import 'package:bfootlearn/components/color_file.dart';
 import 'package:bfootlearn/riverpod/river_pod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +77,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: Text(
                     'Start your quest',
                     style: widget.theme.textTheme.headlineLarge?.copyWith(
-                      color: theme.lightPurple,
+                      color: purpleDark,
                       fontSize: 24.0,
                       fontFamily: 'Chewy',
                     ),
@@ -103,7 +104,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             Text(
                               'Vocabulary',
                               textAlign: TextAlign.center,
-                              style: widget.theme.textTheme.headlineLarge?.copyWith(color: Colors.white, fontSize: 35),
+                              style: widget.theme.textTheme.headlineLarge
+                                  ?.copyWith(color: Colors.white, fontSize: 35),
                             ),
                             AnimatedTextKit(
                               animatedTexts: [
@@ -146,7 +148,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             Text(
                               'Phrases',
                               textAlign: TextAlign.center,
-                              style: widget.theme.textTheme.headlineLarge?.copyWith(color: Colors.white, fontSize: 35),
+                              style: widget.theme.textTheme.headlineLarge
+                                  ?.copyWith(color: Colors.white, fontSize: 35),
                             ),
                             AnimatedTextKit(
                               animatedTexts: [
@@ -165,48 +168,47 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-  child: Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Text(
-      "Explore and preserve the rich heritage of the Blackfoot culture.",
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: theme.darkPurple,
-        fontSize: 15,
-        fontFamily: 'Chewy',
-        shadows: [
-          Shadow(
-            blurRadius: 3.0,
-            color: Colors.white,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-    ),
-  ),
-),
-Container(
-  child: Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Text(
-      "Join us in learning and spreading knowledge about this vibrant tradition.",
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: theme.darkPurple,
-        fontSize: 15,
-        fontFamily: 'Chewy',
-        shadows: [
-          Shadow(
-            blurRadius: 3.0,
-            color: Colors.white,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-    ),
-  ),
-),
-
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Explore and preserve the rich heritage of the Blackfoot culture.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.darkPurple,
+                        fontSize: 15,
+                        fontFamily: 'Chewy',
+                        shadows: [
+                          Shadow(
+                            blurRadius: 3.0,
+                            color: Colors.white,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Join us in learning and spreading knowledge about this vibrant tradition.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.darkPurple,
+                        fontSize: 15,
+                        fontFamily: 'Chewy',
+                        shadows: [
+                          Shadow(
+                            blurRadius: 3.0,
+                            color: Colors.white,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
