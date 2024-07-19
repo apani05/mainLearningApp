@@ -35,11 +35,11 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage>
     with TickerProviderStateMixin {
   CarouselController buttonCarouselController = CarouselController();
   final player = AudioPlayer();
-   late int score ;
-   var lottieController;
-   var progress2 = 0.0;
-   int cardsFlipped = 0;
-   late CardBadge newBadge;
+  late int score;
+  var lottieController;
+  var progress2 = 0.0;
+  int cardsFlipped = 0;
+  late CardBadge newBadge;
   Map<String, Map<String, dynamic>> categoryValues = {};
 
   late ConfettiController _controllerCenter;
@@ -48,6 +48,7 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage>
   void initState() {
     final userRepo = ref.read(userProvider);
     final vocaProvide = ref.read(vocaProvider);
+    final blogProviderObj = ref.read(blogProvider);
     //vocaProvide.titleId = widget.category;
     score = userRepo.score;
     vocaProvide.score = score;
@@ -55,17 +56,20 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage>
     vocaProvide.storeValuesForCategory(widget.category);
     print("init state categoy is ${widget.category}");
     print("init state score is ${userRepo.score}");
-     userRepo.getBadge(userRepo.uid).then((value) {
-       newBadge = userRepo.badge;
-     });
+    userRepo.getBadge(userRepo.uid).then((value) {
+      newBadge = userRepo.badge;
+    });
+    blogProviderObj.fetchAllData().then((onValue) {
+      print("Initialized the blogProviderObj");
+    });
     _controllerCenter =
         ConfettiController(duration: const Duration(seconds: 10));
-     lottieController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    lottieController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
     super.initState();
   }
 
-
-@override
+  @override
   dispose() {
     _controllerCenter.dispose();
     lottieController.dispose();
@@ -98,77 +102,72 @@ class _FlashCradPageState extends ConsumerState<FlashCradPage>
   //   }
   // }
 
- void setNewBadge(String category){
-  switch(category){
-    case 'Weather':
-      if (!newBadge.weather) {
-        newBadge = CardBadge(
-          kinship: newBadge.kinship,
-          direction: newBadge.direction,
-          classroom: newBadge.classroom,
-          time: newBadge.time,
-          weather: true
-        );
-      }
-      break;
-    case 'Times of the day':
-      if (!newBadge.time) {
-        newBadge = CardBadge(
-          kinship: newBadge.kinship,
-          direction: newBadge.direction,
-          classroom: newBadge.classroom,
-          time: true,
-          weather: newBadge.weather
-        );
-      }
-      break;
-    case 'Classroom Commands':
-      if (!newBadge.classroom) {
-        newBadge = CardBadge(
-          kinship: newBadge.kinship,
-          direction: newBadge.direction,
-          classroom: true,
-          time: newBadge.time,
-          weather: newBadge.weather
-        );
-      }
-      break;
-    case 'Kinship Terms':
-      if (!newBadge.kinship) {
-        newBadge = CardBadge(
-          kinship: true,
-          direction: newBadge.direction,
-          classroom: newBadge.classroom,
-          time: newBadge.time,
-          weather: newBadge.weather
-        );
-      }
-      break;
-    case 'Directions and Time':
-      if (!newBadge.direction) {
-        newBadge = CardBadge(
-          kinship: newBadge.kinship,
-          direction: true,
-          classroom: newBadge.classroom,
-          time: newBadge.time,
-          weather: newBadge.weather
-        );
-      }
-      break;
-    default:
-      // If the category doesn't match any of the above, don't change anything
-      break;
+  void setNewBadge(String category) {
+    switch (category) {
+      case 'Weather':
+        if (!newBadge.weather) {
+          newBadge = CardBadge(
+              kinship: newBadge.kinship,
+              direction: newBadge.direction,
+              classroom: newBadge.classroom,
+              time: newBadge.time,
+              weather: true);
+        }
+        break;
+      case 'Times of the day':
+        if (!newBadge.time) {
+          newBadge = CardBadge(
+              kinship: newBadge.kinship,
+              direction: newBadge.direction,
+              classroom: newBadge.classroom,
+              time: true,
+              weather: newBadge.weather);
+        }
+        break;
+      case 'Classroom Commands':
+        if (!newBadge.classroom) {
+          newBadge = CardBadge(
+              kinship: newBadge.kinship,
+              direction: newBadge.direction,
+              classroom: true,
+              time: newBadge.time,
+              weather: newBadge.weather);
+        }
+        break;
+      case 'Kinship Terms':
+        if (!newBadge.kinship) {
+          newBadge = CardBadge(
+              kinship: true,
+              direction: newBadge.direction,
+              classroom: newBadge.classroom,
+              time: newBadge.time,
+              weather: newBadge.weather);
+        }
+        break;
+      case 'Directions and Time':
+        if (!newBadge.direction) {
+          newBadge = CardBadge(
+              kinship: newBadge.kinship,
+              direction: true,
+              classroom: newBadge.classroom,
+              time: newBadge.time,
+              weather: newBadge.weather);
+        }
+        break;
+      default:
+        // If the category doesn't match any of the above, don't change anything
+        break;
+    }
   }
-}
 
   ValueNotifier<double> progressNotifier = ValueNotifier<double>(0.0);
   ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
   ValueNotifier<int> lastIndex = ValueNotifier<int>(0);
-int index = 0;
-int scoreIndex = 0;
-double progress = 0.0;
-  setDocRefCat(String s){
-    switch(s){
+  int index = 0;
+  int scoreIndex = 0;
+  double progress = 0.0;
+  setDocRefCat(String s) {
+    switch (s) {
       case 'Weather':
         return 'w_';
       case 'Times of the day':
@@ -191,17 +190,18 @@ double progress = 0.0;
     final theme = ref.watch(themeProvider);
     final leaderboardRepo = ref.watch(leaderboardProvider);
     final userRepo = ref.watch(userProvider);
-    final vocaProvide = ref.read(vocaProvider);
     final blogProviderObj = ref.read(blogProvider);
-    
+    final vocaProvide = ref.read(vocaProvider);
+
     print("build state categoy is ${widget.category}");
-    if(widget.category != vocaProvide.category) {
+    if (widget.category != vocaProvide.category) {
       vocaProvide.resetGame();
       vocaProvide.category = widget.category;
     }
 // print("badge is ${newBadge.classroom}");
 
-    Map<String, dynamic> values = vocaProvide.getValuesForCategory(widget.category);
+    Map<String, dynamic> values =
+        vocaProvide.getValuesForCategory(widget.category);
     index = values['index'];
     scoreIndex = values['scoreIndex'];
     score = values['score'];
@@ -213,329 +213,344 @@ double progress = 0.0;
     print("lporgress is ${vocaProvide.lProgress}");
     print("score is $score");
     return FutureBuilder(
-      future: vocaProvide.getDataByCategory2(widget.category, setDocRefCat(widget.category)),
-      builder: (context,snapshot) {
-       // print("snapshot.data"+"${widget.category}");
-        //print(snapshot.data);
-        if(snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }else if(snapshot.hasError
-            ||
-            snapshot.data!.where((element) =>
-            element["data"] == null ||
-                (element["data"] != null && (element["data"]["blackfoot"] == null ||
-                    element["data"]["english"] == null || element["data"]["sound"] == null))).length > 0 || snapshot.data!.isEmpty) {
-          print("snapshot.data""${widget.category} + ${snapshot.data}");
-          return const Center(child: Text('Error'));
-        }else{
-        //  print("snapshot.data""${widget.category} + ${snapshot.data}");
-        //   if(vocaProvide.index != 0){
-        //     buttonCarouselController.jumpToPage(vocaProvide.index);
-        //   }
-          return Stack(
-            children: [
-              Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 100),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          buttonCarouselController.previousPage(
-                              duration: const Duration(milliseconds: 300), curve: Curves.linear);
-                          lastIndex.value = index;
-                          if (index != 0 )index--;
-                         // if (scoreIndex != 0 )scoreIndex--;
-
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.lightPurple
-                        ), icon: const Icon(Icons.arrow_back_ios,color: Colors.black,),
-                      ),
-
-
-                      SizedBox(
-                        width: 250,
-                        height: 300,
-                        child: CarouselSlider(
-                          items: snapshot.data?.map((e) {
-                           print("data is ------ ${e["data"]["english"]}");
-                           print("data is ------ ${e["data"]["blackfoot"]}");
-                            return FlipCard(
-                            direction: FlipDirection.HORIZONTAL,
-                            speed: 500,
-                            flipOnTouch: true,
-                            back: Card(
-                                color: theme.lightPurple,
-                                child: Stack(
-                                  children: [
-                                    ElevatedButton.icon(
-                                        onPressed: (){
-                                     // DocumentReference<Map<String, dynamic>> soundReference = e["data"]["sound"];
-                                      print("audio source is ${e["data"]["sound"]}");
-                                     // player.play(e["data"]["sound"]);
-                                      print("audio source is ${e["data"]["sound"]}");
-                                      playAudio(e["data"]["sound"]);
-
-                                    },
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor: theme.lightPurple
-                                        ),
-                                        icon: const Icon(Icons.volume_up,color: Colors.black,),
-                                        label: const Text('')),
-                                    Container(
-                                        child: Center(child: Column(
-                                          children: [
-                                            Text(e["data"]["blackfoot"],style: const TextStyle(fontSize: 30),),
-                                            Lottie.network(
-                                              e["data"]["Lottie"]??"https://lottie.host/018122ea-52fb-474a-9e47-897379e8e629/foSzXLAMUp.json",
-                                              renderCache: RenderCache.drawingCommands,
-                                            )
-                                          ],
-                                        ),
-                                        )),
-                                  ],
-                                )),
-                            front: Card(
-                              color: theme.lightPurple,
-                              child: Container(
-                                child: Center(
-                                  child: Text(e["data"]["english"],style: const TextStyle(fontSize: 30),),
-                                )
-                              ),
-                            ),
-                              onFlip: () {
-
-                              if(index == scoreIndex){
-                                scoreIndex = index+1;
-                                score += 1;
-                                userRepo.updateScore(userRepo.uid, score);
-                                leaderboardRepo.addToLeaderBoard(userRepo.name, score);
-                                vocaProvide.cardsFlipped++;
-                                print("score is -------------- $score");
-                                double progress = (vocaProvide.cardsFlipped / snapshot.data!.length) ; // replace totalNumberOfCards with the actual number of cards
-                                print("progress is -------------- $progress");
-                                logger.log('progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
-                                    'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
-                                    'progressNotifier is ${progressNotifier.value} \n',name: "log1");
-                                 isPlaying.value = true;
-                                 vocaProvide.lProgress = progress;
-                                 if(vocaProvide.lProgress <= 0.8) {
-                                   lottieController.animateTo(vocaProvide.lProgress);
-                                 }else if(vocaProvide.lProgress > 0.8){
-                                   lottieController.animateTo(1.toDouble());
-                                 }
-                                progressNotifier.value = progress;
-                                logger.log('progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
-                                    'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
-                                    'progressNotifier is ${progressNotifier.value} \n',name: "log2");
-                              }},
-                          );
-                          }).toList(),
-                          carouselController: buttonCarouselController,
-                          options: CarouselOptions(
-                            height: MediaQuery.of(context).size.height * 0.55,
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            viewportFraction: 1,
-                            aspectRatio: 2.0,
-                            initialPage: index,
-                            clipBehavior: Clip.hardEdge,
-                            enableInfiniteScroll: false,
-                            scrollPhysics: const NeverScrollableScrollPhysics(),
+        future: vocaProvide.getDataByCategory2(
+            widget.category, setDocRefCat(widget.category)),
+        builder: (context, snapshot) {
+          // print("snapshot.data"+"${widget.category}");
+          //print(snapshot.data);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError ||
+              snapshot.data!
+                      .where((element) =>
+                          element["data"] == null ||
+                          (element["data"] != null &&
+                              (element["data"]["blackfoot"] == null ||
+                                  element["data"]["english"] == null ||
+                                  element["data"]["sound"] == null)))
+                      .length >
+                  0 ||
+              snapshot.data!.isEmpty) {
+            print("snapshot.data" "${widget.category} + ${snapshot.data}");
+            return const Center(child: Text('Error'));
+          } else {
+            //  print("snapshot.data""${widget.category} + ${snapshot.data}");
+            //   if(vocaProvide.index != 0){
+            //     buttonCarouselController.jumpToPage(vocaProvide.index);
+            //   }
+            return Stack(
+              children: [
+                Container(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 100),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            buttonCarouselController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.linear);
+                            lastIndex.value = index;
+                            if (index != 0) index--;
+                            // if (scoreIndex != 0 )scoreIndex--;
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.lightPurple),
+                          icon: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black,
                           ),
                         ),
-                      ),
-                      ValueListenableBuilder(
-                        builder: (context, value, child) {
-                          return Offstage(
-                            offstage: index == snapshot.data!.length - 1,
-                            child: IconButton(
-                              onPressed: () {
-                                buttonCarouselController.nextPage(
-                                    duration: const Duration(milliseconds: 300), curve: Curves.linear);
-                                scoreIndex = index+1;
-                                index++;
-                                lastIndex.value = index;
-                                vocaProvide.index = index;
-
+                        SizedBox(
+                          width: 250,
+                          height: 300,
+                          child: CarouselSlider(
+                            items: snapshot.data?.map((e) {
+                              print("data is ------ ${e["data"]["english"]}");
+                              print("data is ------ ${e["data"]["blackfoot"]}");
+                              return FlipCard(
+                                direction: FlipDirection.HORIZONTAL,
+                                speed: 500,
+                                flipOnTouch: true,
+                                back: Card(
+                                    color: theme.lightPurple,
+                                    child: Stack(
+                                      children: [
+                                        ElevatedButton.icon(
+                                            onPressed: () {
+                                              // DocumentReference<Map<String, dynamic>> soundReference = e["data"]["sound"];
+                                              print(
+                                                  "audio source is ${e["data"]["sound"]}");
+                                              // player.play(e["data"]["sound"]);
+                                              print(
+                                                  "audio source is ${e["data"]["sound"]}");
+                                              playAudio(e["data"]["sound"]);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    theme.lightPurple),
+                                            icon: const Icon(
+                                              Icons.volume_up,
+                                              color: Colors.black,
+                                            ),
+                                            label: const Text('')),
+                                        Container(
+                                            child: Center(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                e["data"]["blackfoot"],
+                                                style: const TextStyle(
+                                                    fontSize: 30),
+                                              ),
+                                              Lottie.network(
+                                                e["data"]["Lottie"] ??
+                                                    "https://lottie.host/018122ea-52fb-474a-9e47-897379e8e629/foSzXLAMUp.json",
+                                                renderCache:
+                                                    RenderCache.drawingCommands,
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ],
+                                    )),
+                                front: Card(
+                                  color: theme.lightPurple,
+                                  child: Container(
+                                      child: Center(
+                                    child: Text(
+                                      e["data"]["english"],
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                  )),
+                                ),
+                                onFlip: () {
+                                  if (index == scoreIndex) {
+                                    scoreIndex = index + 1;
+                                    score += 1;
+                                    userRepo.updateScore(userRepo.uid, score);
+                                    leaderboardRepo.addToLeaderBoard(
+                                        userRepo.name, score);
+                                    vocaProvide.cardsFlipped++;
+                                    print("score is -------------- $score");
+                                    double progress = (vocaProvide
+                                            .cardsFlipped /
+                                        snapshot.data!
+                                            .length); // replace totalNumberOfCards with the actual number of cards
+                                    print(
+                                        "progress is -------------- $progress");
+                                    logger.log(
+                                        'progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
+                                        'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
+                                        'progressNotifier is ${progressNotifier.value} \n',
+                                        name: "log1");
+                                    isPlaying.value = true;
+                                    vocaProvide.lProgress = progress;
+                                    if (vocaProvide.lProgress <= 0.8) {
+                                      lottieController
+                                          .animateTo(vocaProvide.lProgress);
+                                    } else if (vocaProvide.lProgress > 0.8) {
+                                      lottieController.animateTo(1.toDouble());
+                                    }
+                                    progressNotifier.value = progress;
+                                    logger.log(
+                                        'progress is $progress \n score is $score \n index is $index \n scoreIndex is $scoreIndex \n '
+                                        'lastIndex is ${lastIndex.value} \n isPlaying is ${isPlaying.value} \n lProgress is ${vocaProvide.lProgress} \n '
+                                        'progressNotifier is ${progressNotifier.value} \n',
+                                        name: "log2");
+                                  }
                                 },
-                              // child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: theme.lightPurple
-                              ), icon: const Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              );
+                            }).toList(),
+                            carouselController: buttonCarouselController,
+                            options: CarouselOptions(
+                              height: MediaQuery.of(context).size.height * 0.55,
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              viewportFraction: 1,
+                              aspectRatio: 2.0,
+                              initialPage: index,
+                              clipBehavior: Clip.hardEdge,
+                              enableInfiniteScroll: false,
+                              scrollPhysics:
+                                  const NeverScrollableScrollPhysics(),
                             ),
-                          );
-                        }, valueListenable:lastIndex,
-                      ),
-                    ],
+                          ),
+                        ),
+                        ValueListenableBuilder(
+                          builder: (context, value, child) {
+                            return Offstage(
+                              offstage: index == snapshot.data!.length - 1,
+                              child: IconButton(
+                                onPressed: () {
+                                  buttonCarouselController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.linear);
+                                  scoreIndex = index + 1;
+                                  index++;
+                                  lastIndex.value = index;
+                                  vocaProvide.index = index;
+                                },
+                                // child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.lightPurple),
+                                icon: const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            );
+                          },
+                          valueListenable: lastIndex,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 140,
-                right: MediaQuery.of(context).size.width * 0.25 ,
-                child: ElevatedButton(
-                    onPressed: () {
-                      userRepo.addWordToUser(userRepo.uid, SavedWords.fromJson(snapshot.data![index]["data"]),widget.category );
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Word saved')));
-
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.lightPurple
-                    ),
-                    child: const Text('save',style: TextStyle(color: Colors.black),)
+                Positioned(
+                  bottom: 140,
+                  right: MediaQuery.of(context).size.width * 0.25,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        userRepo.addWordToUser(
+                            userRepo.uid,
+                            SavedWords.fromJson(snapshot.data![index]["data"]),
+                            widget.category);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Word saved')));
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.lightPurple),
+                      child: const Text(
+                        'save',
+                        style: TextStyle(color: Colors.black),
+                      )),
                 ),
-              ),
-              Positioned(
-                bottom: 140,
-                left:  MediaQuery.of(context).size.width * 0.25,
-                child: ElevatedButton(
-                    onPressed: () => buttonCarouselController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.linear),
-                    child: const Text('skip',style: TextStyle(color: Colors.black),),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.lightPurple
-                    )
-                ),
-              ),
-              Positioned(
-                bottom: 50,
-                right: MediaQuery.of(context).size.width * 0.25 ,
-                child: ElevatedButton(
-                    onPressed: () {
-                      if(widget.category == 'Directions and Time') {
-                         List<CardData> filteredData =
-            blogProviderObj.filterDataBySeriesName('Dvc1tl9L0UYgik1X5zOT');
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LearningPage(seriesName: 'Dvc1tl9L0UYgik1X5zOT', data: filteredData,isVocabPresent: false)),
-                      );
-                      }else if(widget.category == 'Weather'){
-                        List<CardData> filteredData =
-            blogProviderObj.filterDataBySeriesName('Ge8eXFpeuoMOpt4OJM4l');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LearningPage(seriesName: 'Ge8eXFpeuoMOpt4OJM4l', data: filteredData,isVocabPresent: false)),
-                        );
-                        }else if(widget.category == 'Kinship Terms'){
-                          List<CardData> filteredData =
-            blogProviderObj.filterDataBySeriesName('h3QH0rikK63QTZ7Lr8wP');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LearningPage(seriesName: 'h3QH0rikK63QTZ7Lr8wP', data: filteredData,isVocabPresent: false)),
-                        );
-                      }else if(widget.category == 'Classroom Commands') {
-                        List<CardData> filteredData =
-            blogProviderObj.filterDataBySeriesName('ueEFv1EI9xm9ciT8u2vt');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LearningPage(seriesName: 'ueEFv1EI9xm9ciT8u2vt', data: filteredData,isVocabPresent: false)),
-                        );
-                      }else if(widget.category == 'Time of the day') {
-                         List<CardData> filteredData =
-            blogProviderObj.filterDataBySeriesName('VJsM4pkVy0h9y74To9PG');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LearningPage(seriesName: 'VJsM4pkVy0h9y74To9PG', data: filteredData,isVocabPresent: false)),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.lightPurple
-                    ),
-                    child: const Text('Explore related phrases?',style: TextStyle(color: Colors.black),)
-                ),
-              ),
-              Positioned(
-                  top: 20,
-                  left: 30,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                          height: 30,
-                          width: 260,
-                          child: ValueListenableBuilder<double>(
-                            valueListenable: progressNotifier,
-                            builder: (context, value, child) {
-                              Future(() {
-                                vocaProvide.progress = value;
-                              });
-                              if(value>=1){
-                                userRepo.incrementHeart(userRepo.uid);
-
-                                Future.delayed(const Duration(seconds: 5), () {
-                                  _controllerCenter.play();
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                    _showMyDialog(DefaultTabController.of(context));
-                                  });
-                                });
-
-                              }
-                              return LinearProgressIndicator(
-                                color: theme.lightPurple,
-                                minHeight: 30,
-                                borderRadius: BorderRadius.circular(20),
-                                value: value,
-                              );
-                            },
-                          )
+                Positioned(
+                  bottom: 140,
+                  left: MediaQuery.of(context).size.width * 0.25,
+                  child: ElevatedButton(
+                      onPressed: () => buttonCarouselController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.linear),
+                      child: const Text(
+                        'skip',
+                        style: TextStyle(color: Colors.black),
                       ),
-                      SizedBox(
-                          height: 70,
-                          width: 70,
-                          child:
-                          ValueListenableBuilder(
-                              valueListenable: isPlaying,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.lightPurple)),
+                ),
+                Positioned(
+                  bottom: 50,
+                  right: MediaQuery.of(context).size.width * 0.25,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        List<CardData> filteredData = blogProviderObj
+                            .filterDataBySeriesName(widget.category);
+                        print(
+                            "Initializing filter data ${filteredData.first.documentId}");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LearningPage(
+                                  seriesName: widget.category,
+                                  data: filteredData,
+                                  isVocabPresent: false)),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.lightPurple),
+                      child: const Text(
+                        'Explore related phrases?',
+                        style: TextStyle(color: Colors.black),
+                      )),
+                ),
+                Positioned(
+                    top: 20,
+                    left: 30,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                            height: 30,
+                            width: 260,
+                            child: ValueListenableBuilder<double>(
+                              valueListenable: progressNotifier,
                               builder: (context, value, child) {
-                                if(value == true) {
-                                  return Lottie.asset(
-                                    'assets/heart.json',
-                                    controller: lottieController,
-                                    height: 50,
-                                    width: 50,
-                                    fit: BoxFit.fill,
-                                  );
-                                }else{
-                                  return const Icon(Icons.favorite_border,color: Colors.orangeAccent,size: 40,);
-                                }
-                              }
-                          )
-                      ),
-                    ],
-                  )
-              ),
-              Positioned(
-                top: 0,
-                left: MediaQuery.of(context).size.width * 0.5,
-                child: ConfettiWidget(
-                  confettiController: _controllerCenter,
-                 // blastDirectionality: BlastDirectionality.explosive, // don't specify a direction, blast randomly
-                  shouldLoop: true, // start again as soon as the animation is finished
-                  colors: const [
-                    Colors.green,
-                    Colors.blue,
-                    Colors.pink,
-                    Colors.orange,
-                    Colors.purple
-                  ], // manually specify the colors to be used
-                  blastDirection: pi / 2,
-                  numberOfParticles: 40,// apply the direction
-                  //createParticlePath: drawStar, // define a custom shape/path.
-                ),
-              ),
-            ],
-          );
-        }
+                                Future(() {
+                                  vocaProvide.progress = value;
+                                });
+                                if (value >= 1) {
+                                  userRepo.incrementHeart(userRepo.uid);
 
-      }
-    );
+                                  Future.delayed(const Duration(seconds: 5),
+                                      () {
+                                    _controllerCenter.play();
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                      _showMyDialog(
+                                          DefaultTabController.of(context));
+                                    });
+                                  });
+                                }
+                                return LinearProgressIndicator(
+                                  color: theme.lightPurple,
+                                  minHeight: 30,
+                                  borderRadius: BorderRadius.circular(20),
+                                  value: value,
+                                );
+                              },
+                            )),
+                        SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: ValueListenableBuilder(
+                                valueListenable: isPlaying,
+                                builder: (context, value, child) {
+                                  if (value == true) {
+                                    return Lottie.asset(
+                                      'assets/heart.json',
+                                      controller: lottieController,
+                                      height: 50,
+                                      width: 50,
+                                      fit: BoxFit.fill,
+                                    );
+                                  } else {
+                                    return const Icon(
+                                      Icons.favorite_border,
+                                      color: Colors.orangeAccent,
+                                      size: 40,
+                                    );
+                                  }
+                                })),
+                      ],
+                    )),
+                Positioned(
+                  top: 0,
+                  left: MediaQuery.of(context).size.width * 0.5,
+                  child: ConfettiWidget(
+                    confettiController: _controllerCenter,
+                    // blastDirectionality: BlastDirectionality.explosive, // don't specify a direction, blast randomly
+                    shouldLoop:
+                        true, // start again as soon as the animation is finished
+                    colors: const [
+                      Colors.green,
+                      Colors.blue,
+                      Colors.pink,
+                      Colors.orange,
+                      Colors.purple
+                    ], // manually specify the colors to be used
+                    blastDirection: pi / 2,
+                    numberOfParticles: 40, // apply the direction
+                    //createParticlePath: drawStar, // define a custom shape/path.
+                  ),
+                ),
+              ],
+            );
+          }
+        });
   }
 
   Future<void> playAudio(String Url) async {
@@ -555,7 +570,6 @@ double progress = 0.0;
       print('Error: $e');
     }
   }
-
 
   Path drawStar(Size size) {
     // Method to convert degree to radians
@@ -595,10 +609,12 @@ double progress = 0.0;
               actions: <Widget>[
                 TextButton(
                   child: const Text('Choose a new category'),
-                  onPressed: () async{
+                  onPressed: () async {
                     final vocaProvide = ref.read(vocaProvider);
                     setNewBadge(widget.category);
-                    await ref.read(userProvider).updateBadge(ref.read(userProvider).uid, newBadge);
+                    await ref
+                        .read(userProvider)
+                        .updateBadge(ref.read(userProvider).uid, newBadge);
                     ref.read(userProvider).refreshCatagories();
                     _controllerCenter.stop();
                     progressNotifier.value = 0.0;
@@ -615,50 +631,50 @@ double progress = 0.0;
                     progressNotifier.value = 0.0;
                     vocaProvide.resetGame();
 
-                    if(mounted) {
+                    if (mounted) {
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const VocabularyHome()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const VocabularyHome()));
                       Navigator.of(context).pop();
-
                     }
                   },
                 ),
                 TextButton(
                   child: const Text('Master Again'),
                   onPressed: () {
-                   _resetGame();
+                    _resetGame();
                     Navigator.of(context).pop();
                   },
                 ),
-                Builder(
-                  builder: (BuildContext context) {
-                    return TextButton(
-                      child: const Text('Practice'),
-                      onPressed: () {
+                Builder(builder: (BuildContext context) {
+                  return TextButton(
+                    child: const Text('Practice'),
+                    onPressed: () {
                       _resetGame();
-                        if(mounted) {
-                         tabController.animateTo(1);
-                        }
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  }
-                ),
+                      if (mounted) {
+                        tabController.animateTo(1);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }),
               ],
             ),
             Positioned(
               top: 270, // Adjust this value as needed
-              
+
               right: 60, // Adjust this value as needed
               child: Lottie.asset('assets/badge.json', width: 50, height: 50),
-             
             ),
           ],
         );
       },
     );
   }
+
   _resetGame() {
     final vocaProvide = ref.read(vocaProvider);
     _controllerCenter.stop();

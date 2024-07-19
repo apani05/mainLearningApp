@@ -132,6 +132,7 @@ class BlogProvider extends ChangeNotifier {
 
   ///
   List<CardData> filterDataBySeriesName(String seriesName) {
+    print("card date for blog provider ${_cardDataList.length}");
     return _cardDataList
         .where((data) => data.seriesName == seriesName)
         .toList();
