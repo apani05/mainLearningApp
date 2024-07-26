@@ -1,0 +1,1638 @@
+@startuml
+set namespaceSeparator ::
+
+class "bfootlearn::adminProfile::models::category_model.dart::CategoryModel" {
+  +String categoryId
+  +String timestamp
+  +String categoryName
+  +String iconImage
+}
+
+class "bfootlearn::adminProfile::models::conversation_model.dart::ConversationModel" {
+  +String englishText
+  +String blackfootText
+  +String blackfootAudio
+  +String seriesName
+  +String conversationId
+  +String timestamp
+  +bool selected
+}
+
+class "bfootlearn::adminProfile::pages::admin_access.dart::AdminAccessPage" {
+  -dynamic _removeAdmin()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::adminProfile::pages::admin_access.dart::AdminAccessPage"
+
+class "bfootlearn::adminProfile::pages::admin_page.dart::AdminPage" {
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::adminProfile::pages::admin_page.dart::AdminPage"
+
+class "bfootlearn::adminProfile::pages::admin_page.dart::_AdminPageState" {
+  -TextEditingController _searchController
+  -List<CategoryModel> _categories
+  -List<CategoryModel> _filteredCategories
+  -String? _selectedItem
+  -List<String> _dropdownItems
+  +void initState()
+  +void dispose()
+  -void _filterCategories()
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::pages::admin_page.dart::_AdminPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::adminProfile::pages::admin_page.dart::_AdminPageState"
+
+class "bfootlearn::adminProfile::pages::edit_category_page.dart::EditCategoryPage" {
+  +CategoryModel category
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"bfootlearn::adminProfile::pages::edit_category_page.dart::EditCategoryPage" o-- "bfootlearn::adminProfile::models::category_model.dart::CategoryModel"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::adminProfile::pages::edit_category_page.dart::EditCategoryPage"
+
+class "bfootlearn::adminProfile::pages::edit_category_page.dart::_EditCategoryPageState" {
+  -TextEditingController _searchController
+  -List<ConversationModel> _conversations
+  -List<ConversationModel> _filteredConversations
+  -bool _isMultiSelectMode
+  +void initState()
+  +void dispose()
+  -void _toggleMultiSelectMode()
+  -void _deleteSelectedConversations()
+  -void _filterConversations()
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::pages::edit_category_page.dart::_EditCategoryPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::adminProfile::pages::edit_category_page.dart::_EditCategoryPageState"
+
+class "bfootlearn::adminProfile::services::category_functions.dart::CategoryFunctions" {
+  +List<DocumentSnapshot<Object?>> categories
+  +List<DocumentSnapshot<Object?>> filteredCategories
+  +dynamic uploadImageFileToFirebaseStorage()
+  +void addCategory()
+  +void deleteCategory()
+  +void updateCategory()
+  +dynamic updateConversationsSeriesName()
+  +dynamic deleteConversationsBySeriesName()
+}
+
+class "bfootlearn::adminProfile::services::conversation_functions.dart::ConversationFucntions" {
+  +dynamic uploadAudioFileToFirebaseStorage()
+  +void deleteConversation()
+  +void updateConversation()
+  +void addConversation()
+}
+
+class "bfootlearn::adminProfile::services::flutter_sound_methods.dart::FlutterSoundMethods" {
+  +String pathToSaveAudio
+  -FlutterSoundRecorder _audioRecorder
+  -FlutterSoundPlayer _audioPlayer
+  -bool _isRecorderInitialised
+  -bool _isPlayerInitialised
+  +bool isRecorderInitialised
+  +bool isPlayerInitialised
+  +bool isRecording
+  +bool isRecordingStopped
+  +bool isPlaying
+  +bool isPlayingPaused
+  +dynamic init()
+  +void dispose()
+  +dynamic getPathToSave()
+  +dynamic startRecording()
+  +dynamic stopRecording()
+  +dynamic startPlaying()
+  +dynamic pausePlaying()
+  +dynamic resumePlaying()
+}
+
+"bfootlearn::adminProfile::services::flutter_sound_methods.dart::FlutterSoundMethods" o-- "flutter_sound::public::flutter_sound_recorder.dart::FlutterSoundRecorder"
+"bfootlearn::adminProfile::services::flutter_sound_methods.dart::FlutterSoundMethods" o-- "flutter_sound::public::flutter_sound_player.dart::FlutterSoundPlayer"
+
+class "bfootlearn::adminProfile::widgets::admin_searchbar.dart::AdminSearchBar" {
+  +String hintText
+  +TextEditingController controller
+  +dynamic Function(String)? onChanged
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::widgets::admin_searchbar.dart::AdminSearchBar" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"bfootlearn::adminProfile::widgets::admin_searchbar.dart::AdminSearchBar" o-- "null::dynamic Function(String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::adminProfile::widgets::admin_searchbar.dart::AdminSearchBar"
+
+class "bfootlearn::adminProfile::widgets::category_searchbar.dart::CategorySearchBar" {
+  +TextEditingController controller
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"bfootlearn::adminProfile::widgets::category_searchbar.dart::CategorySearchBar" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::adminProfile::widgets::category_searchbar.dart::CategorySearchBar"
+
+class "bfootlearn::adminProfile::widgets::category_searchbar.dart::_CategorySearchBarState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::adminProfile::widgets::category_searchbar.dart::_CategorySearchBarState"
+
+class "bfootlearn::adminProfile::widgets::dialogbox_textfield.dart::DialogBoxTextField" {
+  +TextEditingController controller
+  +String hintText
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::widgets::dialogbox_textfield.dart::DialogBoxTextField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::adminProfile::widgets::dialogbox_textfield.dart::DialogBoxTextField"
+
+class "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::ExistingCategoriesListview" {
+  +List<CategoryModel> categoriesToDisplay
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::ExistingCategoriesListview"
+
+class "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::CategoryListTileItem" {
+  +CategoryModel category
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"bfootlearn::adminProfile::widgets::existing_categories_listview.dart::CategoryListTileItem" o-- "bfootlearn::adminProfile::models::category_model.dart::CategoryModel"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::CategoryListTileItem"
+
+class "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::_CategoryListTileItemState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::adminProfile::widgets::existing_categories_listview.dart::_CategoryListTileItemState"
+
+class "bfootlearn::adminProfile::widgets::existing_conversations_listview.dart::ExistingConversationsListView" {
+  +List<ConversationModel> conversations
+  +bool isMultiSelectMode
+  +State<ExistingConversationsListView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::adminProfile::widgets::existing_conversations_listview.dart::ExistingConversationsListView"
+
+class "bfootlearn::adminProfile::widgets::existing_conversations_listview.dart::_ExistingConversationsListViewState" {
+  +AudioPlayer audioPlayer
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::widgets::existing_conversations_listview.dart::_ExistingConversationsListViewState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::adminProfile::widgets::existing_conversations_listview.dart::_ExistingConversationsListViewState"
+
+class "bfootlearn::adminProfile::widgets::old_audio_player.dart::OldAudioPlayer" {
+  +String oldBlackfootAudioPath
+  +State<OldAudioPlayer> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::adminProfile::widgets::old_audio_player.dart::OldAudioPlayer"
+
+class "bfootlearn::adminProfile::widgets::old_audio_player.dart::_OldAudioPlayerState" {
+  +AudioPlayer audioPlayer
+  +void onPressedAudioButton()
+  +void disposeAudio()
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::adminProfile::widgets::old_audio_player.dart::_OldAudioPlayerState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::adminProfile::widgets::old_audio_player.dart::_OldAudioPlayerState"
+
+class "bfootlearn::adminProfile::widgets::recording_audio_container.dart::RecordingAudioContainer" {
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::adminProfile::widgets::recording_audio_container.dart::RecordingAudioContainer"
+
+class "bfootlearn::adminProfile::widgets::recording_audio_container.dart::_RecordingAudioContainerState" {
+  +FlutterSoundMethods audioRecorder
+  +dynamic onPressedRecordButton()
+  +void initState()
+  -dynamic _initializeRecorder()
+  +void dispose()
+  +Widget build()
+  +Widget micIcon()
+}
+
+"bfootlearn::adminProfile::widgets::recording_audio_container.dart::_RecordingAudioContainerState" o-- "bfootlearn::adminProfile::services::flutter_sound_methods.dart::FlutterSoundMethods"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::adminProfile::widgets::recording_audio_container.dart::_RecordingAudioContainerState"
+
+class "bfootlearn::common::bottomnav.dart::BottomNavBar" {
+  +_BottomNavBarState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::common::bottomnav.dart::BottomNavBar"
+
+class "bfootlearn::common::bottomnav.dart::_BottomNavBarState" {
+  -int _selectedIndex
+  -void _onItemTapped()
+  +Widget build()
+  +dynamic changeIndex()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::common::bottomnav.dart::_BottomNavBarState"
+
+class "bfootlearn::components::my_button.dart::MyButton" {
+  +String text
+  +void Function()? onTap
+  +Widget build()
+}
+
+"bfootlearn::components::my_button.dart::MyButton" o-- "null::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::components::my_button.dart::MyButton"
+
+class "bfootlearn::components::my_textfield.dart::MyTextField" {
+  +String labelText
+  +Color textColor
+  +bool obscureText
+  +TextEditingController controller
+  +bool? suffix
+  +_MyTextFieldState createState()
+}
+
+"bfootlearn::components::my_textfield.dart::MyTextField" o-- "dart::ui::Color"
+"bfootlearn::components::my_textfield.dart::MyTextField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::components::my_textfield.dart::MyTextField"
+
+class "bfootlearn::components::my_textfield.dart::_MyTextFieldState" {
+  +bool showPassword
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::components::my_textfield.dart::_MyTextFieldState"
+
+class "bfootlearn::Disscussion::provider::discuss_model.dart::Post" {
+  +String name
+  +String time
+  +String profileImage
+  +String content
+  +String? imageUrl
+  +int likes
+  +int comments
+  +String? shares
+  +List<Comment>? replies
+  +List<Likes>? likesList
+  +String? id
+  {static} +Post fromMap()
+  +Map<String, dynamic> toMap()
+  +Post copyWith()
+}
+
+class "bfootlearn::Disscussion::provider::discuss_model.dart::Comment" {
+  +String name
+  +String time
+  +String content
+  +String profileImage
+  {static} +Comment fromMap()
+  +Map<String, dynamic> toMap()
+}
+
+class "bfootlearn::Disscussion::provider::discuss_model.dart::Likes" {
+  +String name
+  +String time
+  +String profileImage
+  {static} +Likes fromMap()
+  +Map<String, dynamic> toMap()
+}
+
+class "bfootlearn::Disscussion::provider::disscuss_provider.dart::FirestoreDiscussProvider" {
+  -FirebaseFirestore _db
+  -List<Post> _posts
+  -bool _isLoading
+  -StreamSubscription<dynamic>? _postsSubscription
+  +List<Post> posts
+  +bool isLoading
+  +void dispose()
+  +dynamic addPost()
+  +dynamic fetchPosts()
+  +void listenForLikes()
+  +void listenForComments()
+  +dynamic toggleLike()
+  +dynamic reportPost()
+  +dynamic toggleComment()
+  +dynamic addComment()
+  +dynamic deleteComment()
+  +dynamic deletePost()
+  +dynamic fetchComments()
+  +Stream<int> listenForLikesRT()
+  +Stream<int> listenForCommentsRT()
+  +dynamic fetchPostById()
+  +dynamic fetchCommentsByPostId()
+  +Stream<List<Comment>> listenForRepliesRT()
+}
+
+"bfootlearn::Disscussion::provider::disscuss_provider.dart::FirestoreDiscussProvider" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"bfootlearn::Disscussion::provider::disscuss_provider.dart::FirestoreDiscussProvider" o-- "dart::async::StreamSubscription<dynamic>"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::Disscussion::provider::disscuss_provider.dart::FirestoreDiscussProvider"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::DisscussionPage" {
+  +DisscussionPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::DisscussionPage"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::DisscussionPageState" {
+  -TextEditingController _postController
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::Disscussion::viwes::disscusion_page.dart::DisscussionPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::DisscussionPageState"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::PostCard" {
+  +Post post
+  +_PostCardState createState()
+}
+
+"bfootlearn::Disscussion::viwes::disscusion_page.dart::PostCard" o-- "bfootlearn::Disscussion::provider::discuss_model.dart::Post"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::PostCard"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::_PostCardState" {
+  -TextEditingController _reportController
+  -void _reportPost()
+  +Widget build()
+}
+
+"bfootlearn::Disscussion::viwes::disscusion_page.dart::_PostCardState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::_PostCardState"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::CommentInputWidget" {
+  +String postId
+  +String userId
+  +_CommentInputWidgetState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::CommentInputWidget"
+
+class "bfootlearn::Disscussion::viwes::disscusion_page.dart::_CommentInputWidgetState" {
+  -TextEditingController _commentController
+  +Widget build()
+}
+
+"bfootlearn::Disscussion::viwes::disscusion_page.dart::_CommentInputWidgetState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Disscussion::viwes::disscusion_page.dart::_CommentInputWidgetState"
+
+class "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::DiscussionsDetailsPage" {
+  +String postId
+  +_DiscussionsDetailsPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::DiscussionsDetailsPage"
+
+class "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::_DiscussionsDetailsPageState" {
+  +dynamic post
+  +dynamic comments
+  +void initState()
+  +Widget build()
+  +Widget buildPostCommentField()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::_DiscussionsDetailsPageState"
+
+class "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::PostCard" {
+  +Post post
+  +_PostCardState createState()
+}
+
+"bfootlearn::Disscussion::viwes::disscuss_details_page.dart::PostCard" o-- "bfootlearn::Disscussion::provider::discuss_model.dart::Post"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::PostCard"
+
+class "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::_PostCardState" {
+  +Widget build()
+  +String timeAgo()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::_PostCardState"
+
+class "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::ReplyWidget" {
+  +Comment reply
+  +Widget build()
+  +String timeAgo()
+}
+
+"bfootlearn::Disscussion::viwes::disscuss_details_page.dart::ReplyWidget" o-- "bfootlearn::Disscussion::provider::discuss_model.dart::Comment"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::Disscussion::viwes::disscuss_details_page.dart::ReplyWidget"
+
+class "bfootlearn::Disscussion::widgets::post_action_widget.dart::PostActionsWidget" {
+  +String postId
+  +String userId
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerWidget" <|-- "bfootlearn::Disscussion::widgets::post_action_widget.dart::PostActionsWidget"
+
+class "bfootlearn::firebase_options.dart::DefaultFirebaseOptions" {
+  {static} +FirebaseOptions web
+  {static} +FirebaseOptions android
+  {static} +FirebaseOptions ios
+  {static} +FirebaseOptions macos
+  {static} +FirebaseOptions currentPlatform
+}
+
+"bfootlearn::firebase_options.dart::DefaultFirebaseOptions" o-- "firebase_core_platform_interface::firebase_core_platform_interface.dart::FirebaseOptions"
+
+class "bfootlearn::Home::views::ack_page.dart::Acknowledegement" {
+  +State<Acknowledegement> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::Home::views::ack_page.dart::Acknowledegement"
+
+class "bfootlearn::Home::views::ack_page.dart::_AcknowledegementState" {
+  +Widget build()
+  +Padding nameForAck()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::Home::views::ack_page.dart::_AcknowledegementState"
+
+class "bfootlearn::Home::views::home_view.dart::HomeView" {
+  +HomeViewState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Home::views::home_view.dart::HomeView"
+
+class "bfootlearn::Home::views::home_view.dart::HomeViewState" {
+  +FlipperController flipperController
+  -GlobalKey<ScaffoldState> _scaffoldKey
+  +void initState()
+  +void dispose()
+  +AppBar buildAppBar()
+  +Widget build()
+}
+
+"bfootlearn::Home::views::home_view.dart::HomeViewState" o-- "flippy::controllers::flipperController.dart::FlipperController"
+"bfootlearn::Home::views::home_view.dart::HomeViewState" o-- "flutter::src::widgets::framework.dart::GlobalKey<ScaffoldState>"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Home::views::home_view.dart::HomeViewState"
+
+class "bfootlearn::Home::widgets::bootomnavItems.dart::BottomNavItem" {
+  {static} +dynamic bottomBar()
+  {static} +dynamic bottomNavItems()
+}
+
+class "bfootlearn::Home::widgets::crad_option.dart::CardFlipper" {
+  +_MyHomePageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Home::widgets::crad_option.dart::CardFlipper"
+
+class "bfootlearn::Home::widgets::crad_option.dart::_MyHomePageState" {
+  +bool isFront
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Home::widgets::crad_option.dart::_MyHomePageState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "bfootlearn::Home::widgets::crad_option.dart::_MyHomePageState"
+
+class "bfootlearn::Home::widgets::home_page.dart::HomePage" {
+  +ThemeData theme
+  +_HomePageState createState()
+}
+
+"bfootlearn::Home::widgets::home_page.dart::HomePage" o-- "flutter::src::material::theme_data.dart::ThemeData"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Home::widgets::home_page.dart::HomePage"
+
+class "bfootlearn::Home::widgets::home_page.dart::_HomePageState" {
+  +List<Color> colorizeColors
+  +TextStyle colorizeTextStyle
+  +Widget build()
+}
+
+"bfootlearn::Home::widgets::home_page.dart::_HomePageState" o-- "flutter::src::painting::text_style.dart::TextStyle"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Home::widgets::home_page.dart::_HomePageState"
+
+class "bfootlearn::Home::widgets::popup_menu.dart::CustomPopupMenu" {
+  +dynamic Function(String) onSelected
+  +void handlePopupMenuSelection()
+  +Widget build()
+}
+
+"bfootlearn::Home::widgets::popup_menu.dart::CustomPopupMenu" o-- "null::dynamic Function(String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::Home::widgets::popup_menu.dart::CustomPopupMenu"
+
+class "bfootlearn::leaderboard::repo::leaderboard_repo.dart::LeaderBoardRepo" {
+  +DatabaseReference databaseReference
+  +User? currentUser
+  +dynamic addToLeaderBoard()
+  +dynamic getTopHighScores()
+  +dynamic updateScore()
+  +dynamic saveHighScore()
+  +dynamic ()
+  +dynamic getUserName()
+  +dynamic getScore()
+}
+
+"bfootlearn::leaderboard::repo::leaderboard_repo.dart::LeaderBoardRepo" o-- "firebase_database::firebase_database.dart::DatabaseReference"
+"bfootlearn::leaderboard::repo::leaderboard_repo.dart::LeaderBoardRepo" o-- "firebase_auth::firebase_auth.dart::User"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::leaderboard::repo::leaderboard_repo.dart::LeaderBoardRepo"
+
+class "bfootlearn::leaderboard::repo::lederborad_model.dart::LeaderBoardModel" {
+  +String name
+  +int score
+  {static} +dynamic fromDocument()
+}
+
+class "bfootlearn::leaderboard::views::leader_board_page.dart::LeaderBoardPage" {
+  +_LeaderBoardPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::leaderboard::views::leader_board_page.dart::LeaderBoardPage"
+
+class "bfootlearn::leaderboard::views::leader_board_page.dart::_LeaderBoardPageState" {
+  +Iterable<LeaderBoardModel> leader
+  -String _selectedTimeRange
+  +Widget topContainer
+  +void initState()
+  +Widget build()
+}
+
+"bfootlearn::leaderboard::views::leader_board_page.dart::_LeaderBoardPageState" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::leaderboard::views::leader_board_page.dart::_LeaderBoardPageState"
+
+class "bfootlearn::leaderboard::widgets::leaderbar.dart::LeaderBar" {
+  +double barHeight
+  +double barWidth
+  +Color color
+  +int index
+  +String image
+  +String leaderImages
+  +_LeaderBarState createState()
+}
+
+"bfootlearn::leaderboard::widgets::leaderbar.dart::LeaderBar" o-- "dart::ui::Color"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::leaderboard::widgets::leaderbar.dart::LeaderBar"
+
+class "bfootlearn::leaderboard::widgets::leaderbar.dart::_LeaderBarState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::leaderboard::widgets::leaderbar.dart::_LeaderBarState"
+
+class "bfootlearn::leaderboard::widgets::leadercard.dart::LeaderCard" {
+  +int index
+  +String name
+  +int score
+  +String currentUserId
+  +_LeaderCardState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::leaderboard::widgets::leadercard.dart::LeaderCard"
+
+class "bfootlearn::leaderboard::widgets::leadercard.dart::_LeaderCardState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::leaderboard::widgets::leadercard.dart::_LeaderCardState"
+
+class "bfootlearn::leaderboard::widgets::sliverlist.dart::SliverListWithTopContainer" {
+  +List<Widget> items
+  +Widget topContainer
+  +_SliverListWithTopContainerState createState()
+}
+
+"bfootlearn::leaderboard::widgets::sliverlist.dart::SliverListWithTopContainer" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::leaderboard::widgets::sliverlist.dart::SliverListWithTopContainer"
+
+class "bfootlearn::leaderboard::widgets::sliverlist.dart::_SliverListWithTopContainerState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::leaderboard::widgets::sliverlist.dart::_SliverListWithTopContainerState"
+
+class "bfootlearn::login::authentication::auth.dart::AuthPage" {
+  +_AuthPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::authentication::auth.dart::AuthPage"
+
+class "bfootlearn::login::authentication::auth.dart::_AuthPageState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::authentication::auth.dart::_AuthPageState"
+
+class "bfootlearn::login::authentication::login_or_register.dart::LoginOrRegister" {
+  +_LoginOrRegisterState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::authentication::login_or_register.dart::LoginOrRegister"
+
+class "bfootlearn::login::authentication::login_or_register.dart::_LoginOrRegisterState" {
+  +bool showLoginPage
+  +void togglePages()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::authentication::login_or_register.dart::_LoginOrRegisterState"
+
+class "bfootlearn::login::authentication::verify_email.dart::EmailVerifyPage" {
+  +_EmailVerifyPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::authentication::verify_email.dart::EmailVerifyPage"
+
+class "bfootlearn::login::authentication::verify_email.dart::_EmailVerifyPageState" {
+  +bool isEmailVerified
+  +bool canResendEmail
+  +Timer? timer
+  +void initState()
+  +dynamic checkCurrentUserEmailVerification()
+  +dynamic sendVerificationEmail()
+  +dynamic checkEmailVerified()
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::login::authentication::verify_email.dart::_EmailVerifyPageState" o-- "dart::async::Timer"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::authentication::verify_email.dart::_EmailVerifyPageState"
+
+class "bfootlearn::login::views::change_password.dart::PasswordChangePage" {
+  +_PasswordChangePageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::views::change_password.dart::PasswordChangePage"
+
+class "bfootlearn::login::views::change_password.dart::_PasswordChangePageState" {
+  +TextEditingController oldPasswordController
+  +TextEditingController newPasswordController
+  -bool _isChangingPassword
+  +Widget build()
+  -dynamic _changePassword()
+}
+
+"bfootlearn::login::views::change_password.dart::_PasswordChangePageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::views::change_password.dart::_PasswordChangePageState"
+
+class "bfootlearn::login::views::forgot_pwd_page.dart::ForgotPasswordPage" {
+  +_ForgotPasswordPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::views::forgot_pwd_page.dart::ForgotPasswordPage"
+
+class "bfootlearn::login::views::forgot_pwd_page.dart::_ForgotPasswordPageState" {
+  +TextEditingController emailController
+  +void dispose()
+  +dynamic passwordReset()
+  +Widget build()
+}
+
+"bfootlearn::login::views::forgot_pwd_page.dart::_ForgotPasswordPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::views::forgot_pwd_page.dart::_ForgotPasswordPageState"
+
+class "bfootlearn::login::views::login_page.dart::LoginPage" {
+  +void Function()? onTap
+  +_LoginPageState createState()
+}
+
+"bfootlearn::login::views::login_page.dart::LoginPage" o-- "null::void Function()"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::views::login_page.dart::LoginPage"
+
+class "bfootlearn::login::views::login_page.dart::_LoginPageState" {
+  +TextEditingController emailController
+  +TextEditingController passwordController
+  +bool showPassword
+  +void dispose()
+  +void login()
+  +Widget build()
+}
+
+"bfootlearn::login::views::login_page.dart::_LoginPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::views::login_page.dart::_LoginPageState"
+
+class "bfootlearn::login::views::registration_page.dart::RegisterPage" {
+  +void Function()? onTap
+  +_RegisterPageState createState()
+}
+
+"bfootlearn::login::views::registration_page.dart::RegisterPage" o-- "null::void Function()"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::views::registration_page.dart::RegisterPage"
+
+class "bfootlearn::login::views::registration_page.dart::_RegisterPageState" {
+  +TextEditingController userNameController
+  +TextEditingController emailController
+  +TextEditingController passwordController
+  +TextEditingController confirmPwdController
+  +bool showPassword
+  +void dispose()
+  +void registerUser()
+  +Widget build()
+}
+
+"bfootlearn::login::views::registration_page.dart::_RegisterPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::views::registration_page.dart::_RegisterPageState"
+
+class "bfootlearn::login::widget::fadein_animation.dart::FadeIn" {
+  +Widget child
+  +Duration duration
+  +double delay
+  +_FadeInState createState()
+}
+
+"bfootlearn::login::widget::fadein_animation.dart::FadeIn" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::login::widget::fadein_animation.dart::FadeIn"
+
+class "bfootlearn::login::widget::fadein_animation.dart::_FadeInState" {
+  -AnimationController _controller
+  -Animation<double> _opacity
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::login::widget::fadein_animation.dart::_FadeInState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"bfootlearn::login::widget::fadein_animation.dart::_FadeInState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::login::widget::fadein_animation.dart::_FadeInState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "bfootlearn::login::widget::fadein_animation.dart::_FadeInState"
+
+class "bfootlearn::login::widget::login_theme_page.dart::LoginPageTop" {
+  +_LoginPageTopState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::login::widget::login_theme_page.dart::LoginPageTop"
+
+class "bfootlearn::login::widget::login_theme_page.dart::_LoginPageTopState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::login::widget::login_theme_page.dart::_LoginPageTopState"
+
+class "bfootlearn::main.dart::MyApp" {
+  +_MyAppState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::main.dart::MyApp"
+
+class "bfootlearn::main.dart::_MyAppState" {
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::main.dart::_MyAppState"
+
+class "bfootlearn::notifications::local_notification.dart::LocalNotifications" {
+  {static} -FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin
+  {static} +BehaviorSubject<String> onClickNotification
+  {static} +void onNotificationTap()
+  {static} +dynamic init()
+  +dynamic showScheduleNotification()
+  -TZDateTime _scheduleDaily()
+}
+
+"bfootlearn::notifications::local_notification.dart::LocalNotifications" o-- "flutter_local_notifications::src::flutter_local_notifications_plugin.dart::FlutterLocalNotificationsPlugin"
+"bfootlearn::notifications::local_notification.dart::LocalNotifications" o-- "rxdart::src::subjects::behavior_subject.dart::BehaviorSubject<String>"
+
+class "bfootlearn::notifications::notification_page.dart::SettingsPage" {
+  +ConsumerState<SettingsPage> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::notifications::notification_page.dart::SettingsPage"
+
+class "bfootlearn::notifications::notification_page.dart::_SettingsPageState" {
+  +void initState()
+  -void _scheduleNotification()
+  +Widget build()
+  +dynamic requestNotificationPermission()
+  -Widget _buildReminderRow0()
+  -Widget _buildReminderRow1()
+  +Widget selectReminderTime()
+  +Widget timePickerDialog()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::notifications::notification_page.dart::_SettingsPageState"
+
+class "bfootlearn::notifications::notification_provider.dart::NotificationProvider" {
+  -int _remindTimeHr
+  -int _remindTimeMin
+  -int _remindTimeSec
+  -double _commitedTime
+  -bool _isReminderOn
+  +int remindTimeHr
+  +int remindTimeMin
+  +int remindTimeSec
+  +double commitedTime
+  +bool isReminderOn
+  +void loadSettings()
+  +void saveSettings()
+  +void toggleReminderMode()
+  +void setRemindTime()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::notifications::notification_provider.dart::NotificationProvider"
+
+class "bfootlearn::notifications::notification_usage.dart::AppUsageService" {
+  -Timer _timer
+  -StreamController<int> _usageTimeController
+  -Stream<int> _usageTimeStream
+  -int _appUsageTimeInSeconds
+  +Stream<int> usageTimeStream
+  -void _startTimer()
+  +void dispose()
+}
+
+"bfootlearn::notifications::notification_usage.dart::AppUsageService" o-- "dart::async::Timer"
+"bfootlearn::notifications::notification_usage.dart::AppUsageService" o-- "dart::async::StreamController<int>"
+"bfootlearn::notifications::notification_usage.dart::AppUsageService" o-- "dart::async::Stream<int>"
+
+class "bfootlearn::Phrases::models::card_data.dart::CardData" {
+  +String documentId
+  +String englishText
+  +String blackfootText
+  +String blackfootAudio
+  +String seriesName
+  +Map<String, dynamic> toJson()
+}
+
+class "bfootlearn::Phrases::models::question_model.dart::Question" {
+  +String questionText
+  +String correctAnswer
+  +List<String> options
+  +String? selectedAnswer
+  +bool showCorrectAnswer
+  +bool isAudioTypeQuestion
+  +String seriesType
+  +Map<String, dynamic> toJson()
+}
+
+class "bfootlearn::Phrases::models::quiz_model.dart::Quiz" {
+  +Timestamp dateSubmitted
+  +int quizScore
+  +int totalPoints
+  +List<Question> questionSet
+  +Map<String, dynamic> toJson()
+}
+
+"bfootlearn::Phrases::models::quiz_model.dart::Quiz" o-- "cloud_firestore_platform_interface::src::timestamp.dart::Timestamp"
+
+class "bfootlearn::Phrases::models::saved_data.dart::SavedData" {
+  +String uid
+  +List<CardData> savedPhrases
+  +Map<String, dynamic> toJson()
+}
+
+class "bfootlearn::Phrases::provider::blogProvider.dart::BlogProvider" {
+  -List<CardData> _cardDataList
+  -List<Map<String, dynamic>> _seriesOptions
+  -SavedData _userPhraseProgress
+  -Quiz _quizResults
+  -bool _isLoading
+  -String? _errorMessage
+  +List<CardData> cardDataList
+  +List<Map<String, dynamic>> seriesOptions
+  +SavedData userPhraseProgress
+  +Quiz quizResults
+  +bool isLoading
+  +String? errorMessage
+  +void setLoading()
+  +void setError()
+  +dynamic getSeriesNamesFromFirestore()
+  +List<CardData> filterDataBySeriesName()
+  +dynamic fetchAllData()
+  +void toggleSavedPhrase()
+  +dynamic getSavedPhrases()
+  +dynamic fetchQuizResultsFromFirebase()
+  +dynamic saveQuizResults()
+  +void updateSeriesOptions()
+  +void updateCardDataList()
+  +void updateUserPhraseProgress()
+}
+
+"bfootlearn::Phrases::provider::blogProvider.dart::BlogProvider" o-- "bfootlearn::Phrases::models::saved_data.dart::SavedData"
+"bfootlearn::Phrases::provider::blogProvider.dart::BlogProvider" o-- "bfootlearn::Phrases::models::quiz_model.dart::Quiz"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::Phrases::provider::blogProvider.dart::BlogProvider"
+
+class "bfootlearn::Phrases::views::category_learning_page.dart::LearningPage" {
+  +String seriesName
+  +List<CardData> data
+  +bool isVocabPresent
+  +_LearningPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Phrases::views::category_learning_page.dart::LearningPage"
+
+class "bfootlearn::Phrases::views::category_learning_page.dart::_LearningPageState" {
+  +int? currentPlayingIndex
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Phrases::views::category_learning_page.dart::_LearningPageState"
+
+class "bfootlearn::Phrases::views::saved_phrases.dart::SavedPage" {
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Phrases::views::saved_phrases.dart::SavedPage"
+
+class "bfootlearn::Phrases::views::saved_phrases.dart::_SavedPageState" {
+  +int? currentPlayingIndex
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Phrases::views::saved_phrases.dart::_SavedPageState"
+
+class "bfootlearn::Phrases::views::sentence_homepage.dart::SentenceHomePage" {
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Phrases::views::sentence_homepage.dart::SentenceHomePage"
+
+class "bfootlearn::Phrases::views::sentence_homepage.dart::_SentenceHomePageState" {
+  +List<Map<String, dynamic>> seriesOptions
+  +List<CardData> allData
+  +List<String> vocabCategory
+  +void initState()
+  -dynamic _fetchPhrasesData()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Phrases::views::sentence_homepage.dart::_SentenceHomePageState"
+
+class "bfootlearn::Phrases::views::stories_page.dart::StoriesPage" {
+  +State<StoriesPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::Phrases::views::stories_page.dart::StoriesPage"
+
+class "bfootlearn::Phrases::views::stories_page.dart::_StoriesPageState" {
+  +void initState()
+  +dynamic fetchStories()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::Phrases::views::stories_page.dart::_StoriesPageState"
+
+class "bfootlearn::Phrases::views::stories_page.dart::StoryAudioPlayer" {
+  +String topic
+  +String audioUrl
+  +State<StoryAudioPlayer> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "bfootlearn::Phrases::views::stories_page.dart::StoryAudioPlayer"
+
+class "bfootlearn::Phrases::views::stories_page.dart::_StoryAudioPlayerState" {
+  +AudioPlayer audioPlayer
+  +bool isPlaying
+  +Duration duration
+  +Duration position
+  +String formatDuration()
+  +dynamic setAudio()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"bfootlearn::Phrases::views::stories_page.dart::_StoryAudioPlayerState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter::src::widgets::framework.dart::State" <|-- "bfootlearn::Phrases::views::stories_page.dart::_StoryAudioPlayerState"
+
+class "bfootlearn::Phrases::widgets::card_slider.dart::CardSlider" {
+  +List<CardData> cardDataList
+  +int? currentPlayingIndex
+  +dynamic Function(int) onPlayButtonPressed
+  +dynamic Function(int) onSavedButtonPressed
+  +Widget build()
+}
+
+"bfootlearn::Phrases::widgets::card_slider.dart::CardSlider" o-- "null::dynamic Function(int)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::Phrases::widgets::card_slider.dart::CardSlider"
+
+class "bfootlearn::Phrases::widgets::card_widget.dart::CardWidget" {
+  +int index
+  +String englishText
+  +String blackfootText
+  +String blackfootAudio
+  +bool isPlaying
+  +void Function() onPlayButtonPressed
+  +void Function() onSavedButtonPressed
+  +String documentId
+  +ConsumerState<CardWidget> createState()
+}
+
+"bfootlearn::Phrases::widgets::card_widget.dart::CardWidget" o-- "dart::ui::void Function()"
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Phrases::widgets::card_widget.dart::CardWidget"
+
+class "bfootlearn::Phrases::widgets::card_widget.dart::_CardWidgetState" {
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Phrases::widgets::card_widget.dart::_CardWidgetState"
+
+class "bfootlearn::Phrases::widgets::category_item.dart::CategoryItem" {
+  +List<String> vocabCategory
+  +String seriesName
+  +String imageUrl
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerWidget" <|-- "bfootlearn::Phrases::widgets::category_item.dart::CategoryItem"
+
+class "bfootlearn::Phrases::widgets::feature_item.dart::FeatureItem" {
+  +String title
+  +void Function() onTap
+  +Widget build()
+}
+
+"bfootlearn::Phrases::widgets::feature_item.dart::FeatureItem" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::Phrases::widgets::feature_item.dart::FeatureItem"
+
+class "bfootlearn::Quizpages::pages::quiz_page.dart::QuizPage" {
+  +_QuizPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Quizpages::pages::quiz_page.dart::QuizPage"
+
+class "bfootlearn::Quizpages::pages::quiz_page.dart::_QuizPageState" {
+  -int _currentIndex
+  +List<Question> quizQuestions
+  -List<bool> _isQuestionAnswered
+  -bool _isNextButtonEnabled
+  -bool _isSubmitButtonEnabled
+  +List<String> selectedSeries
+  +AudioPlayer player
+  +bool isPlaying
+  +List<Map<String, dynamic>> seriesOptions
+  +void initState()
+  -dynamic _showSeriesSelectionDialog()
+  +dynamic fetchQuestionsForSelectedSeries()
+  +void nextQuestion()
+  +void submitAnswer()
+  +void calculateScore()
+  +void updateIsQuestionAnswered()
+  -dynamic _onBackPressed()
+  +Widget build()
+  +Widget buildQuestionCard()
+  +List<Widget> buildRadioOptionsList()
+}
+
+"bfootlearn::Quizpages::pages::quiz_page.dart::_QuizPageState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Quizpages::pages::quiz_page.dart::_QuizPageState"
+
+class "bfootlearn::Quizpages::pages::quiz_result_list.dart::QuizResultList" {
+  +ConsumerState<ConsumerStatefulWidget> createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Quizpages::pages::quiz_result_list.dart::QuizResultList"
+
+class "bfootlearn::Quizpages::pages::quiz_result_list.dart::_QuizResultListState" {
+  +List<Quiz> quizResults
+  +void initState()
+  +dynamic fetchData()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Quizpages::pages::quiz_result_list.dart::_QuizResultListState"
+
+class "bfootlearn::Quizpages::pages::quiz_result_page.dart::QuizResultScreen" {
+  +int quizScore
+  +List<Question> quizQuestions
+  +_QuizResultScreenState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::Quizpages::pages::quiz_result_page.dart::QuizResultScreen"
+
+class "bfootlearn::Quizpages::pages::quiz_result_page.dart::_QuizResultScreenState" {
+  +AudioPlayer player
+  +void initState()
+  +void dispose()
+  +Widget build()
+  -Widget _buildQuizResultContent()
+}
+
+"bfootlearn::Quizpages::pages::quiz_result_page.dart::_QuizResultScreenState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::Quizpages::pages::quiz_result_page.dart::_QuizResultScreenState"
+
+class "bfootlearn::Quizpages::widgets::bar_graph.dart::ChartData" {
+  +String x
+  +double y
+}
+
+class "bfootlearn::Quizpages::widgets::bar_graph.dart::QuizBarData" {
+  {static} +Map<String, double> calculateSeriesTypeScore()
+  {static} +Widget buildBarGraph()
+}
+
+class "bfootlearn::Quizpages::widgets::circular_graph.dart::CircularGraph" {
+  +int quizScore
+  +int totalQuestions
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::Quizpages::widgets::circular_graph.dart::CircularGraph"
+
+class "bfootlearn::Quizpages::widgets::circular_graph.dart::ChartData" {
+  +String x
+  +double y
+  +Color? color
+}
+
+"bfootlearn::Quizpages::widgets::circular_graph.dart::ChartData" o-- "dart::ui::Color"
+
+class "bfootlearn::route::routes.dart::RouteGenerator" {
+  {static} +String homeRoute
+  {static} +String feedRoute
+  {static} +String leaderboardRoute
+  {static} +String disscussionRoute
+  {static} +String vocabularyRoute
+  {static} +String vGame
+  {static} +String blogRoute
+  {static} +Route<dynamic> generateRoute()
+}
+
+class "bfootlearn::theme.dart::theme.dart::ThemeNotifier" {
+  -ThemeData _themeData
+  -AnimationController _controller
+  -Animation<double> _animation
+  +Color lightPurple
+  +Color darkPurple
+  +Color red
+  +Color green
+  +ThemeData themeData
+  +bool isDark
+  +AnimationController controller
+  +Animation<double> animation
+  +ThemeData darkTheme
+  +ThemeData lightTheme
+  +void toggleTheme()
+  +void getTheme()
+}
+
+"bfootlearn::theme.dart::theme.dart::ThemeNotifier" o-- "flutter::src::material::theme_data.dart::ThemeData"
+"bfootlearn::theme.dart::theme.dart::ThemeNotifier" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"bfootlearn::theme.dart::theme.dart::ThemeNotifier" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"bfootlearn::theme.dart::theme.dart::ThemeNotifier" o-- "dart::ui::Color"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::theme.dart::theme.dart::ThemeNotifier"
+
+class "bfootlearn::User::user_firebase_operation.dart::FirestoreOperations" {
+  -CollectionReference<Object?> _collection
+  +dynamic createDocument()
+  +dynamic readDocument()
+  +dynamic updateDocument()
+  +dynamic deleteDocument()
+  +void listenToDocument()
+  +dynamic streamDocument()
+}
+
+"bfootlearn::User::user_firebase_operation.dart::FirestoreOperations" o-- "cloud_firestore::cloud_firestore.dart::CollectionReference<Object>"
+
+class "bfootlearn::User::user_model.dart::UserModel" {
+  +String name
+  +String email
+  +String uid
+  +String role
+  +String imageUrl
+  +int score
+  +int rank
+  +int heart
+  +String userName
+  +CardBadge badge
+  +String joinedDate
+  +List<SavedWords>? savedWords
+  +List<CardData>? savedPhrases
+  +String getName
+  +String getEmail
+  +String getUid
+  +String getRole
+  +String getImageUrl
+  +int getScore
+  +int getRank
+  +int getHeart
+  +String getJoinedDate
+  +String getUserName
+  +List<SavedWords> getSavedWords
+  +List<CardData> getSavedPhrases
+  +Map<String, dynamic> toJson()
+  +String getBadgeCategory()
+}
+
+"bfootlearn::User::user_model.dart::UserModel" o-- "bfootlearn::User::user_model.dart::CardBadge"
+
+class "bfootlearn::User::user_model.dart::CardBadge" {
+  +bool kinship
+  +bool direction
+  +bool classroom
+  +bool time
+  +bool weather
+  +Map<String, dynamic> toJson()
+}
+
+class "bfootlearn::User::user_model.dart::Words" {
+  +SavedWords data
+  +Map<String, dynamic> toJson()
+}
+
+"bfootlearn::User::user_model.dart::Words" o-- "bfootlearn::User::user_model.dart::SavedWords"
+
+class "bfootlearn::User::user_model.dart::SavedWords" {
+  +String sound
+  +String english
+  +String blackfoot
+  +String cat
+  +Map<String, dynamic> toJson()
+}
+
+class "bfootlearn::User::user_profile_screen.dart::UserProfileScreen" {
+  +String? uid
+  +bool isFromLeaderboard
+  +_UserProfileScreenState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::User::user_profile_screen.dart::UserProfileScreen"
+
+class "bfootlearn::User::user_profile_screen.dart::_UserProfileScreenState" {
+  +String score
+  +TextEditingController feedbackController
+  +double progress
+  +double progress2
+  +String dropDownValue
+  +void initState()
+  +void dispose()
+  +Widget build()
+  +dynamic setValues()
+  +int setBadgeValue()
+  +dynamic setHeader()
+  +Widget buildContainer()
+  +String getNameFromEmail()
+}
+
+"bfootlearn::User::user_profile_screen.dart::_UserProfileScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::User::user_profile_screen.dart::_UserProfileScreenState"
+
+class "bfootlearn::User::user_provider.dart::UserProvider" {
+  -String _name
+  -String _email
+  -String _photoUrl
+  -String _uid
+  -String _role
+  -String _token
+  -String _refreshToken
+  -String _expiresIn
+  -int _score
+  -int _rank
+  -UserModel _user
+  -int _heart
+  -String _username
+  -String _joinDate
+  -CardBadge _badge
+  -List<SavedWords> _savedWords
+  -List<CardData> _savedPhrases
+  -List<String> _badgeCategories
+  +UserModel user
+  +String name
+  +String email
+  +String photoUrl
+  +String uid
+  +String role
+  +String token
+  +String refreshToken
+  +String expiresIn
+  +int score
+  +int rank
+  +int heart
+  +String username
+  +String joinDate
+  +List<SavedWords> savedWords
+  +List<CardData> savedPhrases
+  +CardBadge badge
+  +dynamic setUserData()
+  +dynamic setBadge()
+  +void setUid()
+  +void setName()
+  +void setEmail()
+  +void setRole()
+  +void setPhotoUrl()
+  +void setToken()
+  +void setRefreshToken()
+  +void setExpiresIn()
+  +void setScore()
+  +void setRank()
+  +void setHeart()
+  +void setUsername()
+  +void setJoinedDate()
+  +void setWords()
+  +void clear()
+  +dynamic createUserInDb()
+  +dynamic checkIfUserExistsInDb()
+  +dynamic getUserFromDb()
+  +dynamic getUserProfile()
+  +dynamic updateBadge()
+  +dynamic getSavedWords()
+  +dynamic removeWord()
+  +dynamic updateUserInDb()
+  +dynamic deleteUserFromDb()
+  +dynamic addWordToUser()
+  +dynamic removeWordFromUser()
+  +dynamic updateScore()
+  +dynamic getScore()
+  +dynamic getRole()
+  +dynamic getRank()
+  +dynamic updateRank()
+  +dynamic sortAndUpdateRank()
+  +dynamic updateJoinDate()
+  +dynamic changePassword()
+  +dynamic changeEmail()
+  +dynamic changeName()
+  +dynamic changePhotoUrl()
+  +dynamic deleteAccount()
+  +void updateProfile()
+  +dynamic createFeedback()
+  +dynamic getJoinDate()
+  +dynamic incrementHeart()
+  +dynamic getHeart()
+  +dynamic getBadge()
+  +dynamic setBadgeCategories()
+  +List<String> getBadgeCategories()
+  +dynamic refreshCatagories()
+  +void setPhrases()
+}
+
+"bfootlearn::User::user_provider.dart::UserProvider" o-- "bfootlearn::User::user_model.dart::UserModel"
+"bfootlearn::User::user_provider.dart::UserProvider" o-- "bfootlearn::User::user_model.dart::CardBadge"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::User::user_provider.dart::UserProvider"
+
+class "bfootlearn::User::user_p_details.dart::ProfileScoreFeed" {
+  +String uid
+  +_ProfileScoreFeedState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::User::user_p_details.dart::ProfileScoreFeed"
+
+class "bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" {
+  +double progress
+  +double progress2
+  +String dropDownValue
+  -FirestoreOperations _firestoreOperations
+  -UserProvider _userProvider
+  -ValueNotifier<bool> _isEditing
+  -ValueNotifier<bool> _isEditPassWord
+  -TextEditingController _nameController
+  -TextEditingController _userNameController
+  -TextEditingController _passwordController
+  -TextEditingController _emailController
+  -TextEditingController _newPasswordController
+  +File imageFile
+  -ImagePicker _picker
+  +void initState()
+  +void dispose()
+  +dynamic pickImage()
+  +Widget build()
+  -void _showBottomSheetForEdit()
+}
+
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "bfootlearn::User::user_firebase_operation.dart::FirestoreOperations"
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "bfootlearn::User::user_provider.dart::UserProvider"
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<bool>"
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "dart::io::File"
+"bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState" o-- "image_picker::image_picker.dart::ImagePicker"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::User::user_p_details.dart::_ProfileScoreFeedState"
+
+class "bfootlearn::User::widgets::custom_progress.dart::CustomCircularProgressPainter" {
+  +double progress1
+  +double progress2
+  +Color color1
+  +Color color2
+  +void paint()
+  +bool shouldRepaint()
+}
+
+"bfootlearn::User::widgets::custom_progress.dart::CustomCircularProgressPainter" o-- "dart::ui::Color"
+"flutter::src::rendering::custom_paint.dart::CustomPainter" <|-- "bfootlearn::User::widgets::custom_progress.dart::CustomCircularProgressPainter"
+
+class "bfootlearn::vocabulary::model::quiz_model.dart::QuizQuestion" {
+  +String id
+  +String? question
+  +String sound
+  +List<Option> options
+  +String quizType
+  +dynamic correctAnswer
+  +String audioLottie
+}
+
+class "bfootlearn::vocabulary::model::quiz_model.dart::Option" {
+  +String sound
+  +String word
+  +String lottie
+}
+
+class "bfootlearn::vocabulary::provider::voca_provider.dart::vocabularyProvider" {
+  -int _currentPage
+  +FirebaseFirestore firestore
+  -double _lProgress
+  -String _category
+  -bool _isDownloading
+  -String _titleId
+  -GlobalKey<CurvedNavigationBarState> _bottomNavigationKey
+  -List<String> _vocabulary
+  +CollectionReference<Object?> vocabularyCollection
+  -String _selectedAnswer
+  -bool _isAnswered
+  -int _currentQuestionIndex
+  -int _score
+  -List<QuizQuestion> _questions
+  -int _scoreT
+  -int _index
+  -int _scoreIndex
+  -double _progress
+  -int _cardsFlipped
+  -bool _isPlaying
+  -String _categoryT
+  +Map<String, Map<String, dynamic>> categoryValues
+  +int currentPage
+  +double lProgress
+  +String category
+  +bool isDownloading
+  +String titleId
+  +GlobalKey<CurvedNavigationBarState> bottomNavigationKey
+  +List<String> vocabulary
+  +String selectedAnswer
+  +bool isAnswered
+  +int score
+  +int index
+  +int scoreIndex
+  +double progress
+  +int cardsFlipped
+  +bool isPlaying
+  +String categoryT
+  +dynamic setDocRef()
+  +dynamic getAllCategories()
+  +dynamic getDataByCategory()
+  +dynamic getDataByCategory2()
+  +dynamic getVocabulary()
+  +dynamic fetchQuestions()
+  +void selectAnswer()
+  +void nextQuestion()
+  +void resetGame()
+  +void storeValuesForCategory()
+  +Map<String, dynamic> getValuesForCategory()
+  +Map<String, dynamic> setValuesForCategory()
+}
+
+"bfootlearn::vocabulary::provider::voca_provider.dart::vocabularyProvider" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"bfootlearn::vocabulary::provider::voca_provider.dart::vocabularyProvider" o-- "flutter::src::widgets::framework.dart::GlobalKey<CurvedNavigationBarState>"
+"bfootlearn::vocabulary::provider::voca_provider.dart::vocabularyProvider" o-- "cloud_firestore::cloud_firestore.dart::CollectionReference<Object>"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "bfootlearn::vocabulary::provider::voca_provider.dart::vocabularyProvider"
+
+class "bfootlearn::vocabulary::viwes::flash_card_page.dart::FlashCradPage" {
+  +String category
+  +_FlashCradPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::vocabulary::viwes::flash_card_page.dart::FlashCradPage"
+
+class "bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" {
+  +CarouselController buttonCarouselController
+  +AudioPlayer player
+  +int score
+  +dynamic lottieController
+  +double progress2
+  +int cardsFlipped
+  +CardBadge newBadge
+  +Map<String, Map<String, dynamic>> categoryValues
+  -ConfettiController _controllerCenter
+  +ValueNotifier<double> progressNotifier
+  +ValueNotifier<bool> isPlaying
+  +ValueNotifier<int> lastIndex
+  +int index
+  +int scoreIndex
+  +double progress
+  +void initState()
+  +void dispose()
+  +void setNewBadge()
+  +dynamic setDocRefCat()
+  +Widget build()
+  +dynamic playAudio()
+  +Path drawStar()
+  -void _showMyDialog()
+  -dynamic _resetGame()
+}
+
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "carousel_slider::carousel_controller.dart::CarouselController"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "bfootlearn::User::user_model.dart::CardBadge"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "confetti::src::confetti.dart::ConfettiController"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<double>"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<bool>"
+"bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<int>"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin" <|-- "bfootlearn::vocabulary::viwes::flash_card_page.dart::_FlashCradPageState"
+
+class "bfootlearn::vocabulary::viwes::flash_card_page.dart::Qustion" {
+  +String blackfoot
+  +String english
+  +dynamic toFireStore()
+}
+
+class "bfootlearn::vocabulary::viwes::practice_page.dart::PracticePage" {
+  +String category
+  +String uid
+  +PracticePageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::vocabulary::viwes::practice_page.dart::PracticePage"
+
+class "bfootlearn::vocabulary::viwes::practice_page.dart::PracticePageState" {
+  -int _duration
+  -int _score
+  -CountDownController _controller
+  +LeaderBoardRepo leaderBoardRepo
+  +UserProvider userRepo
+  -int _currentQuestionIndex
+  -List<QuizQuestion> _questions
+  -int _secondsRemaining
+  -bool _isAnswered
+  -String _selectedAnswer
+  +void initState()
+  +dynamic fetchQuestions()
+  +void didChangeDependencies()
+  +void dispose()
+  -void _nextQuestion()
+  -void _selectAnswer()
+  +Widget build()
+  +void showAlertDilog()
+  +Widget LWidget()
+  +dynamic normalOption()
+  +void reloadPage()
+}
+
+"bfootlearn::vocabulary::viwes::practice_page.dart::PracticePageState" o-- "circular_countdown_timer::circular_countdown_timer.dart::CountDownController"
+"bfootlearn::vocabulary::viwes::practice_page.dart::PracticePageState" o-- "bfootlearn::leaderboard::repo::leaderboard_repo.dart::LeaderBoardRepo"
+"bfootlearn::vocabulary::viwes::practice_page.dart::PracticePageState" o-- "bfootlearn::User::user_provider.dart::UserProvider"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::vocabulary::viwes::practice_page.dart::PracticePageState"
+
+class "bfootlearn::vocabulary::viwes::saved_pages.dart::SavedPage" {
+  +String category
+  +_SavedPageState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::vocabulary::viwes::saved_pages.dart::SavedPage"
+
+class "bfootlearn::vocabulary::viwes::saved_pages.dart::_SavedPageState" {
+  +CarouselController buttonCarouselController
+  +List<SavedWords> savedWords
+  +String uid
+  +AudioPlayer player
+  +Widget build()
+  +dynamic playAudio()
+}
+
+"bfootlearn::vocabulary::viwes::saved_pages.dart::_SavedPageState" o-- "carousel_slider::carousel_controller.dart::CarouselController"
+"bfootlearn::vocabulary::viwes::saved_pages.dart::_SavedPageState" o-- "audioplayers::src::audioplayer.dart::AudioPlayer"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::vocabulary::viwes::saved_pages.dart::_SavedPageState"
+
+class "bfootlearn::vocabulary::viwes::vocabulary_home.dart::VocabularyHome" {
+  +HomeViewState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::vocabulary::viwes::vocabulary_home.dart::VocabularyHome"
+
+class "bfootlearn::vocabulary::viwes::vocabulary_home.dart::HomeViewState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::vocabulary::viwes::vocabulary_home.dart::HomeViewState"
+
+class "bfootlearn::vocabulary::viwes::v_game.dart::VocabularyGame" {
+  +String category
+  +String uid
+  +VocabularyViewState createState()
+}
+
+"flutter_riverpod::src::consumer.dart::ConsumerStatefulWidget" <|-- "bfootlearn::vocabulary::viwes::v_game.dart::VocabularyGame"
+
+class "bfootlearn::vocabulary::viwes::v_game.dart::VocabularyViewState" {
+  +FlipperController flipperController
+  +void initState()
+  +Widget build()
+}
+
+"bfootlearn::vocabulary::viwes::v_game.dart::VocabularyViewState" o-- "flippy::controllers::flipperController.dart::FlipperController"
+"flutter_riverpod::src::consumer.dart::ConsumerState" <|-- "bfootlearn::vocabulary::viwes::v_game.dart::VocabularyViewState"
+
+class "bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer" {
+  +double width
+  +double height
+  +double borderRadius
+  +double blur
+  +AlignmentGeometry alignment
+  +LinearGradient linearGradient
+  +double border
+  +Color borderColor
+  +Widget child
+  +Widget build()
+}
+
+"bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer" o-- "flutter::src::painting::alignment.dart::AlignmentGeometry"
+"bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer" o-- "flutter::src::painting::gradient.dart::LinearGradient"
+"bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer" o-- "dart::ui::Color"
+"bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "bfootlearn::vocabulary::widgets::gls_cnt.dart::GlassmorphicContainer"
+
+
+@enduml
