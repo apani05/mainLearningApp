@@ -36,9 +36,7 @@ class _CardWidgetState extends ConsumerState<CardWidget> {
     final player = ref.watch(audioPlayerProvider);
     final theme = ref.watch(themeProvider);
     final blogProviderObj = ref.watch(blogProvider);
-    bool isPhraseSaved = blogProviderObj
-        .getUserPhraseProgress()
-        .savedPhrases
+    bool isPhraseSaved = blogProviderObj.userPhraseProgress.savedPhrases
         .any((phrase) => phrase.documentId == widget.documentId);
     return Card(
       color: purpleLight.withOpacity(0.9),

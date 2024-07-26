@@ -35,11 +35,15 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
   Future<void> _fetchPhrasesData() async {
     final blogProviderObj = ref.read(blogProvider);
     final vProvider = ref.read(vocaProvider);
-    seriesOptions = await blogProviderObj.getSeriesNamesFromFirestore();
-    allData = await blogProviderObj.fetchAllData();
-    blogProviderObj.getSavedPhrases();
+    await blogProviderObj.getSeriesNamesFromFirestore();
+    await blogProviderObj.fetchAllData();
+    await blogProviderObj.getSavedPhrases();
     vocabCategory = await vProvider.getAllCategories();
-    setState(() {});
+
+    setState(() {
+      seriesOptions = blogProviderObj.seriesOptions;
+      allData = blogProviderObj.cardDataList;
+    });
   }
 
   @override
@@ -165,12 +169,18 @@ class _SentenceHomePageState extends ConsumerState<SentenceHomePage> {
                                     snapshot.hasError ||
                                     snapshot.data == null ||
                                     snapshot.data!.isEmpty) {
-                                  return CategoryItem(vocabCategory,
-                                      seriesData['seriesName'], '');
+                                  return CategoryItem(
+                                    vocabCategory,
+                                    seriesData['seriesName'],
+                                    '',
+                                  );
                                 } else {
                                   final String downloadUrl = snapshot.data!;
-                                  return CategoryItem(vocabCategory,
-                                      seriesData['seriesName'], downloadUrl);
+                                  return CategoryItem(
+                                    vocabCategory,
+                                    seriesData['seriesName'],
+                                    downloadUrl,
+                                  );
                                 }
                               },
                             );

@@ -16,7 +16,7 @@ class _SavedPageState extends ConsumerState<SavedPage> {
   @override
   Widget build(BuildContext context) {
     final blogProviderObj = ref.watch(blogProvider);
-    final savedBlogs = blogProviderObj.getUserPhraseProgress().savedPhrases;
+    final savedBlogs = blogProviderObj.userPhraseProgress.savedPhrases;
 
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Saved Phrases'),

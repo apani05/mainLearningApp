@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bfootlearn/Phrases/models/card_data.dart';
 import 'package:bfootlearn/Phrases/models/question_model.dart';
+import 'package:bfootlearn/Phrases/models/quiz_model.dart';
 import 'package:bfootlearn/components/color_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,7 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   List<String> selectedSeries = [];
   late AudioPlayer player = ref.watch(audioPlayerProvider);
   bool isPlaying = false;
+  List<Map<String, dynamic>> seriesOptions = [];
 
   @override
   void initState() {
@@ -34,8 +36,9 @@ class _QuizPageState extends ConsumerState<QuizPage> {
   }
 
   Future<void> _showSeriesSelectionDialog() async {
-    List<Map<String, dynamic>> seriesOptions =
-        await ref.read(blogProvider).getSeriesOptions();
+    setState(() {
+      seriesOptions = ref.read(blogProvider).seriesOptions;
+    });
     List<bool> isSelected =
         List.generate(seriesOptions.length, (index) => false);
 
